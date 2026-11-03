@@ -224,15 +224,16 @@ body{padding:0!important;overflow:hidden}
 #app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
 #app .sa-stage .sa-gift{position:relative;z-index:2;width:100%;margin:0;overflow:visible;transition:opacity .8s,transform .9s}
 #app .sa-gift *{transform-box:fill-box;transform-origin:center}
-#app .b-bow .loop{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s .15s}
-#app .b-bow .knot,#app .b-bow .tail,#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .5s}
+#app .b-bow .string{transition:stroke-dashoffset 1.2s cubic-bezier(.5,0,.3,1)}
+#app .b-bow .pull{transition:stroke-dashoffset .7s cubic-bezier(.3,.7,.3,1),transform 1.1s cubic-bezier(.5,0,.3,1),opacity .5s .8s}
+#app .b-bow .fillb,#app .b-bow .knot,#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s}
 #app .b-lid{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s .3s;transform-origin:0 100%}
-#app .sa-stage.untie .b-bow .loop.l1{transform:translate(-26px,14px) rotate(-70deg) scale(.4);opacity:0}
-#app .sa-stage.untie .b-bow .loop.l2{transform:translate(26px,14px) rotate(70deg) scale(.4);opacity:0}
-#app .sa-stage.untie .b-bow .knot{transform:scale(0);opacity:0}
-#app .sa-stage.untie .b-bow .tail.t1{transform:translate(-14px,52px) rotate(40deg);opacity:0}
-#app .sa-stage.untie .b-bow .tail.t2{transform:translate(14px,52px) rotate(-40deg);opacity:0}
+#app .sa-stage.untie .b-bow .pull{stroke-dashoffset:0}
 #app .sa-stage.untie .b-tag{transform:translateY(26px) rotate(18deg);opacity:0}
+#app .sa-stage.unravel .b-bow .string{stroke-dashoffset:-100}
+#app .sa-stage.unravel .b-bow .pull{transform:translate(16px,22px);opacity:0}
+#app .sa-stage.unravel .b-bow .fillb{opacity:0;transition-duration:.6s}
+#app .sa-stage.unravel .b-bow .knot{transform:scale(0);opacity:0;transition-delay:.7s}
 #app .sa-stage.lift .b-lid{transform:translate(-16px,-62px) rotate(-26deg);opacity:0}
 #app .sa-ticket{position:absolute;z-index:1;left:50%;top:50%;width:80cqw;margin-left:-40cqw;transform:translate(0,calc(-50% + 9cqw)) scale(.42);opacity:0;transition:transform 1s cubic-bezier(.25,.9,.3,1),opacity .4s;
   border-radius:12px;padding:6cqw 5cqw 5.4cqw;background:linear-gradient(135deg,#f6e2a0 0,#d9b665 38%,#b98b34 68%,#e7c776 100%);box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1.5px #8a6420 inset;color:#2a1d06;overflow:hidden}
@@ -6212,8 +6213,9 @@ fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inA
 const GIFT_SVG=tag=>'<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round">'+
   '<g class="b-box"><rect x="26" y="62" width="108" height="76" fill="#17382b" stroke="#f4ecd6" stroke-width="2"/><path d="M80 62v76" stroke="#d4b36a" stroke-width="3"/></g>'+
   '<g class="b-lid"><rect x="18" y="46" width="124" height="20" fill="#10291f" stroke="#f4ecd6" stroke-width="2"/><path d="M18 56h124M80 46v20" stroke="#d4b36a" stroke-width="3"/></g>'+
-  '<g class="b-bow"><path class="tail t1" d="M80 46l-14 26" stroke="#d4b36a" stroke-width="2.4"/><path class="tail t2" d="M80 46l14 26" stroke="#d4b36a" stroke-width="2.4"/>'+
-  '<path class="loop l1" d="M80 46C60 12 28 22 46 40c8 8 26 6 34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><path class="loop l2" d="M80 46c20-34 52-24 34-6-8 8-26 6-34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><circle class="knot" cx="80" cy="46" r="5" fill="#d4b36a"/></g>'+
+  '<g class="b-bow"><path class="fillb" d="M80 46C60 12 28 22 46 40c8 8 26 6 34 6zM80 46c20-34 52-24 34-6-8 8-26 6-34 6z" fill="#17382b"/>'+
+  '<path class="string" pathLength="100" d="M60 78C66 64 74 54 80 46C60 12 28 22 46 40C54 48 72 48 80 46C100 12 132 22 114 40C106 48 88 48 80 46C86 54 94 64 100 78" fill="none" stroke="#d4b36a" stroke-width="2.6" stroke-dasharray="100 100" stroke-dashoffset="0"/>'+
+  '<path class="pull" pathLength="100" d="M100 78C112 96 128 98 142 120" fill="none" stroke="#d4b36a" stroke-width="2.6" stroke-dasharray="100 100" stroke-dashoffset="100"/><circle class="knot" cx="80" cy="46" r="5" fill="#d4b36a"/></g>'+
   (tag?'<g class="b-tag"><path d="M62 98h36v22H62z" fill="#f4ecd6" stroke="#a2792b"/><text x="80" y="114" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700" fill="#10291f">?</text></g>':'')+'</svg>';
 const SPARKS=[[-70,-60],[60,-80],[-30,-96],[90,-40],[-90,-20],[20,-110],[110,-70],[-60,-100]].map(([x,y])=>'<i style="--dx:'+x+'px;--dy:'+y+'px"></i>').join('');
 const TICKET='<div class="sa-ticket"><span class="notch l"></span><span class="notch r"></span><div class="tk top">Golden ticket</div><div class="tk d2 for">You are buying for</div><div class="tk d2 name" id="saName"></div><div class="rule tk d3"></div><p class="tk d3"><b>Keep it secret</b> until the presents are opened.</p><p class="tk d4" style="margin-top:1.6cqw">Budget: <b>£20</b></p></div>';
@@ -6238,13 +6240,13 @@ async function unwrapSanta(){
   document.getElementById('saName').textContent=name;
   btn.classList.add('sa-fade');msg.classList.add('sa-fade');
   const step=(cls,ms)=>setTimeout(()=>stage.classList.add(cls),ms);
-  step('untie',50);step('lift',750);step('rise',1350);step('grow',2350);step('show',3000);step('shine',3400);
+  step('untie',50);step('unravel',600);step('lift',1900);step('rise',2500);step('grow',3500);step('show',4150);step('shine',4550);
   setTimeout(()=>{
     saOpenName=name;document.getElementById('saSub').textContent='Shh. Only you can see this';
     btn.textContent='Hide it again';btn.classList.remove('solid','sa-fade');btn.onclick=()=>{saOpenName=null;saBusy=false;renderSanta()};
     msg.textContent='It hides itself when you leave this tab.';msg.classList.remove('sa-fade');saBusy=false;
     saBusy=true; // stays busy until hidden, so the animation cannot be replayed on top of itself
-  },4100);
+  },5250);
 }
 
 /* ---------- tabs and entering the app */
