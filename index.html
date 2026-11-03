@@ -5847,7 +5847,7 @@ body{padding:0!important;overflow:hidden}
           <div class="tile"><svg class="ico" viewBox="0 0 24 24"><path d="M5 11V8a7 7 0 0 1 14 0v3M4 11h16v2H4zM6 13l1 7h10l1-7"/></svg><small>Arrive</small><b>12:30</b><span>Welcome drink on arrival</span></div>
           <div class="tile"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/></svg><small>Sit down</small><b>14:00</b><span>Christmas dinner</span></div>
           <div class="tile"><svg class="ico" viewBox="0 0 24 24"><path d="M8 4 4 7l2 3 2-1v11h8V9l2 1 2-3-4-3c-1 2-2 3-4 3S9 6 8 4z"/></svg><small>Dress</small><b>Dress to impress</b><span>Sparkle encouraged</span></div>
-          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11"/><path d="M4 9h16M12 9v11M12 9c-2-5-6-4-5-1 .5 1.500 3 1 5 1zM12 9c2-5 6-4 5-1-.5 1.500-3 1-5 1z"/></svg><small>Bring</small><div id="bring"><b>Secret Santa</b><span>&amp;</span><b class="b2">Festive cheer</b></div></div>
+          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11"/><path d="M4 9h16M12 9v11M12 9c-2-5-6-4-5-1 .5 1.500 3 1 5 1zM12 9c2-5 6-4 5-1-.5 1.500-3 1-5 1z"/></svg><small>Bring</small><div id="bring"><b>Secret Santa</b><b class="b2">Festive cheer</b></div></div>
           <div class="tile wide"><svg class="ico big" viewBox="0 0 24 24"><path d="M12 1v4"/><circle cx="12" cy="14" r="8"/><path d="M4.3 11.5h15.4M4.3 16.5h15.4M12 6v16M12 6c-4.500 4-4.500 12 0 16M12 6c4.500 4 4.500 12 0 16"/><path d="M21.500 3.500v3M20 5h3" stroke-width="1"/></svg><div><small>Party time</small><b>19:00</b><span>Evening food at 19:30</span></div></div>
         </div>
       </div>
@@ -6146,11 +6146,13 @@ document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('clic
   document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
 }));
 
-/* ---------- what each guest brings: Secret Santa and festive cheer for everyone, plus anything agreed for them */
-const BRING={Lana:['Crackers']};
+/* ---------- what each guest brings: Secret Santa and festive cheer for everyone, plus whatever is typed against their name in bring.json */
+let BRING={};
+fetch('bring.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{BRING=j;if(inApp)paintBring()}).catch(()=>{});
 function paintBring(){
-  const items=['Secret Santa','Festive cheer'].concat(BRING[window.GUEST]||[]);
-  document.getElementById('bring').innerHTML=items.map((x,i)=>(i===items.length-1&&i>0?'<span>&amp;</span>':'')+'<b'+(i>0?' class="b2"':'')+'>'+x+'</b>').join('');
+  const mine=[].concat(BRING[window.GUEST]||[]).map(x=>String(x).trim()).filter(Boolean);
+  const items=['Secret Santa','Festive cheer'].concat(mine);
+  document.getElementById('bring').innerHTML=items.map((x,i)=>'<b'+(i>0?' class="b2"':'')+'>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>').join('');
 }
 let inApp=false;
 function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();render(new Date());scr.classList.add('app')}
