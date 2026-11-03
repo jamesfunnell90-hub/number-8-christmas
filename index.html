@@ -219,6 +219,48 @@ body{padding:0!important;overflow:hidden}
 #app .sa-tag p b{color:var(--ink);font-weight:500}
 #app .apptabs{padding-left:0;padding-right:0;font-size:8.4px;letter-spacing:.05em}
 #app .apptabs button{padding:0 2px;flex:1}
+
+/* the unwrap: bow unties, lid lifts, a golden ticket rises and grows to replace the box */
+#app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
+#app .sa-stage .sa-gift{position:relative;z-index:2;width:100%;margin:0;overflow:visible;transition:opacity .8s,transform .9s}
+#app .sa-gift *{transform-box:fill-box;transform-origin:center}
+#app .b-bow .loop{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s .15s}
+#app .b-bow .knot,#app .b-bow .tail,#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .5s}
+#app .b-lid{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s .3s;transform-origin:0 100%}
+#app .sa-stage.untie .b-bow .loop.l1{transform:translate(-26px,14px) rotate(-70deg) scale(.4);opacity:0}
+#app .sa-stage.untie .b-bow .loop.l2{transform:translate(26px,14px) rotate(70deg) scale(.4);opacity:0}
+#app .sa-stage.untie .b-bow .knot{transform:scale(0);opacity:0}
+#app .sa-stage.untie .b-bow .tail.t1{transform:translate(-14px,52px) rotate(40deg);opacity:0}
+#app .sa-stage.untie .b-bow .tail.t2{transform:translate(14px,52px) rotate(-40deg);opacity:0}
+#app .sa-stage.untie .b-tag{transform:translateY(26px) rotate(18deg);opacity:0}
+#app .sa-stage.lift .b-lid{transform:translate(-16px,-62px) rotate(-26deg);opacity:0}
+#app .sa-ticket{position:absolute;z-index:1;left:50%;top:50%;width:80cqw;margin-left:-40cqw;transform:translate(0,calc(-50% + 9cqw)) scale(.42);opacity:0;transition:transform 1s cubic-bezier(.25,.9,.3,1),opacity .4s;
+  border-radius:12px;padding:6cqw 5cqw 5.4cqw;background:linear-gradient(135deg,#f6e2a0 0,#d9b665 38%,#b98b34 68%,#e7c776 100%);box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1.5px #8a6420 inset;color:#2a1d06;overflow:hidden}
+#app .sa-stage.rise .sa-ticket{opacity:1;transform:translate(0,calc(-50% - 9cqw)) scale(.42)}
+#app .sa-stage.grow{height:80cqw}
+#app .sa-stage.grow .sa-ticket{z-index:3;transform:translate(0,-50%) scale(1)}
+#app .sa-stage.grow .sa-gift{opacity:0;transform:scale(.85)}
+#app .sa-ticket::before{content:"";position:absolute;inset:7px;border:1px dashed rgba(90,60,10,.55);border-radius:8px;pointer-events:none}
+#app .sa-ticket::after{content:"";position:absolute;top:0;bottom:0;width:30%;left:-40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none}
+#app .sa-stage.shine .sa-ticket::after{left:120%;transition:left 1.1s ease-in-out}
+#app .sa-ticket .tk{opacity:0;transform:translateY(8px);transition:opacity .7s,transform .7s}
+#app .sa-stage.show .sa-ticket .tk{opacity:1;transform:none}
+#app .sa-ticket .tk.d2{transition-delay:.2s} #app .sa-ticket .tk.d3{transition-delay:.4s} #app .sa-ticket .tk.d4{transition-delay:.6s}
+#app .sa-ticket .top{font-size:3cqw;letter-spacing:.34em;text-transform:uppercase;color:#6b4a10;font-weight:500}
+#app .sa-ticket .for{font-size:3.2cqw;letter-spacing:.2em;text-transform:uppercase;color:#5a3d0c;margin-top:3.4cqw}
+#app .sa-ticket .name{font-family:var(--script);font-size:19cqw;line-height:1.05;color:#1b3a2a;margin:1.4cqw 0 .4cqw}
+#app .sa-ticket .rule{height:1px;background:linear-gradient(90deg,transparent,#7a5410,transparent);margin:2.6cqw 0}
+#app .sa-ticket p{margin:0;font-size:3.5cqw;color:#3a2a08}
+#app .sa-ticket p b{font-weight:700;color:#1b3a2a}
+#app .sa-ticket .notch{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;background:var(--panel2);margin-top:-7px;box-shadow:0 0 0 1.5px #8a6420 inset}
+#app .sa-ticket .notch.l{left:-7px} #app .sa-ticket .notch.r{right:-7px}
+#app .sa-spark{position:absolute;left:50%;top:38%;z-index:4;pointer-events:none}
+#app .sa-spark i{position:absolute;width:8px;height:8px;margin:-4px;background:radial-gradient(circle,#fff6cf 0,#f2cf72 45%,transparent 70%);border-radius:50%;opacity:0}
+#app .sa-stage.rise .sa-spark i{animation:spark 1.2s ease-out forwards}
+@keyframes spark{0%{opacity:0;transform:translate(0,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.6)}}
+#app .sa-btn,#app .sa-hint{transition:opacity .4s}
+#app .sa-fade{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#app .sa-stage,#app .sa-stage *{transition-duration:.01s!important;transition-delay:0s!important;animation-duration:.01s!important}}
 </style>
 </head>
 <body>
@@ -6166,33 +6208,48 @@ function render(now){
 /* ---------- Secret Santa: each result is locked with its owner's PIN, so only they can open it */
 const SANTA_ADULTS_ONLY=['Arabella'];
 let SANTA=null,saOpenName=null,saBusy=false;
-fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inApp)renderSanta()}).catch(()=>{});
-const GIFT_SVG='<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="62" width="108" height="76" fill="#17382b" stroke="#f4ecd6" stroke-width="2"/><rect x="18" y="46" width="124" height="20" fill="#10291f" stroke="#f4ecd6" stroke-width="2"/><path d="M80 46v92M18 56h124" stroke="#d4b36a" stroke-width="3"/><path d="M80 46C60 12 28 22 46 40c8 8 26 6 34 6zM80 46c20-34 52-24 34-6-8 8-26 6-34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><circle cx="80" cy="46" r="5" fill="#d4b36a"/>%TAG%</svg>';
-const TAGQ='<path d="M62 98h36v22H62z" fill="#f4ecd6" stroke="#a2792b"/><text x="80" y="114" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700" fill="#10291f">?</text>';
+fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inApp&&!saBusy)renderSanta()}).catch(()=>{});
+const GIFT_SVG=tag=>'<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round">'+
+  '<g class="b-box"><rect x="26" y="62" width="108" height="76" fill="#17382b" stroke="#f4ecd6" stroke-width="2"/><path d="M80 62v76" stroke="#d4b36a" stroke-width="3"/></g>'+
+  '<g class="b-lid"><rect x="18" y="46" width="124" height="20" fill="#10291f" stroke="#f4ecd6" stroke-width="2"/><path d="M18 56h124M80 46v20" stroke="#d4b36a" stroke-width="3"/></g>'+
+  '<g class="b-bow"><path class="tail t1" d="M80 46l-14 26" stroke="#d4b36a" stroke-width="2.4"/><path class="tail t2" d="M80 46l14 26" stroke="#d4b36a" stroke-width="2.4"/>'+
+  '<path class="loop l1" d="M80 46C60 12 28 22 46 40c8 8 26 6 34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><path class="loop l2" d="M80 46c20-34 52-24 34-6-8 8-26 6-34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><circle class="knot" cx="80" cy="46" r="5" fill="#d4b36a"/></g>'+
+  (tag?'<g class="b-tag"><path d="M62 98h36v22H62z" fill="#f4ecd6" stroke="#a2792b"/><text x="80" y="114" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700" fill="#10291f">?</text></g>':'')+'</svg>';
+const SPARKS=[[-70,-60],[60,-80],[-30,-96],[90,-40],[-90,-20],[20,-110],[110,-70],[-60,-100]].map(([x,y])=>'<i style="--dx:'+x+'px;--dy:'+y+'px"></i>').join('');
+const TICKET='<div class="sa-ticket"><span class="notch l"></span><span class="notch r"></span><div class="tk top">Golden ticket</div><div class="tk d2 for">You are buying for</div><div class="tk d2 name" id="saName"></div><div class="rule tk d3"></div><p class="tk d3"><b>Keep it secret</b> until the presents are opened.</p><p class="tk d4" style="margin-top:1.6cqw">Budget: <b>£20</b></p></div>';
 function renderSanta(){
   const el=document.getElementById('saBody'),n=window.GUEST;if(!el||!n)return;
-  const head=(t,s)=>'<div class="sa-small">Secret Santa</div><h2>'+t+'</h2><div class="sa-sub">'+s+'</div>';
-  if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('Hello, '+n,'This one is for the grown-ups')+GIFT_SVG.replace('%TAG%','')+'<div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
-  if(!SANTA||!SANTA.drawn){el.innerHTML=head('Not drawn yet','The names are still in the hat')+GIFT_SVG.replace('%TAG%',TAGQ)+'<div class="sa-hint">Everyone is drawn at once, so nobody can see a result until it is done. Come back soon.</div>';return}
-  if(saOpenName){el.innerHTML=head('Shh','Only you can see this')+'<div class="sa-tag"><div class="for">You are buying for</div><div class="name"></div><div class="rule"></div><p><b>Keep it secret</b> until the presents are opened.</p><p style="margin-top:2cqw">Budget: <b>£20</b></p></div><button class="sa-btn" id="saHide" type="button">Hide it again</button>';el.querySelector('.name').textContent=saOpenName;document.getElementById('saHide').onclick=()=>{saOpenName=null;renderSanta()};return}
-  el.innerHTML=head('Hello, '+n,'Your Secret Santa is ready')+GIFT_SVG.replace('%TAG%',TAGQ)+'<button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
+  const head=(t,s)=>'<div class="sa-small">Secret Santa</div><h2>'+t+'</h2><div class="sa-sub" id="saSub">'+s+'</div>';
+  if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('Hello, '+n,'This one is for the grown-ups')+'<div class="sa-stage" style="height:44cqw;width:50cqw">'+GIFT_SVG(false)+'</div><div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
+  if(!SANTA||!SANTA.drawn){el.innerHTML=head('Not drawn yet','The names are still in the hat')+'<div class="sa-stage">'+GIFT_SVG(true)+'</div><div class="sa-hint">Everyone is drawn at once, so nobody can see a result until it is done. Come back soon.</div>';return}
+  saOpenName=null;
+  el.innerHTML=head('Hello, '+n,'Your Secret Santa is ready')+'<div class="sa-stage" id="saStage"><div class="sa-spark">'+SPARKS+'</div>'+GIFT_SVG(true)+TICKET+'</div><button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
   document.getElementById('saOpen').onclick=unwrapSanta;
 }
 async function unwrapSanta(){
-  if(saBusy)return;saBusy=true;const msg=document.getElementById('saMsg');
+  if(saBusy)return;saBusy=true;const msg=document.getElementById('saMsg'),btn=document.getElementById('saOpen'),stage=document.getElementById('saStage');
+  let name;
   try{
     const g=SANTA.gifts[window.GUEST],b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
     const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(window.GUEST_PIN+':'+window.GUEST),'PBKDF2',false,['deriveKey']);
     const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(g.s),iterations:SANTA.iter,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
-    saOpenName=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(g.i)},key,b(g.c)));
-    renderSanta();
-  }catch(e){if(msg)msg.textContent='Sorry, that would not open. Please tell James.'}
-  saBusy=false;
+    name=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(g.i)},key,b(g.c)));
+  }catch(e){if(msg)msg.textContent='Sorry, that would not open. Please tell James.';saBusy=false;return}
+  document.getElementById('saName').textContent=name;
+  btn.classList.add('sa-fade');msg.classList.add('sa-fade');
+  const step=(cls,ms)=>setTimeout(()=>stage.classList.add(cls),ms);
+  step('untie',50);step('lift',750);step('rise',1350);step('grow',2350);step('show',3000);step('shine',3400);
+  setTimeout(()=>{
+    saOpenName=name;document.getElementById('saSub').textContent='Shh. Only you can see this';
+    btn.textContent='Hide it again';btn.classList.remove('solid','sa-fade');btn.onclick=()=>{saOpenName=null;saBusy=false;renderSanta()};
+    msg.textContent='It hides itself when you leave this tab.';msg.classList.remove('sa-fade');saBusy=false;
+    saBusy=true; // stays busy until hidden, so the animation cannot be replayed on top of itself
+  },4100);
 }
 
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.v!=='santa'&&saOpenName){saOpenName=null;renderSanta()}
+  if(b.dataset.v!=='santa'&&(saOpenName||saBusy)){saOpenName=null;saBusy=false;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
 }));
