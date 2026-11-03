@@ -224,17 +224,11 @@ body{padding:0!important;overflow:hidden}
 #app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
 #app .sa-stage .sa-gift{position:relative;z-index:2;width:100%;margin:0;overflow:visible;transition:opacity .8s,transform .9s}
 #app .sa-gift *{transform-box:fill-box;transform-origin:center}
-#app .b-bow .string{transition:stroke-dashoffset 1.15s cubic-bezier(.45,0,.35,1),opacity .15s 1.05s}
-#app .b-bow .pull{opacity:0;transition:stroke-dashoffset .9s cubic-bezier(.3,.7,.3,1),transform 1.2s cubic-bezier(.45,0,.5,1)}
-#app .b-bow .fillb,#app .b-bow .knot,#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s}
+#app .b-bow .pull{opacity:0}
+#app .b-bow .pull.away{transition:opacity .3s,transform .5s cubic-bezier(.4,0,.6,1);opacity:0!important;transform:translate(14px,20px)}
+#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s}
 #app .b-lid{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s .3s;transform-origin:0 100%}
-#app .sa-stage.untie .b-bow .pull{stroke-dashoffset:0;animation:pullfade 1.3s linear forwards}
-@keyframes pullfade{0%{opacity:0}8%{opacity:1}70%{opacity:1}100%{opacity:0}}
 #app .sa-stage.untie .b-tag{transform:translateY(26px) rotate(18deg);opacity:0}
-#app .sa-stage.unravel .b-bow .string{stroke-dashoffset:-100;opacity:0}
-#app .sa-stage.unravel .b-bow .pull{transform:translate(16px,22px)}
-#app .sa-stage.unravel .b-bow .fillb{opacity:0;transition-duration:.6s}
-#app .sa-stage.unravel .b-bow .knot{transform:scale(0);opacity:0;transition-delay:.7s}
 #app .sa-stage.lift .b-lid{transform:translate(-16px,-62px) rotate(-26deg);opacity:0}
 #app .sa-ticket{position:absolute;z-index:1;left:50%;top:50%;width:80cqw;margin-left:-40cqw;transform:translate(0,calc(-50% + 9cqw)) scale(.42);opacity:0;transition:transform 1s cubic-bezier(.25,.9,.3,1),opacity .4s;
   border-radius:12px;padding:6cqw 5cqw 5.4cqw;background:linear-gradient(135deg,#f6e2a0 0,#d9b665 38%,#b98b34 68%,#e7c776 100%);box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1.5px #8a6420 inset;color:#2a1d06;overflow:hidden}
@@ -6229,6 +6223,20 @@ function renderSanta(){
   el.innerHTML=head('Hello, '+n,'Your Secret Santa is ready')+'<div class="sa-stage" id="saStage"><div class="sa-spark">'+SPARKS+'</div>'+GIFT_SVG(true)+TICKET+'</div><button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
   document.getElementById('saOpen').onclick=unwrapSanta;
 }
+function unravelBow(stage){
+  /* one shared progress drives both the bow's string and the end being pulled out, so they cannot drift apart */
+  const s=stage.querySelector('.string'),p=stage.querySelector('.pull'),f=stage.querySelector('.fillb'),k=stage.querySelector('.knot');
+  const dur=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches?1:1300,t0=performance.now();
+  (function frame(now){
+    const u=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-u,1.8);
+    s.style.strokeDashoffset=-100*e;
+    p.style.strokeDashoffset=100*(1-e);p.style.opacity=Math.min(1,e*10);
+    f.style.opacity=Math.max(0,1-e*1.8);
+    const kk=Math.max(0,1-Math.max(0,e-.7)/.3);k.style.opacity=kk;k.style.transform='scale('+kk+')';
+    if(e>.985)s.style.opacity=0;
+    if(u<1)requestAnimationFrame(frame);else{s.style.opacity=0;p.classList.add('away')}
+  })(t0);
+}
 async function unwrapSanta(){
   if(saBusy)return;saBusy=true;const msg=document.getElementById('saMsg'),btn=document.getElementById('saOpen'),stage=document.getElementById('saStage');
   let name;
@@ -6241,13 +6249,13 @@ async function unwrapSanta(){
   document.getElementById('saName').textContent=name;
   btn.classList.add('sa-fade');msg.classList.add('sa-fade');
   const step=(cls,ms)=>setTimeout(()=>stage.classList.add(cls),ms);
-  step('untie',50);step('unravel',50);step('lift',1700);step('rise',2300);step('grow',3300);step('show',3950);step('shine',4350);
+  step('untie',50);setTimeout(()=>unravelBow(stage),50);step('lift',1550);step('rise',2150);step('grow',3150);step('show',3800);step('shine',4200);
   setTimeout(()=>{
     saOpenName=name;document.getElementById('saSub').textContent='Shh. Only you can see this';
     btn.textContent='Hide it again';btn.classList.remove('solid','sa-fade');btn.onclick=()=>{saOpenName=null;saBusy=false;renderSanta()};
     msg.textContent='It hides itself when you leave this tab.';msg.classList.remove('sa-fade');saBusy=false;
     saBusy=true; // stays busy until hidden, so the animation cannot be replayed on top of itself
-  },5050);
+  },4900);
 }
 
 /* ---------- tabs and entering the app */
