@@ -224,14 +224,15 @@ body{padding:0!important;overflow:hidden}
 #app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
 #app .sa-stage .sa-gift{position:relative;z-index:2;width:100%;margin:0;overflow:visible;transition:opacity .8s,transform .9s}
 #app .sa-gift *{transform-box:fill-box;transform-origin:center}
-#app .b-bow .string{transition:stroke-dashoffset 1.2s cubic-bezier(.5,0,.3,1)}
-#app .b-bow .pull{transition:stroke-dashoffset .7s cubic-bezier(.3,.7,.3,1),transform 1.1s cubic-bezier(.5,0,.3,1),opacity .5s .8s}
+#app .b-bow .string{transition:stroke-dashoffset 1.15s cubic-bezier(.45,0,.35,1),opacity .15s 1.05s}
+#app .b-bow .pull{opacity:0;transition:stroke-dashoffset .9s cubic-bezier(.3,.7,.3,1),transform 1.2s cubic-bezier(.45,0,.5,1)}
 #app .b-bow .fillb,#app .b-bow .knot,#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s}
 #app .b-lid{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s .3s;transform-origin:0 100%}
-#app .sa-stage.untie .b-bow .pull{stroke-dashoffset:0}
+#app .sa-stage.untie .b-bow .pull{stroke-dashoffset:0;animation:pullfade 1.3s linear forwards}
+@keyframes pullfade{0%{opacity:0}8%{opacity:1}70%{opacity:1}100%{opacity:0}}
 #app .sa-stage.untie .b-tag{transform:translateY(26px) rotate(18deg);opacity:0}
-#app .sa-stage.unravel .b-bow .string{stroke-dashoffset:-100}
-#app .sa-stage.unravel .b-bow .pull{transform:translate(16px,22px);opacity:0}
+#app .sa-stage.unravel .b-bow .string{stroke-dashoffset:-100;opacity:0}
+#app .sa-stage.unravel .b-bow .pull{transform:translate(16px,22px)}
 #app .sa-stage.unravel .b-bow .fillb{opacity:0;transition-duration:.6s}
 #app .sa-stage.unravel .b-bow .knot{transform:scale(0);opacity:0;transition-delay:.7s}
 #app .sa-stage.lift .b-lid{transform:translate(-16px,-62px) rotate(-26deg);opacity:0}
@@ -6240,13 +6241,13 @@ async function unwrapSanta(){
   document.getElementById('saName').textContent=name;
   btn.classList.add('sa-fade');msg.classList.add('sa-fade');
   const step=(cls,ms)=>setTimeout(()=>stage.classList.add(cls),ms);
-  step('untie',50);step('unravel',600);step('lift',1900);step('rise',2500);step('grow',3500);step('show',4150);step('shine',4550);
+  step('untie',50);step('unravel',50);step('lift',1700);step('rise',2300);step('grow',3300);step('show',3950);step('shine',4350);
   setTimeout(()=>{
     saOpenName=name;document.getElementById('saSub').textContent='Shh. Only you can see this';
     btn.textContent='Hide it again';btn.classList.remove('solid','sa-fade');btn.onclick=()=>{saOpenName=null;saBusy=false;renderSanta()};
     msg.textContent='It hides itself when you leave this tab.';msg.classList.remove('sa-fade');saBusy=false;
     saBusy=true; // stays busy until hidden, so the animation cannot be replayed on top of itself
-  },5250);
+  },5050);
 }
 
 /* ---------- tabs and entering the app */
