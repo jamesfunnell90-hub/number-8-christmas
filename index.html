@@ -198,6 +198,27 @@ body{padding:0!important;overflow:hidden}
 #app .apptabs .on{color:var(--gold)}
 .screen.settle .welcome{pointer-events:auto}
 
+
+/* Secret Santa tab */
+#app .sa{align-items:center;justify-content:center;text-align:center;padding:0 7cqw 8cqw;overflow:hidden}
+#app .sa-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 42%,#1f4a39 0,#16382b 50%,var(--panel2) 100%)}
+#app .sa>*{position:relative}
+#app .sa>.sa-bg{position:absolute}
+#app .sa-small{font-size:3cqw;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+#app .sa h2{font-family:var(--serif);font-weight:600;font-size:8.6cqw;margin:6px 0 0}
+#app .sa-sub{font-family:var(--serif);font-style:italic;font-size:4.4cqw;color:var(--dim);margin-top:4px}
+#app .sa-gift{width:60cqw;margin:8cqw auto 0;display:block}
+#app .sa-btn{margin-top:6cqw;border:1px solid var(--gold);color:var(--gold);background:none;border-radius:30px;padding:10px 24px;font:500 3.2cqw var(--sans);letter-spacing:.18em;text-transform:uppercase;cursor:pointer}
+#app .sa-btn.solid{background:var(--gold);color:#10291f}
+#app .sa-hint{font-size:3.3cqw;color:var(--dim);margin-top:4cqw;max-width:36ch}
+#app .sa-tag{margin-top:7cqw;border:1px solid var(--gold-deep);background:linear-gradient(var(--panel),#12301f);border-radius:10px;padding:6cqw 5cqw 5cqw;width:100%}
+#app .sa-tag .for{font-size:3.2cqw;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+#app .sa-tag .name{font-family:var(--script);font-size:17cqw;line-height:1.1;color:var(--ink);margin:2cqw 0}
+#app .sa-tag .rule{height:1px;background:linear-gradient(90deg,transparent,var(--gold-deep),transparent);margin:3cqw 0}
+#app .sa-tag p{margin:0;font-size:3.4cqw;color:var(--dim)}
+#app .sa-tag p b{color:var(--ink);font-weight:500}
+#app .apptabs{padding-left:0;padding-right:0;font-size:8.4px;letter-spacing:.05em}
+#app .apptabs button{padding:0 2px;flex:1}
 </style>
 </head>
 <body>
@@ -5856,11 +5877,12 @@ body{padding:0!important;overflow:hidden}
         <ul class="tl" id="tl"></ul>
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
-    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="play"><h2>Play</h2><p>Coming soon. This page is still being built.</p></section></div><nav class="apptabs" id="apptabs">
+    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view soon" data-v="play"><h2>Play</h2><p>Coming soon. This page is still being built.</p></section></div><nav class="apptabs" id="apptabs">
   <button class="on" data-v="welcome"><svg viewBox="0 0 16 16"><path d="M2 8l6-5 6 5v6H2zM6.5 14v-4h3v4"/></svg>Welcome</button>
   <button data-v="menu"><svg viewBox="0 0 16 16"><path d="M3 2v12M3 2c3-1 5 1 9 0v7c-4 1-6-1-9 0"/></svg>Menu</button>
   <button data-v="drinks"><svg viewBox="0 0 16 16"><path d="M4 2h8l-1 5a3 3 0 0 1-6 0zM8 10v4M5 14h6"/></svg>Drinks</button>
   <button data-v="table"><svg viewBox="0 0 16 16"><circle cx="5" cy="6" r="2"/><circle cx="11" cy="6" r="2"/><path d="M2 13c0-3 6-3 6 0M8 13c0-3 6-3 6 0"/></svg>Table</button>
+  <button data-v="santa"><svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="7"/><path d="M2 7h12M8 7v7M8 7C6 2 3 3 4 5c.5 1 3 2 4 2zM8 7c2-5 5-4 4-2-.5 1-3 2-4 2z"/></svg>Santa</button>
   <button data-v="play"><svg viewBox="0 0 16 16"><path d="M8 2l2 4 4 .5-3 3 .8 4.5L8 12l-3.8 2 .8-4.5-3-3L6 6z"/></svg>Play</button>
 </nav></div>
   </div></div>
@@ -5894,7 +5916,7 @@ function check(){
     dotsEl.classList.remove('shake');void dotsEl.offsetWidth;dotsEl.classList.add('shake');
     msg.textContent='That PIN is not right. Try again.';entry='';setTimeout(paint,380);return;
   }
-  go(name);
+  window.GUEST_PIN=entry;go(name);
 }
 function later(fn,ms){timers.push(setTimeout(fn,ms))}
 function fly(tx,ty,ms){
@@ -6140,8 +6162,37 @@ function render(now){
   window.__gameHide=v=>{document.getElementById('gamelink').style.display=v?'none':''};
 })();
 
+
+/* ---------- Secret Santa: each result is locked with its owner's PIN, so only they can open it */
+const SANTA_ADULTS_ONLY=['Arabella'];
+let SANTA=null,saOpenName=null,saBusy=false;
+fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inApp)renderSanta()}).catch(()=>{});
+const GIFT_SVG='<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="26" y="62" width="108" height="76" fill="#17382b" stroke="#f4ecd6" stroke-width="2"/><rect x="18" y="46" width="124" height="20" fill="#10291f" stroke="#f4ecd6" stroke-width="2"/><path d="M80 46v92M18 56h124" stroke="#d4b36a" stroke-width="3"/><path d="M80 46C60 12 28 22 46 40c8 8 26 6 34 6zM80 46c20-34 52-24 34-6-8 8-26 6-34 6z" fill="#17382b" stroke="#d4b36a" stroke-width="2.4"/><circle cx="80" cy="46" r="5" fill="#d4b36a"/>%TAG%</svg>';
+const TAGQ='<path d="M62 98h36v22H62z" fill="#f4ecd6" stroke="#a2792b"/><text x="80" y="114" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" font-weight="700" fill="#10291f">?</text>';
+function renderSanta(){
+  const el=document.getElementById('saBody'),n=window.GUEST;if(!el||!n)return;
+  const head=(t,s)=>'<div class="sa-small">Secret Santa</div><h2>'+t+'</h2><div class="sa-sub">'+s+'</div>';
+  if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('Hello, '+n,'This one is for the grown-ups')+GIFT_SVG.replace('%TAG%','')+'<div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
+  if(!SANTA||!SANTA.drawn){el.innerHTML=head('Not drawn yet','The names are still in the hat')+GIFT_SVG.replace('%TAG%',TAGQ)+'<div class="sa-hint">Everyone is drawn at once, so nobody can see a result until it is done. Come back soon.</div>';return}
+  if(saOpenName){el.innerHTML=head('Shh','Only you can see this')+'<div class="sa-tag"><div class="for">You are buying for</div><div class="name"></div><div class="rule"></div><p><b>Keep it secret</b> until the presents are opened.</p><p style="margin-top:2cqw">Budget: <b>£20</b></p></div><button class="sa-btn" id="saHide" type="button">Hide it again</button>';el.querySelector('.name').textContent=saOpenName;document.getElementById('saHide').onclick=()=>{saOpenName=null;renderSanta()};return}
+  el.innerHTML=head('Hello, '+n,'Your Secret Santa is ready')+GIFT_SVG.replace('%TAG%',TAGQ)+'<button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
+  document.getElementById('saOpen').onclick=unwrapSanta;
+}
+async function unwrapSanta(){
+  if(saBusy)return;saBusy=true;const msg=document.getElementById('saMsg');
+  try{
+    const g=SANTA.gifts[window.GUEST],b=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+    const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(window.GUEST_PIN+':'+window.GUEST),'PBKDF2',false,['deriveKey']);
+    const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b(g.s),iterations:SANTA.iter,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+    saOpenName=new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b(g.i)},key,b(g.c)));
+    renderSanta();
+  }catch(e){if(msg)msg.textContent='Sorry, that would not open. Please tell James.'}
+  saBusy=false;
+}
+
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.v!=='santa'&&saOpenName){saOpenName=null;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
 }));
@@ -6155,7 +6206,7 @@ function paintBring(){
   document.getElementById('bring').innerHTML=items.map((x,i)=>'<b'+(i>0?' class="b2"':'')+'>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>').join('');
 }
 let inApp=false;
-function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();render(new Date());scr.classList.add('app')}
+function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();render(new Date());scr.classList.add('app')}
 document.getElementById('welcome').addEventListener('click',enterApp);
 </script>
 <script type="module">
