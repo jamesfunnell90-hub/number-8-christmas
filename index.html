@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Funnell’s Christmas Spectacular</title>
+<script src="game-core.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10291f">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -6446,7 +6447,7 @@ function slCropScreen(){
 }
 function slRender(soft){
   const el=document.getElementById('plBody');if(!el||!window.GUEST)return;
-  if(soft&&sl.screen!=='hub'&&!(sl.screen==='host'&&HOST.tab==='over'))return;
+  if(soft&&sl.screen!=='hub'&&!(sl.screen==='host'&&(HOST.tab==='over'||HOST.tab==='r')))return;
   const s=sl.screen;
   el.innerHTML=s==='hub'?slHub():s==='intro'?slIntro():s==='q'?slQuestion():s==='review'?slReview():s==='done'?slDone():s==='hostpin'?slHostPin():s==='host'?slHost():slCropScreen();
   el.scrollTop=0;
@@ -6548,11 +6549,11 @@ window.addEventListener('sl-data',()=>{if(inApp)slRender(true)});
 const HOST_PIN='2026',APP_URL='https://jamesfunnell90-hub.github.io/number-8-christmas/';
 let HOST={tab:'over',cfg:null,saved:'',pinErr:'',confirmDel:''};
 let hostTimer=0;
-function hostLoad(){const c=window.__hostCfg||slDefaultCfg();HOST.cfg=JSON.parse(JSON.stringify(c));if(!HOST.cfg.questions||!HOST.cfg.questions.length)HOST.cfg.questions=slDefaultCfg().questions;if(!HOST.cfg.hidden)HOST.cfg.hidden=[];if(!HOST.cfg.away)HOST.cfg.away=[]}
+function hostLoad(){const c=window.__hostCfg||slDefaultCfg();HOST.cfg=JSON.parse(JSON.stringify(c));if(!HOST.cfg.questions||!HOST.cfg.questions.length)HOST.cfg.questions=slDefaultCfg().questions;if(!HOST.cfg.hidden)HOST.cfg.hidden=[];if(!HOST.cfg.away)HOST.cfg.away=[];HOST.cfg.settings=Object.assign({},HOST.cfg.settings||{});HOST.cfg.locked=!!HOST.cfg.locked}
 function hostSave(){
   HOST.saved='Saving…';const el=document.getElementById('plSaved');if(el)el.textContent=HOST.saved;
   clearTimeout(hostTimer);hostTimer=setTimeout(async()=>{
-    const c=HOST.cfg;const out={hp:HOST_PIN,opens:c.opens,closes:c.closes,questions:c.questions,hidden:c.hidden,away:c.away,next:c.next,updated:Date.now()};
+    const c=HOST.cfg;const out={hp:HOST_PIN,opens:c.opens,closes:c.closes,questions:c.questions,hidden:c.hidden,away:c.away,next:c.next,settings:c.settings||{},locked:!!c.locked,updated:Date.now()};
     try{await window.__saveConfig(out);window.__hostCfg=out;HOST.saved='Saved'}catch(e){HOST.saved='Could not save. Check your connection.'}
     const e2=document.getElementById('plSaved');if(e2)e2.textContent=HOST.saved;
   },500);
@@ -6594,13 +6595,9 @@ function slHostGuests(){
     return '<li style="flex-wrap:wrap">'+slAv(n,'9cqw')+'<span class="nm">'+n+(isV?'':' <span class="pl-note">(child)</span>')+'</span><span class="pl-note">Here</span><button class="pl-sw'+(away?'':' on')+'" data-act="hg-away" data-n="'+n+'" aria-label="Attending"></button><span class="pl-note" style="margin-left:1.5cqw">Can be picked</span><button class="pl-sw'+(hid||away?'':' on')+'" data-act="hg-hid" data-n="'+n+'" aria-label="Can appear in the game"'+(away?' disabled':'')+'></button></li>';}).join('');
   return '<div class="pl-note" style="margin-top:2cqw">“Here” switched off means they are not coming: they stop voting and drop out of the game. “Can be picked” off means they will not appear as a face. The baby is never included.</div><div class="pl-saved" id="plSaved">'+HOST.saved+'</div><ul class="pl-list">'+rows+'</ul>';
 }
-function slHostDates(){
-  const c=HOST.cfg;
-  return '<div class="pl-note" style="margin-top:2cqw">When the survey opens and closes. Voting stops at the closing time.</div><div class="pl-card"><div class="pl-small">Opens</div><input class="pl-in" id="plOpen" type="datetime-local" value="'+hostToLocal(c.opens)+'" style="margin-top:1.6cqw"><div class="pl-small" style="margin-top:3cqw">Closes</div><input class="pl-in" id="plClose" type="datetime-local" value="'+hostToLocal(c.closes)+'" style="margin-top:1.6cqw"><div class="pl-saved" id="plSaved" style="margin-top:2cqw">'+HOST.saved+'</div><div class="pl-row" style="margin-top:1cqw"><button class="pl-btn" data-act="hd-real">Set 1 to 20 December</button></div></div>';
-}
 function slHost(){
-  const tabs=[['over','Overview'],['q','Questions'],['g','Guests'],['d','Dates'],['b','Build']].map(([k,l])=>'<button class="'+(HOST.tab===k?'on':'')+'" data-act="htab" data-t="'+k+'">'+l+'</button>').join('');
-  const body=HOST.tab==='q'?slHostQuestions():HOST.tab==='g'?slHostGuests():HOST.tab==='d'?slHostDates():HOST.tab==='b'?slHostBuild():slHostOverview();
+  const tabs=[['over','Overview'],['q','Questions'],['g','Guests'],['d','Settings'],['b','Build'],['r','Remote']].map(([k,l])=>'<button class="'+(HOST.tab===k?'on':'')+'" data-act="htab" data-t="'+k+'">'+l+'</button>').join('');
+  const body=HOST.tab==='q'?slHostQuestions():HOST.tab==='g'?slHostGuests():HOST.tab==='d'?slHostDates():HOST.tab==='b'?slHostBuild():HOST.tab==='r'?slHostRemote():slHostOverview();
   return '<div class="pl-row" style="justify-content:space-between"><div><div class="pl-small">Santa Shortlist</div><h2>Host</h2></div><button class="pl-btn ghost" style="width:auto" data-act="hub">Close</button></div><div class="pl-tabs">'+tabs+'</div>'+body;
 }
 function slHostCopy(){
@@ -6697,7 +6694,7 @@ function hostRehearse(){
   let seed=Math.floor(Math.random()*1e9),rr=mulberry32(seed),res={};
   const favs={};qs.forEach(q=>favs[q.id]=cands[Math.floor(rr()*cands.length)]);
   voters.forEach(v=>{res[v]={};qs.forEach(q=>{let a=rr()<.6?favs[q.id]:cands[Math.floor(rr()*cands.length)];if(a===v)a=cands[(cands.indexOf(a)+1)%cands.length];res[v][q.id]=a})});
-  const g=buildGame({questions:qs,candidates:cands,responses:res,settings:{},seed});
+  const g=buildGame({questions:qs,candidates:cands,responses:res,settings:(slCfg()&&slCfg().settings)||(HOST.cfg&&HOST.cfg.settings)||{},seed});
   HOST.build.reh={g,texts:Object.fromEntries(qs.map(q=>[q.id,q.text]))};
 }
 function hostRoundList(g,texts){
@@ -6710,12 +6707,12 @@ function hostSummary(s){
 function slHostBuild(){
   hostBuildLoad();const B=HOST.build,m=B.meta;
   let real;
-  if(m){real='<div class="pl-card hot"><div class="pl-small">Real game</div><div class="pl-ttl" style="font-size:5.4cqw;margin-top:1cqw">Built</div><div class="pl-note">'+new Date(m.built).toLocaleString('en-GB',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' · '+m.voters+' sealed ballots opened</div>'+hostSummary(m.summary)+'<div class="pl-note" style="margin-top:2cqw">You can’t see names, questions or results here, so you can play fairly.</div></div>';}
+  if(m){real='<div class="pl-card hot"><div class="pl-small">Real game</div><div class="pl-ttl" style="font-size:5.4cqw;margin-top:1cqw">Built</div><div class="pl-note">'+new Date(m.built).toLocaleString('en-GB',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' · '+m.voters+' sealed ballots opened</div>'+hostSummary(m.summary)+'<div class="pl-note" style="margin-top:2cqw">You can’t see names, questions or results here, so you can play fairly.</div><div class="pl-row" style="margin-top:3cqw">'+(HOST.cfg.locked?'<span class="pl-chip ok">Locked</span><button class="pl-btn ghost" style="width:auto" data-act="hb-unlock">Unlock</button>':'<button class="pl-btn" data-act="hb-lock">Lock game</button>')+'</div></div>';}
   else real='<div class="pl-card"><div class="pl-small">Real game</div><div class="pl-ttl" style="font-size:5.4cqw;margin-top:1cqw">Not built yet</div><div class="pl-note">After the survey closes, the sealed votes are tallied on James’s Mac and the rounds are published. Nobody sees who voted for whom, and you stay blind.</div></div>';
   const rh=B.reh?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Rehearsal · made-up guests</div>'+hostSummary(B.reh.g.summary)+'<div class="pl-note" style="margin-top:2cqw">This used your real questions with 14 pretend guests and random votes. It never touches real votes.</div><button class="pl-btn" style="margin-top:3cqw" data-act="hb-reh">Build another</button></div>'+hostRoundList(B.reh.g,B.reh.texts)):'<div class="pl-card"><div class="pl-small">Rehearsal</div><div class="pl-note" style="margin-top:1.4cqw">Try the whole build with 14 made-up guests and random votes, using your real questions. Nothing real is touched.</div><button class="pl-btn solid" style="margin-top:3cqw" data-act="hb-reh">Build a rehearsal game</button></div>';
   let rev='';
   if(m){rev=B.reveal?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Revealed</div><div class="pl-note">Real rounds, with vote counts. You have now seen the answers.</div></div>'+hostRoundList(B.reveal.g,B.reveal.texts)):(B.confirm?'<div class="pl-card" style="border-color:var(--berry)"><div class="pl-ttl" style="font-size:4.6cqw">Reveal everything?</div><div class="pl-note" style="margin-top:1.4cqw">You won’t be able to play fairly. This shows every round with the names and vote counts, for checking only.</div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="hb-reveal-go">Show me</button><button class="pl-btn ghost" data-act="hb-reveal-no" style="width:auto">Cancel</button></div></div>':'<div class="pl-hostlink"><button data-act="hb-reveal">Reveal everything (for checking only)</button></div>');}
-  return '<div class="pl-note" style="margin-top:2cqw">Build settings: '+DEFAULT_SETTINGS.targetRounds+' rounds, at least '+DEFAULT_SETTINGS.minResponses+' votes a question, nobody in more than '+DEFAULT_SETTINGS.maxAppearances+' rounds, no side wins more than '+DEFAULT_SETTINGS.maxSameSideStreak+' times in a row.</div>'+real+rh+rev;
+  return '<div class="pl-note" style="margin-top:2cqw">Build settings: '+hostSet(HOST.cfg,'targetRounds')+' rounds, at least '+hostSet(HOST.cfg,'minResponses')+' votes a question, nobody in more than '+hostSet(HOST.cfg,'maxAppearances')+' rounds, no side wins more than '+hostSet(HOST.cfg,'maxSameSideStreak')+' times in a row, '+hostSet(HOST.cfg,'countdown')+' seconds to answer. Change them in Settings.</div>'+real+rh+rev;
 }
 document.addEventListener('click',e=>{
   const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;if(a.indexOf('hb-')!==0)return;
@@ -6724,6 +6721,81 @@ document.addEventListener('click',e=>{
   else if(a==='hb-reveal-no'){HOST.build.confirm=false;slGo('host')}
   else if(a==='hb-reveal-go'){const m=HOST.build.meta;fetch(m.file,{cache:'no-store'}).then(r=>r.json()).then(j=>{HOST.build.reveal={g:j,texts:j.questions};HOST.build.confirm=false;slGo('host')}).catch(()=>{HOST.build.confirm=false;slGo('host')})}
 });
+
+/* ---------- host: Settings tab, Remote tab and Lock ---------- */
+const SET_FIELDS=[['countdown','Seconds to answer each round',5,120,'How long the table has to choose Heads or Tails.'],['drumroll','Drumroll before the reveal (seconds)',1,10,''],['targetRounds','Rounds in the main run',1,20,''],['minResponses','Fewest votes a question needs',1,13,''],['maxAppearances','Most rounds one person can be in',1,10,''],['maxSameSideStreak','Most times one side can win in a row',1,10,'']];
+const SET_SWITCHES=[['noBackToBack','Never the same person in two rounds running'],['easyToHard','Order rounds from easy to close'],['fullResults','Show the full results slideshow at the end']];
+function hostSet(c,k){const v=c.settings&&c.settings[k];return v===undefined?DEFAULT_SETTINGS[k]:v}
+function slHostDates(){
+  const c=HOST.cfg;
+  const nums=SET_FIELDS.map(([k,l,mn,mx,h])=>'<div style="margin-top:3cqw"><div class="pl-row" style="justify-content:space-between;gap:3cqw"><div style="flex:1"><div style="font-size:3.4cqw">'+l+'</div>'+(h?'<div class="pl-note" style="font-size:2.8cqw">'+h+'</div>':'')+'</div><input class="pl-in" type="number" inputmode="numeric" min="'+mn+'" max="'+mx+'" data-set="'+k+'" value="'+hostSet(c,k)+'" style="width:20cqw;text-align:center"></div></div>').join('');
+  const sw=SET_SWITCHES.map(([k,l])=>'<div class="pl-row" style="justify-content:space-between;margin-top:3cqw"><div style="flex:1;font-size:3.4cqw">'+l+'</div><button class="pl-sw'+(hostSet(c,k)?' on':'')+'" data-act="hs-sw" data-k="'+k+'" aria-label="'+l+'"></button></div>').join('');
+  return '<div class="pl-saved" id="plSaved">'+HOST.saved+'</div><div class="pl-card"><div class="pl-small">Game timing and rules</div>'+nums+sw+'<div class="pl-note" style="margin-top:3cqw">These apply the next time the game is built or rehearsed. The countdown and drumroll are read live by the TV.</div></div>'
+   +'<div class="pl-card"><div class="pl-small">Survey dates</div><div class="pl-note" style="margin-top:1.4cqw">Voting stops at the closing time.</div><div class="pl-small" style="margin-top:3cqw">Opens</div><input class="pl-in" id="plOpen" type="datetime-local" value="'+hostToLocal(c.opens)+'" style="margin-top:1.6cqw"><div class="pl-small" style="margin-top:3cqw">Closes</div><input class="pl-in" id="plClose" type="datetime-local" value="'+hostToLocal(c.closes)+'" style="margin-top:1.6cqw"><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="hd-real">Set 1 to 20 December</button></div></div>';
+}
+function hostInfo(){
+  const st=window.__gstate,mode=(st&&st.mode)||'real';
+  if(mode==='rehearsal'){const r=window.__rehearsal;return r?{rounds:r.rounds.length,spares:r.spares.length,ok:true,mode,noResults:hostSet(HOST.cfg,'fullResults')===false}:{rounds:0,spares:0,ok:false,mode}}
+  const m=HOST.build&&HOST.build.meta;return m?{rounds:m.summary.rounds,spares:m.summary.spares,ok:true,mode,noResults:hostSet(HOST.cfg,'fullResults')===false}:{rounds:0,spares:0,ok:false,mode};
+}
+function hostSend(cmd,arg){
+  const info=hostInfo(),cur=window.__gstate||GC.init(info.mode);
+  const nx=GC.step(cur,cmd,info,arg);if(nx===cur)return;
+  window.__gstate=nx;slGo('host');
+  if(window.__saveState)window.__saveState(nx).catch(()=>{});
+}
+async function hostStartMode(mode){
+  if(mode==='rehearsal'){
+    if(!HOST.build.reh)hostRehearse();
+    const r=HOST.build.reh;
+    await window.__saveRehearsal({hp:HOST_PIN,rounds:r.g.rounds,spares:r.g.spares,questions:r.texts,summary:r.g.summary,updated:Date.now()});
+    window.__rehearsal={rounds:r.g.rounds,spares:r.g.spares,questions:r.texts};
+  }
+  const st=GC.init(mode);st.seq=((window.__gstate&&window.__gstate.seq)||0)+1;window.__gstate=st;
+  await window.__saveState(st);slGo('host');
+}
+function slHostRemote(){
+  hostBuildLoad();
+  const st=window.__gstate||GC.init('real'),info=hostInfo(),tv=window.__tv,age=tv?Math.round((Date.now()-tv.t)/1000):null,live=tv&&age<40;
+  const locked=!!HOST.cfg.locked;
+  const chip=(t,on)=>'<span class="pl-chip '+(on?'ok':'')+'">'+t+'</span>';
+  const head='<div class="pl-row" style="gap:1.6cqw;flex-wrap:wrap">'+chip(live?'TV connected':'TV not seen',live)+chip(locked?'Locked':'Not locked',locked)+chip(tv&&tv.cached?'Offline ready':'Not cached yet',tv&&tv.cached)+chip(st.mode==='rehearsal'?'REHEARSAL':'Real game',st.mode!=='rehearsal')+'</div>';
+  if(!info.ok){return head+'<div class="pl-card" style="margin-top:3cqw"><div class="pl-note">'+(st.mode==='rehearsal'?'No rehearsal game on the TV yet.':'The real game has not been built yet, so there is nothing to run. Use Rehearsal to try the TV.')+'</div></div>'+hostStartButtons(st)}
+  if(st.screen==='pick'){
+    const names=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n));
+    return head+'<div class="pl-ttl" style="font-size:6cqw;margin-top:3cqw">Who won?</div><div class="pl-faces">'+names.map(n=>'<button class="pl-face" type="button" data-act="hr-pick" data-n="'+n+'">'+slAv(n,'100%')+'<span>'+n+'</span></button>').join('')+'</div><div class="pl-foot"><button class="pl-btn ghost" data-act="hr-cmd" data-c="exit">Cancel</button></div>';
+  }
+  const rn=(st.k==='r'&&!st.sd)?'Round '+st.n+' of '+info.rounds:st.sd?'Sudden death':'';
+  const spareLeft=Math.max(0,info.spares-(st.sp||0));
+  const mk=(c,l,cls)=>'<button class="pl-btn '+(cls||'')+'" data-act="hr-cmd" data-c="'+c+'">'+l+'</button>';
+  return head
+   +'<div class="pl-card hot" style="text-align:center"><div class="pl-small">On the TV now</div><div class="pl-ttl" style="font-size:7cqw;margin-top:1.4cqw">'+GC.screenName(st)+'</div><div class="pl-note" style="margin-top:1cqw">'+(rn?rn+' · ':'')+spareLeft+' spare'+(spareLeft===1?'':'s')+' left'+(st.paused?' · PAUSED':'')+'</div></div>'
+   +'<button class="pl-btn solid" data-act="hr-cmd" data-c="next" style="margin-top:3cqw;padding:7cqw 3cqw;font-size:4.4cqw">'+GC.nextLabel(st)+'</button>'
+   +'<div class="pl-row" style="margin-top:2.4cqw">'+mk('back','Back')+mk('pause',st.paused?'Resume':'Pause')+'</div>'
+   +'<div class="pl-small" style="margin-top:4cqw">More</div><div class="pl-stat" style="grid-template-columns:repeat(2,1fr)">'
+   +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to fire'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
+   +'</div>'+hostStartButtons(st);
+}
+function hostStartButtons(st){
+  const m=HOST.build&&HOST.build.meta,lk=!!HOST.cfg.locked;
+  return '<div class="pl-card" style="margin-top:4cqw"><div class="pl-small">Start or switch</div><div class="pl-row" style="margin-top:2.6cqw;flex-wrap:wrap"><button class="pl-btn" data-act="hr-reh">'+(st.mode==='rehearsal'?'Restart rehearsal':'Start a rehearsal on the TV')+'</button>'+(m?'<button class="pl-btn" data-act="hr-real">'+(st.mode==='real'?'Restart the real game':'Switch to the real game')+'</button>':'')+'</div><div class="pl-note" style="margin-top:2cqw">'+(m?(lk?'The real game is locked.':'Lock the real game from the Build tab on Christmas Eve.'):'The real game appears here once it has been built.')+'</div></div>';
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;
+  if(a==='hr-cmd')hostSend(t.dataset.c);
+  else if(a==='hr-pick')hostSend('pick',t.dataset.n);
+  else if(a==='hr-reh'){hostStartMode('rehearsal')}
+  else if(a==='hr-real'){hostStartMode('real')}
+  else if(a==='hs-sw'){const k=t.dataset.k;HOST.cfg.settings=HOST.cfg.settings||{};HOST.cfg.settings[k]=!hostSet(HOST.cfg,k);hostSave();slGo('host')}
+  else if(a==='hb-lock'){HOST.cfg.locked=true;hostSave();slGo('host')}
+  else if(a==='hb-unlock'){HOST.cfg.locked=false;hostSave();slGo('host')}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;if(!HOST.cfg||!t.dataset||!t.dataset.set)return;
+  const f=SET_FIELDS.find(x=>x[0]===t.dataset.set);let v=Math.round(+t.value);if(isNaN(v))return;v=Math.max(f[2],Math.min(f[3],v));t.value=v;
+  HOST.cfg.settings=HOST.cfg.settings||{};HOST.cfg.settings[f[0]]=v;hostSave();
+});
+
 
 
 
@@ -6762,6 +6834,11 @@ try{
   onSnapshot(doc(db,"host","config"),d=>{window.__hostCfg=d.exists()?d.data():null;ping()},()=>{});
   window.__saveVote=(name,data)=>setDoc(doc(db,"votes",name),data);
   window.__saveConfig=data=>setDoc(doc(db,"host","config"),data);
+  onSnapshot(doc(db,"game","state"),d=>{if(d.exists()){const v=d.data();if(!window.__gstate||(v.seq||0)>=(window.__gstate.seq||0))window.__gstate=v}ping()},()=>{});
+  onSnapshot(doc(db,"game","tv"),d=>{window.__tv=d.exists()?d.data():null;ping()},()=>{});
+  onSnapshot(doc(db,"game","rehearsal"),d=>{window.__rehearsal=d.exists()?d.data():null;ping()},()=>{});
+  window.__saveState=st=>setDoc(doc(db,"game","state"),Object.assign({},st,{hp:"2026",updated:Date.now()}));
+  window.__saveRehearsal=data=>setDoc(doc(db,"game","rehearsal"),data);
 }catch(e){}
 </script>
 </body>
