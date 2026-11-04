@@ -273,6 +273,51 @@ body{padding:0!important;overflow:hidden}
   .f-bg{fill:#10291f} .f-wash{fill:#173629} .f-ink{fill:#f1e7cc}
   .f-gold{fill:#d4b36a} .f-soft{fill:#2c5440} .f-red{fill:#a8382a}
   .tx{font-family:'Cormorant Garamond','Didot','Bodoni 72','Playfair Display',Georgia,serif;text-anchor:middle}
+
+/* Santa Shortlist: Play tab, photo crop and survey */
+#app .pl{padding:0}
+#app .pl-pg{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:max(7cqw,calc(env(safe-area-inset-top,0px) + 12px)) 5.5cqw 5cqw;display:flex;flex-direction:column}
+#app .pl-pg::-webkit-scrollbar{display:none}
+#app .pl-small{font-size:2.9cqw;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+#app .pl-pg h2{font-family:var(--serif);font-weight:600;font-size:7.6cqw;margin:4px 0 0}
+#app .pl-sub{font-family:var(--serif);font-style:italic;font-size:4.2cqw;color:var(--dim);margin-top:2px}
+#app .pl-card{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:4cqw;margin-top:3cqw}
+#app .pl-card.hot{border-color:var(--gold-deep);background:linear-gradient(135deg,#1d4636,#17382b);margin-top:4cqw}
+#app .pl-btn{display:block;width:100%;text-align:center;border:1px solid var(--gold);color:var(--gold);background:none;border-radius:30px;padding:2.8cqw;font:500 3.1cqw var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+#app .pl-btn.solid{background:var(--gold);color:#10291f}
+#app .pl-btn.ghost{border-color:transparent;color:var(--dim);padding:1.8cqw}
+#app .pl-btn[disabled]{opacity:.45;cursor:default}
+#app .pl-row{display:flex;gap:3cqw;align-items:center}
+#app .pl-pill{font-size:2.7cqw;letter-spacing:.16em;text-transform:uppercase;border:1px solid var(--gold-deep);color:var(--gold);border-radius:20px;padding:.8cqw 2.6cqw;white-space:nowrap}
+#app .pl-bar{height:5px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:2.4cqw}
+#app .pl-bar i{display:block;height:100%;background:var(--gold);transition:width .3s}
+#app .pl-ttl{font-family:var(--serif);font-weight:600;line-height:1.1}
+#app .pl-note{font-size:3.2cqw;color:var(--dim)}
+#app .pl-av{border-radius:50%;display:grid;place-items:center;font-family:var(--serif);font-weight:600;color:#10291f;border:2px solid var(--gold-deep);flex:none;overflow:hidden;background:#e7c776}
+#app .pl-av img{width:100%;height:100%;object-fit:cover;display:block}
+#app .pl-av.c0{background:#e7c776}#app .pl-av.c1{background:#b9d3c0}#app .pl-av.c2{background:#e3b8a8}#app .pl-av.c3{background:#c7c3e3}#app .pl-av.c4{background:#a8d0d6}#app .pl-av.c5{background:#e7d9a5}
+#app .pl-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:8cqw}
+#app .pl-center h2{font-size:10cqw}
+#app .pl-ico{width:24cqw;height:24cqw}
+#app .pl-faces{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4cqw 1.6cqw;margin-top:3.6cqw}
+#app .pl-face{background:none;border:0;color:var(--ink);text-align:center;cursor:pointer;padding:0;font:500 2.9cqw var(--sans)}
+#app .pl-face .pl-av{width:100%;aspect-ratio:1;font-size:6cqw;transition:transform .15s,box-shadow .15s,border-color .15s}
+#app .pl-face span{display:block;margin-top:1cqw}
+#app .pl-face.on .pl-av{border-color:#fff;box-shadow:0 0 0 3px var(--gold),0 6px 18px rgba(0,0,0,.5);transform:scale(1.06)}
+#app .pl-face.on span{color:var(--gold)}
+#app .pl-q{font-family:var(--serif);font-size:7cqw;line-height:1.12;margin-top:3cqw}
+#app .pl-q small{display:block;font:400 3.2cqw var(--sans);letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.4cqw}
+#app .pl-foot{margin-top:auto;padding-top:4cqw;display:flex;gap:2cqw;justify-content:space-between;align-items:center}
+#app .pl-rv{list-style:none;margin:3cqw 0 0;padding:0}
+#app .pl-rv li{display:grid;grid-template-columns:5.5cqw 1fr auto;gap:2cqw;padding:2.1cqw 0;border-bottom:1px solid var(--line);font-size:3.3cqw;align-items:center;cursor:pointer}
+#app .pl-rv li b{font-family:var(--serif);font-size:4cqw;color:var(--gold);font-weight:600}
+#app .pl-rv li i{font-style:normal;color:var(--dim);font-size:2.8cqw}
+#app .pl-crop{position:relative;flex:1;min-height:60cqw;background:#0a1712;margin:3cqw -5.5cqw 0;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#app .pl-crop canvas{position:absolute;max-width:none;pointer-events:none}
+#app .pl-crop .mask{position:absolute;inset:0;pointer-events:none}
+#app .pl-crop .ring{position:absolute;border-radius:50%;border:2px solid #fff;pointer-events:none;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+#app .pl-slider{width:100%;margin:4cqw 0 1cqw;accent-color:var(--gold)}
+#app .pl-err{color:var(--berry);font-size:3.2cqw;margin-top:2cqw;text-align:center}
 </style>
 <clipPath id="patch"><path d="M0.0 0.0L1000.0 0.0L1000.0 680.0L0.0 680.0Z"/></clipPath>
 <clipPath id="c1"><rect x="40.00000000000006" y="557.2" width="788.8" height="40.8"/></clipPath>
@@ -5915,7 +5960,7 @@ body{padding:0!important;overflow:hidden}
         <ul class="tl" id="tl"></ul>
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
-    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view soon" data-v="play"><h2>Play</h2><p>Coming soon. This page is still being built.</p></section></div><nav class="apptabs" id="apptabs">
+    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
   <button class="on" data-v="welcome"><svg viewBox="0 0 16 16"><path d="M2 8l6-5 6 5v6H2zM6.5 14v-4h3v4"/></svg>Welcome</button>
   <button data-v="menu"><svg viewBox="0 0 16 16"><path d="M3 2v12M3 2c3-1 5 1 9 0v7c-4 1-6-1-9 0"/></svg>Menu</button>
   <button data-v="drinks"><svg viewBox="0 0 16 16"><path d="M4 2h8l-1 5a3 3 0 0 1-6 0zM8 10v4M5 14h6"/></svg>Drinks</button>
@@ -6258,8 +6303,195 @@ async function unwrapSanta(){
   },4900);
 }
 
+
+/* ---------- Santa Shortlist: photo, sealed votes and the Play tab ---------- */
+const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James'];
+const SL_CANDS=SL_ADULTS.concat(['Arabella']);
+const SL_QS=['ask for seconds','fall asleep on the sofa','still be up at midnight','have all their presents wrapped by 1 December','still be wrapping presents on Christmas Eve','take all the purple ones from the Quality Street tin','be on Father Christmas’s naughty list','give the most thoughtful present','cry at a Christmas film','get too competitive at a board game','sing the loudest when a Christmas song comes on','be the one fixing the tree lights','spot Father Christmas’s sleigh first','win Auntie Sue’s quiz'];
+const SL_OPEN=new Date(2026,11,1),SL_CLOSE=new Date(2026,11,21);
+const SL_PUB={"kty":"RSA","n":"sSbClEBhI6DZoKXEhcML-1ddBaHRd65LP3oH3G7uOpd55FmSx7Im9laJA9Zu-15dlbv7E7mxSl-QAJCRYb0kv9yIp7wTtbbusf4LN4eZOsU73h3Zh8ma9I_CDUSEorMNL5fL3o2uJdX892qF-FJwuWulRxAltH87UTCXAS700tlxLg6wExQUA81hQDZWVO5FEXg4fM66Abo-fFK61YNJu2D3U7z38fLBcUR4Ba4cDXq274IN3TuLq48AIiqvQ4BZpWKj4eBq0d_LZF8djhdUIIJ7ahWcJ9Z8aVMQ-2_t0LStAZl7l5lUjDMFihxiKQOp0WUwA-EMF3vwNaRm5ntxgQ","e":"AQAB"};
+let SL_PREVIEW=false;try{if(/preview/.test(location.hash))localStorage.setItem('sl_preview','1');SL_PREVIEW=localStorage.getItem('sl_preview')==='1'}catch(e){}
+let sl={screen:'hub',qi:0,fromReview:false,answers:{},submitted:false,crop:null,busy:false,err:''};
+const slMe=()=>window.GUEST||'';
+const slVoter=()=>SL_ADULTS.includes(slMe());
+const slPhase=()=>{const n=new Date();return n>=SL_CLOSE?'closed':(n<SL_OPEN&&!SL_PREVIEW?'before':'open')};
+const slColor=n=>{const i=SL_CANDS.indexOf(n);return 'c'+(i<0?0:i%6)};
+function slAv(name,size){
+  const p=window.__photos&&window.__photos[name],st=size==='100%'?'width:100%;aspect-ratio:1;font-size:6.4cqw':'width:'+size+';height:'+size+';font-size:calc('+size+' * .42)';
+  return p?'<div class="pl-av" style="'+st+'"><img src="'+p+'" alt=""></div>':'<div class="pl-av '+slColor(name)+'" style="'+st+'">'+name.charAt(0)+'</div>';
+}
+function slLoadLocal(){
+  sl.answers={};sl.submitted=false;
+  try{const j=JSON.parse(localStorage.getItem('sl_votes_'+slMe())||'null');if(j){sl.answers=j.answers||{};sl.submitted=!!j.submitted}}catch(e){}
+}
+const slHandled=()=>Object.keys(sl.answers).length;
+function slMeta(){const m=window.__votes&&window.__votes[slMe()];return m||null}
+function slStatus(){
+  const local=slHandled(),m=slMeta();
+  const n=local||(m?m.n:0),done=sl.submitted||(m&&m.submitted);
+  return {n,done:!!done};
+}
+/* sealed ballots: AES-GCM for the answers, the AES key sealed with the game's public key. Only the offline build script can open them. */
+const slB64=a=>{let s='';new Uint8Array(a).forEach(b=>s+=String.fromCharCode(b));return btoa(s)};
+async function slEncrypt(obj){
+  const pub=await crypto.subtle.importKey('jwk',{kty:SL_PUB.kty,n:SL_PUB.n,e:SL_PUB.e,alg:'RSA-OAEP-256',ext:true},{name:'RSA-OAEP',hash:'SHA-256'},false,['encrypt']);
+  const k=await crypto.subtle.generateKey({name:'AES-GCM',length:256},true,['encrypt']),iv=crypto.getRandomValues(new Uint8Array(12));
+  const c=await crypto.subtle.encrypt({name:'AES-GCM',iv},k,new TextEncoder().encode(JSON.stringify(obj)));
+  const ek=await crypto.subtle.encrypt({name:'RSA-OAEP'},pub,await crypto.subtle.exportKey('raw',k));
+  return {k:slB64(ek),i:slB64(iv),c:slB64(c)};
+}
+let slTimer=0;
+function slSave(now){
+  try{localStorage.setItem('sl_votes_'+slMe(),JSON.stringify({answers:sl.answers,submitted:sl.submitted}))}catch(e){}
+  clearTimeout(slTimer);slTimer=setTimeout(slPush,now?0:600);
+}
+async function slPush(){
+  if(!window.__saveVote||slPhase()==='closed')return;
+  try{const enc=await slEncrypt({a:sl.answers});await window.__saveVote(slMe(),{name:slMe(),n:slHandled(),submitted:!!sl.submitted,enc,updated:Date.now()})}catch(e){}
+}
+/* ---- screens ---- */
+const SL_ICON='<svg class="pl-ico" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="13" y="5" width="38" height="50" rx="3.5" fill="#f4ecd6" stroke="#a2792b" stroke-width="2"/><path d="M19 13h18" stroke="#a2792b" stroke-width="2.4"/><path d="M42 11.5l1.5 3 3.3.4-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.4z" fill="#d4b36a"/><g stroke="#10291f" stroke-width="2.4"><path d="M19 27l2.6 2.6 5-5.6"/><path d="M31 27h14" opacity=".55"/><path d="M19 37l2.6 2.6 5-5.6"/><path d="M31 37h14" opacity=".55"/><path d="M19 47l2.6 2.6 5-5.6" opacity=".35"/><path d="M31 47h9" opacity=".3"/></g><circle cx="46" cy="50" r="7" fill="#c4523f" stroke="#f4ecd6" stroke-width="1.8"/><path d="M46 46.5l1.1 2.3 2.5.3-1.8 1.7.5 2.5-2.3-1.2-2.3 1.2.5-2.5-1.8-1.7 2.5-.3z" fill="#f4ecd6"/></svg>';
+function slHub(){
+  const me=slMe(),ph=slPhase(),st=slStatus(),has=!!(window.__photos&&window.__photos[me]);
+  let card='';
+  const head='<div class="pl-row">'+SL_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Santa Shortlist</div><div class="pl-small" style="letter-spacing:.2em;margin-top:1.2cqw">Who’s most likely to…</div></div></div>';
+  if(!slVoter()){
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">The grown-ups vote on who is most likely to do 14 silly things. You will be playing at the table on Christmas Day.</div></div>';
+  }else if(ph==='before'){
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do 14 silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Opens 1 December</span></div><button class="pl-btn" style="margin-top:3.4cqw" disabled>Opens 1 December</button></div>';
+  }else if(ph==='closed'){
+    card='<div class="pl-card hot">'+head+'<div class="pl-ttl" style="font-size:5.4cqw;margin-top:3cqw;color:var(--gold)">Voting closed.</div><div class="pl-note">See you at the table.</div></div>';
+  }else{
+    const label=st.done?'Change my votes':(st.n?'Carry on voting':'Start voting');
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do 14 silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-pill">Closes 20 Dec</span><span class="pl-note">'+(st.done?'Done':(st.n?'Partly done · '+st.n+' of 14':'Not started'))+'</span></div><div class="pl-bar"><i style="width:'+Math.round((st.done?14:st.n)/14*100)+'%"></i></div><button class="pl-btn solid" style="margin-top:3.4cqw" data-act="'+(st.done?'review':'intro')+'">'+label+'</button></div>';
+  }
+  const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the game</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
+    :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the game</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
+  const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div></div>';
+  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+photo+sleigh;
+}
+function slIntro(){
+  const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
+  return '<div class="pl-center">'+SL_ICON+'<h2 style="margin-top:6cqw">Santa Shortlist</h2><div class="pl-small" style="margin-top:1.6cqw">Who’s most likely to…</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note"><b style="color:var(--ink);font-weight:500">Votes are anonymous.</b> Nobody will ever see who voted for whom, not even James. At the table, you guess which of two people got the most votes.</div></div><div class="pl-note" style="margin-top:3cqw">14 questions · about 4 minutes · closes 20 December</div>'+warn+'<button class="pl-btn solid" style="margin-top:5cqw" data-act="begin">Start</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Not now</button></div>';
+}
+function slQuestion(){
+  const qi=sl.qi,key='q'+(qi+1),cur=sl.answers[key],me=slMe();
+  const faces=SL_CANDS.filter(n=>n!==me).map(n=>'<button class="pl-face'+(cur===n?' on':'')+'" type="button" data-act="face" data-n="'+n+'">'+slAv(n,'100%')+'<span>'+n+'</span></button>').join('');
+  return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">'+(qi+1)+' of 14</span><button class="pl-small" style="background:none;border:0;color:var(--dim);cursor:pointer;font-family:inherit" data-act="back">Back</button></div><div class="pl-bar"><i style="width:'+Math.round((qi+1)/14*100)+'%"></i></div><div class="pl-q"><small>Who’s most likely to…</small>'+SL_QS[qi]+'?</div><div class="pl-faces">'+faces+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:auto" data-act="skip">Skip this one</button><button class="pl-btn solid" style="width:44%" data-act="next">'+(qi===13||sl.fromReview?'Done':'Next')+'</button></div>';
+}
+function slReview(){
+  const rows=SL_QS.map((q,i)=>{const a=sl.answers['q'+(i+1)];return '<li data-act="goq" data-i="'+i+'"><span>'+(i+1)+'</span><span>'+q.charAt(0).toUpperCase()+q.slice(1)+'</span>'+(a?'<b>'+a+'</b>':'<i>'+(sl.answers['q'+(i+1)]===null?'Skipped':'Not answered')+'</i>')+'</li>'}).join('');
+  return '<div class="pl-small">Check your votes</div><h2>Review</h2><ul class="pl-rv">'+rows+'</ul><div class="pl-foot"><button class="pl-btn solid" data-act="submit">'+(sl.submitted?'Save changes':'Submit votes')+'</button></div>';
+}
+function slDone(){
+  return '<div class="pl-center">'+slAv(slMe(),'24cqw')+'<h2 style="margin-top:5cqw">Thanks, '+slMe()+'</h2><div class="pl-sub" style="font-size:4.6cqw">Your votes are in</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note">You can change them until <b style="color:var(--ink);font-weight:500">20 December</b>. After that, voting closes and nobody can see their answers again.</div></div><button class="pl-btn" style="margin-top:5cqw" data-act="review">Change my votes</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Back to games</button></div>';
+}
+function slCropScreen(){
+  return '<div class="pl-small">Your photo</div><h2>Move and zoom</h2><div class="pl-sub">Drag to move, pinch to zoom</div><div class="pl-crop" id="plStage"></div><input class="pl-slider" id="plZoom" type="range" min="0" max="1000" value="0" aria-label="Zoom"><div class="pl-err" id="plErr">'+(sl.err||'')+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:34%" data-act="cancelcrop">Cancel</button><button class="pl-btn solid" data-act="savecrop">'+(sl.busy?'Saving…':'Save')+'</button></div>';
+}
+function slRender(soft){
+  const el=document.getElementById('plBody');if(!el||!window.GUEST)return;
+  if(soft&&sl.screen!=='hub')return;
+  const s=sl.screen;
+  el.innerHTML=s==='hub'?slHub():s==='intro'?slIntro():s==='q'?slQuestion():s==='review'?slReview():s==='done'?slDone():slCropScreen();
+  el.scrollTop=0;
+  if(s==='crop')slCropInit();
+}
+function slGo(s){sl.screen=s;slRender()}
+/* ---- photo: pick, crop, save ---- */
+function slPick(){
+  const f=document.createElement('input');f.type='file';f.accept='image/*';
+  f.onchange=()=>{const file=f.files&&f.files[0];if(file)slLoadImage(file)};f.click();
+}
+function slLoadImage(file){
+  const url=URL.createObjectURL(file),img=new Image();
+  img.onload=()=>{
+    const m=1024,k=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight)),cv=document.createElement('canvas');
+    cv.width=Math.round(img.naturalWidth*k);cv.height=Math.round(img.naturalHeight*k);
+    cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
+    sl.crop={cv,iw:cv.width,ih:cv.height};sl.err='';sl.busy=false;slGo('crop');
+  };
+  img.onerror=()=>{URL.revokeObjectURL(url);alert('Sorry, that photo would not open. Try another one.')};
+  img.src=url;
+}
+function slClamp(c){
+  c.s=Math.max(c.smin,Math.min(c.smax,c.s));
+  const mx=(c.iw*c.s-c.d)/2,my=(c.ih*c.s-c.d)/2;
+  c.cx=Math.max(c.Cx-mx,Math.min(c.Cx+mx,c.cx));c.cy=Math.max(c.Cy-my,Math.min(c.Cy+my,c.cy));
+}
+function slCropApply(){
+  const c=sl.crop;slClamp(c);const cv=c.cv;
+  cv.style.width=c.iw*c.s+'px';cv.style.height=c.ih*c.s+'px';cv.style.left=(c.cx-c.iw*c.s/2)+'px';cv.style.top=(c.cy-c.ih*c.s/2)+'px';
+  const z=document.getElementById('plZoom');if(z)z.value=Math.round((c.s-c.smin)/(c.smax-c.smin)*1000);
+}
+function slCropInit(){
+  const st=document.getElementById('plStage');if(!st||!sl.crop)return;const c=sl.crop,r=st.getBoundingClientRect();
+  c.W=r.width;c.H=r.height;c.d=Math.min(r.width*.82,r.height*.86);c.Cx=r.width/2;c.Cy=r.height/2;
+  c.smin=c.d/Math.min(c.iw,c.ih);c.smax=c.smin*4;c.s=c.smin;c.cx=c.Cx;c.cy=c.Cy;
+  st.appendChild(c.cv);
+  const mask=document.createElement('div');mask.className='mask';mask.style.background='radial-gradient(circle at '+c.Cx+'px '+c.Cy+'px,transparent '+(c.d/2-1)+'px,rgba(8,20,14,.8) '+(c.d/2)+'px)';st.appendChild(mask);
+  const ring=document.createElement('div');ring.className='ring';ring.style.cssText='width:'+c.d+'px;height:'+c.d+'px;left:'+(c.Cx-c.d/2)+'px;top:'+(c.Cy-c.d/2)+'px';st.appendChild(ring);
+  slCropApply();
+  const pts=new Map();let last=null;
+  st.onpointerdown=e=>{st.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});last=null};
+  st.onpointermove=e=>{
+    if(!pts.has(e.pointerId))return;const p=pts.get(e.pointerId),prev={x:p.x,y:p.y};p.x=e.clientX;p.y=e.clientY;
+    if(pts.size===1){c.cx+=p.x-prev.x;c.cy+=p.y-prev.y}
+    else if(pts.size>=2){
+      const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(last){const ratio=d/last.d,old=c.s;c.s=Math.max(c.smin,Math.min(c.smax,c.s*ratio));const f=c.s/old;c.cx=c.Cx+(c.cx-c.Cx)*f;c.cy=c.Cy+(c.cy-c.Cy)*f;c.cx+=((a.x+b.x)/2-last.mx);c.cy+=((a.y+b.y)/2-last.my)}
+      last={d,mx:(a.x+b.x)/2,my:(a.y+b.y)/2};
+    }
+    slCropApply();
+  };
+  const up=e=>{pts.delete(e.pointerId);last=null};st.onpointerup=up;st.onpointercancel=up;
+  document.getElementById('plZoom').oninput=e=>{const old=c.s;c.s=c.smin+(c.smax-c.smin)*(e.target.value/1000);const f=c.s/old;c.cx=c.Cx+(c.cx-c.Cx)*f;c.cy=c.Cy+(c.cy-c.Cy)*f;slCropApply()};
+}
+function slCropOutput(){
+  const c=sl.crop,out=document.createElement('canvas');out.width=out.height=256;const x=out.getContext('2d');
+  x.fillStyle='#10291f';x.fillRect(0,0,256,256);
+  const size=c.d/c.s,sx=(c.iw*c.s/2-c.cx+c.Cx-c.d/2)/c.s,sy=(c.ih*c.s/2-c.cy+c.Cy-c.d/2)/c.s;
+  x.drawImage(c.cv,sx,sy,size,size,0,0,256,256);
+  return out.toDataURL('image/jpeg',.85);
+}
+async function slCropSave(){
+  if(sl.busy||!sl.crop)return;sl.busy=true;
+  const url=slCropOutput();
+  try{
+    if(!window.__savePhoto)throw new Error('offline');
+    await window.__savePhoto(slMe(),url);
+    window.__photos=window.__photos||{};window.__photos[slMe()]=url;
+    sl.busy=false;sl.crop=null;slGo('hub');
+  }catch(e){sl.busy=false;sl.err='That did not save. Check your connection and try again.';const b=document.querySelector('#plBody [data-act=savecrop]'),m=document.getElementById('plErr');if(b)b.textContent='Save';if(m)m.textContent=sl.err}
+}
+/* ---- clicks ---- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;
+  if(a==='hub')slGo('hub');
+  else if(a==='intro'){slLoadLocal();sl.fromReview=false;slGo(slStatus().done&&slHandled()?'review':'intro')}
+  else if(a==='begin'){slLoadLocal();sl.qi=0;sl.fromReview=false;slGo('q')}
+  else if(a==='review'){slLoadLocal();slGo('review')}
+  else if(a==='goq'){sl.qi=+t.dataset.i;sl.fromReview=true;slGo('q')}
+  else if(a==='face'){sl.answers['q'+(sl.qi+1)]=t.dataset.n;slSave();[...document.querySelectorAll('#plBody .pl-face')].forEach(b=>b.classList.toggle('on',b===t))}
+  else if(a==='skip'){if(sl.answers['q'+(sl.qi+1)]===undefined){sl.answers['q'+(sl.qi+1)]=null;slSave()}slNext()}
+  else if(a==='next'){slNext()}
+  else if(a==='back'){if(sl.fromReview)slGo('review');else if(sl.qi>0){sl.qi--;slGo('q')}else slGo('intro')}
+  else if(a==='submit'){sl.submitted=true;slSave(true);slGo('done')}
+  else if(a==='photo')slPick();
+  else if(a==='cancelcrop'){sl.crop=null;slGo('hub')}
+  else if(a==='savecrop'){const b=t;b.textContent='Saving…';slCropSave()}
+  else if(a==='rmphoto'){if(window.__removePhoto){window.__removePhoto(slMe());if(window.__photos)delete window.__photos[slMe()];slRender()}}
+  else if(a==='sleigh'){document.querySelector('#apptabs [data-v=welcome]').click();setTimeout(()=>{const g=document.getElementById('gamelink');if(g)g.click()},300)}
+});
+function slNext(){
+  if(sl.fromReview){slGo('review');return}
+  if(sl.qi<13){sl.qi++;slGo('q')}else slGo('review');
+}
+window.addEventListener('sl-data',()=>{if(inApp)slRender(true)});
+
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.v==='play'){slLoadLocal();sl.screen='hub';slRender()}
   if(b.dataset.v!=='santa'&&(saOpenName||saBusy)){saOpenName=null;saBusy=false;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
@@ -6274,17 +6506,22 @@ function paintBring(){
   document.getElementById('bring').innerHTML=items.map((x,i)=>'<b'+(i>0?' class="b2"':'')+'>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>').join('');
 }
 let inApp=false;
-function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();render(new Date());scr.classList.add('app')}
+function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();slLoadLocal();slRender();render(new Date());scr.classList.add('app')}
 document.getElementById('welcome').addEventListener('click',enterApp);
 </script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,doc,setDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,doc,setDoc,deleteDoc,onSnapshot} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 try{
   const app=initializeApp({apiKey:"AIzaSyDFRV5a1Fgwa9WRJMIV_cpdF9HjtZMrEmw",authDomain:"number-8-christmas.firebaseapp.com",projectId:"number-8-christmas",storageBucket:"number-8-christmas.firebasestorage.app",messagingSenderId:"321544675650",appId:"1:321544675650:web:45ff6b3d754dd06f51a8db"});
-  const db=getFirestore(app);
+  const db=getFirestore(app),ping=()=>window.dispatchEvent(new Event("sl-data"));
   onSnapshot(collection(db,"scores"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.score==="number")o[d.id]=v.score});window.__scores=o},()=>{});
+  onSnapshot(collection(db,"photos"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.img==="string")o[d.id]=v.img});window.__photos=o;ping()},()=>{});
+  onSnapshot(collection(db,"votes"),snap=>{const o={};snap.forEach(d=>{const v=d.data();o[d.id]={n:v.n||0,submitted:!!v.submitted}});window.__votes=o;ping()},()=>{});
   window.__saveScore=(name,score)=>setDoc(doc(db,"scores",name),{name,score,updated:Date.now()}).catch(()=>{});
+  window.__savePhoto=(name,img)=>setDoc(doc(db,"photos",name),{name,img,updated:Date.now()});
+  window.__removePhoto=name=>deleteDoc(doc(db,"photos",name)).catch(()=>{});
+  window.__saveVote=(name,data)=>setDoc(doc(db,"votes",name),data);
 }catch(e){}
 </script>
 </body>
