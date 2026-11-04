@@ -176,7 +176,7 @@ body{padding:0!important;overflow:hidden}
 #app .over .nb{display:none;margin-top:8px;font:500 9px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:#10291f;background:var(--gold);border-radius:10px;padding:3px 8px;width:max-content}
 #app .over .nb.show{display:block}
 #app .over ol{list-style:none;margin:6px 0 0;padding:0}
-#app .over li{display:grid;grid-template-columns:16px 1fr auto;gap:6px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line);color:var(--dim)}
+#app .over li{display:grid;grid-template-columns:14px 26px 1fr auto;gap:6px;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line);color:var(--dim)}
 #app .over li b{font-family:var(--serif);font-size:15px;color:var(--ink);font-weight:600}
 #app .over li.me{color:var(--gold)}
 #app .over li.me b{color:var(--gold)}
@@ -282,6 +282,14 @@ body{padding:0!important;overflow:hidden}
 #app .pl-small{font-size:2.9cqw;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 #app .pl-pg h2{font-family:var(--serif);font-weight:600;font-size:7.6cqw;margin:4px 0 0}
 #app .pl-sub{font-family:var(--serif);font-style:italic;font-size:4.2cqw;color:var(--dim);margin-top:2px}
+#app .pl-lbh{font-size:2.9cqw;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-top:3.4cqw;padding-top:3cqw;border-top:1px solid var(--line)}
+#app .pl-lb{list-style:none;margin:1.4cqw 0 0;padding:0}
+#app .pl-lb li{display:flex;align-items:center;gap:3cqw;padding:1.5cqw 0;border-bottom:1px solid rgba(255,255,255,.06)}
+#app .pl-lb li:last-child{border-bottom:0}
+#app .pl-lb .rk{width:4cqw;font:600 3.4cqw var(--serif);color:var(--gold);text-align:center}
+#app .pl-lb .nm{flex:1;font-size:3.9cqw;color:var(--ink)}
+#app .pl-lb li.me .nm{color:var(--gold)}
+#app .pl-lb b{font:600 4.4cqw var(--serif);color:var(--ink)}
 #app .pl-card{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:4cqw;margin-top:3cqw}
 #app .pl-card.hot{border-color:var(--gold-deep);background:linear-gradient(135deg,#1d4636,#17382b);margin-top:4cqw}
 #app .pl-btn{display:block;width:100%;text-align:center;border:1px solid var(--gold);color:var(--gold);background:none;border-radius:30px;padding:2.8cqw;font:500 3.1cqw var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
@@ -6277,7 +6285,7 @@ function render(now){
     const me=NAME(),sc=Object.assign({},window.__scores||{});if(best>0)sc[me]=Math.max(sc[me]||0,best);
     const rows=Object.keys(sc).filter(n=>sc[n]>0).map(n=>({n,s:sc[n],me:n===me})).sort((a,b)=>b.s-a.s||a.n.localeCompare(b.n));
     let top=rows.slice(0,5);const my=rows.findIndex(r=>r.me);if(my>4)top=rows.slice(0,4).concat([rows[my]]);
-    document.getElementById('lb').innerHTML=top.length?top.map(r=>'<li class="'+(r.me?'me':'')+'"><span>'+(rows.indexOf(r)+1)+'</span><span>'+(r.me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join(''):'<li><span></span><span>No scores yet. Be the first!</span><b></b></li>';
+    document.getElementById('lb').innerHTML=top.length?top.map(r=>'<li class="'+(r.me?'me':'')+'"><span>'+(rows.indexOf(r)+1)+'</span>'+slAv(r.n,'26px')+'<span>'+(r.me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join(''):'<li style="grid-template-columns:1fr"><span>No scores yet. Be the first!</span></li>';
     hero.classList.add('dead')}
   function close(){state='idle';cancelAnimationFrame(raf);hero.classList.remove('game','waiting','dead')}
   cv.addEventListener('pointerdown',e=>{e.preventDefault();if(state==='waiting')startRun();else if(state==='running')jump()});
@@ -6423,7 +6431,9 @@ function slHub(){
   }
   const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the game</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
     :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the game</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
-  const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div></div>';
+  const lbRows=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)).slice(0,5);
+  const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map((r,i)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
+  const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div>'+lb+'</div>';
   return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+photo+sleigh+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
@@ -6451,7 +6461,7 @@ function slRender(soft){
   const s=sl.screen;
   const key=s+':'+(s==='host'?HOST.tab:''),top=el.scrollTop;
   el.innerHTML=s==='hub'?slHub():s==='intro'?slIntro():s==='q'?slQuestion():s==='review'?slReview():s==='done'?slDone():s==='hostpin'?slHostPin():s==='host'?slHost():slCropScreen();
-  el.scrollTop=(s==='host'&&key===slRender.last)?top:0;slRender.last=key;
+  el.scrollTop=((s==='host'&&key===slRender.last)||(soft&&s==='hub'&&slRender.last==='hub:'))?top:0;slRender.last=key;
   if(s==='crop')slCropInit();
 }
 function slGo(s){sl.screen=s;slRender()}
@@ -6849,7 +6859,7 @@ import {getFirestore,collection,doc,setDoc,deleteDoc,onSnapshot} from "https://w
 try{
   const app=initializeApp({apiKey:"AIzaSyDFRV5a1Fgwa9WRJMIV_cpdF9HjtZMrEmw",authDomain:"number-8-christmas.firebaseapp.com",projectId:"number-8-christmas",storageBucket:"number-8-christmas.firebasestorage.app",messagingSenderId:"321544675650",appId:"1:321544675650:web:45ff6b3d754dd06f51a8db"});
   const db=getFirestore(app),ping=()=>window.dispatchEvent(new Event("sl-data"));
-  onSnapshot(collection(db,"scores"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.score==="number")o[d.id]=v.score});window.__scores=o},()=>{});
+  onSnapshot(collection(db,"scores"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.score==="number")o[d.id]=v.score});window.__scores=o;ping()},()=>{});
   onSnapshot(collection(db,"photos"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.img==="string")o[d.id]=v.img});window.__photos=o;ping()},()=>{});
   onSnapshot(collection(db,"votes"),snap=>{const o={};snap.forEach(d=>{const v=d.data();o[d.id]={n:v.n||0,submitted:!!v.submitted}});window.__votes=o;ping()},()=>{});
   window.__saveScore=(name,score)=>setDoc(doc(db,"scores",name),{name,score,updated:Date.now()}).catch(()=>{});
