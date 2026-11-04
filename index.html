@@ -330,6 +330,38 @@ body{padding:0!important;overflow:hidden}
 .pad{position:relative;left:auto;right:auto;bottom:auto;flex:none;padding:3px 11cqw max(3.2cqw,env(safe-area-inset-bottom,0px))}
 .fade{display:none}
 .dots{margin:2px 0 8px}
+
+/* Santa Shortlist: host tools */
+#app .pl-hostlink{margin-top:5cqw;text-align:center}
+#app .pl-hostlink button{background:none;border:0;color:var(--dim);font:400 2.8cqw var(--sans);letter-spacing:.18em;text-transform:uppercase;opacity:.6;cursor:pointer;padding:2cqw}
+#app .pl-tabs{display:flex;gap:1.6cqw;margin:3cqw 0 1cqw;flex-wrap:wrap}
+#app .pl-tabs button{background:none;border:1px solid var(--line);color:var(--dim);border-radius:20px;padding:1.4cqw 3.4cqw;font:500 2.9cqw var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer}
+#app .pl-tabs button.on{border-color:var(--gold);color:var(--gold)}
+#app .pl-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:2cqw;margin-top:3cqw}
+#app .pl-stat div{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:2.4cqw;text-align:center}
+#app .pl-stat b{display:block;font-family:var(--serif);font-variant-numeric:lining-nums;font-size:7cqw;line-height:1;color:var(--ink);font-weight:600}
+#app .pl-stat span{font-size:2.6cqw;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+#app .pl-list{list-style:none;margin:3cqw 0 0;padding:0}
+#app .pl-list li{display:flex;align-items:center;gap:2.6cqw;padding:2cqw 0;border-bottom:1px solid var(--line);font-size:3.4cqw}
+#app .pl-list li .nm{flex:1;min-width:0}
+#app .pl-chip{font-size:2.6cqw;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--line);border-radius:14px;padding:.6cqw 2.2cqw;color:var(--dim);white-space:nowrap}
+#app .pl-chip.ok{border-color:var(--gold);color:var(--gold)}
+#app .pl-chip.mid{border-color:var(--gold-deep);color:var(--ink)}
+#app .pl-sw{width:11cqw;height:6cqw;border-radius:6cqw;background:var(--line);border:0;position:relative;flex:none;cursor:pointer;transition:background .2s}
+#app .pl-sw::after{content:"";position:absolute;top:.7cqw;left:.7cqw;width:4.6cqw;height:4.6cqw;border-radius:50%;background:var(--ink);transition:transform .2s}
+#app .pl-sw.on{background:var(--gold)}
+#app .pl-sw.on::after{transform:translateX(5cqw);background:#10291f}
+#app .pl-qrow{display:flex;gap:2cqw;align-items:flex-start;padding:2.2cqw 0;border-bottom:1px solid var(--line)}
+#app .pl-qrow .tx{flex:1;min-width:0}
+#app .pl-qrow .no{font-family:var(--serif);font-variant-numeric:lining-nums;color:var(--gold);width:5cqw;flex:none;font-size:4cqw;padding-top:.6cqw}
+#app .pl-in{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;color:var(--ink);font:400 3.4cqw var(--sans);padding:2cqw 2.4cqw}
+#app .pl-in:focus{outline:none;border-color:var(--gold)}
+#app .pl-mini{display:flex;gap:1.4cqw;margin-top:1.6cqw;align-items:center;flex-wrap:wrap}
+#app .pl-mini button{background:none;border:1px solid var(--line);color:var(--dim);border-radius:6px;font:500 2.7cqw var(--sans);padding:1cqw 2cqw;cursor:pointer}
+#app .pl-mini button.on{border-color:var(--gold);color:var(--gold)}
+#app .pl-mini button.del{color:var(--berry);border-color:rgba(196,82,63,.5)}
+#app .pl-qrow.off .tx{opacity:.45}
+#app .pl-saved{font-size:2.8cqw;color:var(--gold);text-align:right;min-height:4cqw}
 </style>
 <clipPath id="patch"><path d="M0.0 0.0L1000.0 0.0L1000.0 680.0L0.0 680.0Z"/></clipPath>
 <clipPath id="c1"><rect x="40.00000000000006" y="557.2" width="788.8" height="40.8"/></clipPath>
@@ -6317,18 +6349,27 @@ async function unwrapSanta(){
 /* ---------- Santa Shortlist: photo, sealed votes and the Play tab ---------- */
 const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James'];
 const SL_CANDS=SL_ADULTS.concat(['Arabella']);
-const SL_QS=['ask for seconds','fall asleep on the sofa','still be up at midnight','have all their presents wrapped by 1 December','still be wrapping presents on Christmas Eve','take all the purple ones from the Quality Street tin','be on Father Christmas’s naughty list','give the most thoughtful present','cry at a Christmas film','get too competitive at a board game','sing the loudest when a Christmas song comes on','be the one fixing the tree lights','spot Father Christmas’s sleigh first','win Auntie Sue’s quiz'];
+const SL_DQS=['ask for seconds','fall asleep on the sofa','still be up at midnight','have all their presents wrapped by 1 December','still be wrapping presents on Christmas Eve','take all the purple ones from the Quality Street tin','be on Father Christmas’s naughty list','give the most thoughtful present','cry at a Christmas film','get too competitive at a board game','sing the loudest when a Christmas song comes on','be the one fixing the tree lights','spot Father Christmas’s sleigh first','win Auntie Sue’s quiz'];
 /* Survey window. TEMPORARY test window: open now, closing at the end of 5 November. The real window is OPEN 1 Dec 2026 to CLOSE 21 Dec 2026 (midnight, so the last day is 20 Dec): new Date(2026,11,1) and new Date(2026,11,21). */
-const SL_OPEN=new Date(2026,10,4),SL_CLOSE=new Date(2026,10,6);
+const SL_DOPEN=new Date(2026,10,4),SL_DCLOSE=new Date(2026,10,6);
 const SL_MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const slDay=d=>d.getDate()+' '+SL_MON[d.getMonth()],slDayShort=d=>d.getDate()+' '+SL_MON[d.getMonth()].slice(0,3);
-const SL_LAST=new Date(SL_CLOSE.getTime()-864e5);
+const slCfg=()=>window.__hostCfg||null;
+const slOpen=()=>{const c=slCfg();return c&&c.opens?new Date(c.opens):SL_DOPEN};
+const slClose=()=>{const c=slCfg();return c&&c.closes?new Date(c.closes):SL_DCLOSE};
+const slLast=()=>new Date(slClose().getTime()-864e5);
+function slDefaultCfg(){return {hp:'2026',opens:SL_DOPEN.getTime(),closes:SL_DCLOSE.getTime(),questions:SL_DQS.map((t,i)=>({id:'q'+(i+1),text:t,on:true,last:false})),hidden:[],away:[],next:SL_DQS.length+1,updated:0}}
+function slQs(){const c=slCfg(),list=(c&&c.questions&&c.questions.length)?c.questions:slDefaultCfg().questions,act=list.filter(q=>q.on);return act.filter(q=>!q.last).concat(act.filter(q=>q.last))}
+const slN=()=>slQs().length;
+const slAway=()=>{const c=slCfg();return (c&&c.away)||[]};
+const slHidden=()=>{const c=slCfg();return (c&&c.hidden)||[]};
+const slCands=()=>SL_CANDS.filter(n=>!slAway().includes(n)&&!slHidden().includes(n));
 const SL_PUB={"kty":"RSA","n":"sSbClEBhI6DZoKXEhcML-1ddBaHRd65LP3oH3G7uOpd55FmSx7Im9laJA9Zu-15dlbv7E7mxSl-QAJCRYb0kv9yIp7wTtbbusf4LN4eZOsU73h3Zh8ma9I_CDUSEorMNL5fL3o2uJdX892qF-FJwuWulRxAltH87UTCXAS700tlxLg6wExQUA81hQDZWVO5FEXg4fM66Abo-fFK61YNJu2D3U7z38fLBcUR4Ba4cDXq274IN3TuLq48AIiqvQ4BZpWKj4eBq0d_LZF8djhdUIIJ7ahWcJ9Z8aVMQ-2_t0LStAZl7l5lUjDMFihxiKQOp0WUwA-EMF3vwNaRm5ntxgQ","e":"AQAB"};
 let SL_PREVIEW=false;try{if(/preview/.test(location.hash))localStorage.setItem('sl_preview','1');SL_PREVIEW=localStorage.getItem('sl_preview')==='1'}catch(e){}
 let sl={screen:'hub',qi:0,fromReview:false,answers:{},submitted:false,crop:null,busy:false,err:''};
 const slMe=()=>window.GUEST||'';
-const slVoter=()=>SL_ADULTS.includes(slMe());
-const slPhase=()=>{const n=new Date();return n>=SL_CLOSE?'closed':(n<SL_OPEN&&!SL_PREVIEW?'before':'open')};
+const slVoter=()=>SL_ADULTS.includes(slMe())&&!slAway().includes(slMe());
+const slPhase=()=>{const n=new Date();return n>=slClose()?'closed':(n<slOpen()&&!SL_PREVIEW?'before':'open')};
 const slColor=n=>{const i=SL_CANDS.indexOf(n);return 'c'+(i<0?0:i%6)};
 function slAv(name,size){
   const p=window.__photos&&window.__photos[name],st=size==='100%'?'width:100%;aspect-ratio:1;font-size:5.2cqw':'width:'+size+';height:'+size+';font-size:calc('+size+' * .42)';
@@ -6338,7 +6379,7 @@ function slLoadLocal(){
   sl.answers={};sl.submitted=false;
   try{const j=JSON.parse(localStorage.getItem('sl_votes_'+slMe())||'null');if(j){sl.answers=j.answers||{};sl.submitted=!!j.submitted}}catch(e){}
 }
-const slHandled=()=>Object.keys(sl.answers).length;
+const slHandled=()=>{const ids=slQs().map(q=>q.id);return Object.keys(sl.answers).filter(k=>ids.includes(k)).length};
 function slMeta(){const m=window.__votes&&window.__votes[slMe()];return m||null}
 function slStatus(){
   const local=slHandled(),m=slMeta();
@@ -6370,44 +6411,44 @@ function slHub(){
   let card='';
   const head='<div class="pl-row">'+SL_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Santa Shortlist</div><div class="pl-small" style="letter-spacing:.2em;margin-top:1.2cqw">Who’s most likely to…</div></div></div>';
   if(!slVoter()){
-    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">The grown-ups vote on who is most likely to do 14 silly things. You will be playing at the table on Christmas Day.</div></div>';
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">The grown-ups vote on who is most likely to do '+slN()+' silly things. You will be playing at the table on Christmas Day.</div></div>';
   }else if(ph==='before'){
-    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do 14 silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Opens '+slDay(SL_OPEN)+'</span></div><button class="pl-btn" style="margin-top:3.4cqw" disabled>Opens '+slDay(SL_OPEN)+'</button></div>';
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do '+slN()+' silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Opens '+slDay(slOpen())+'</span></div><button class="pl-btn" style="margin-top:3.4cqw" disabled>Opens '+slDay(slOpen())+'</button></div>';
   }else if(ph==='closed'){
     card='<div class="pl-card hot">'+head+'<div class="pl-ttl" style="font-size:5.4cqw;margin-top:3cqw;color:var(--gold)">Voting closed.</div><div class="pl-note">See you at the table.</div></div>';
   }else{
     const label=st.done?'Change my votes':(st.n?'Carry on voting':'Start voting');
-    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do 14 silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-pill">Closes '+slDayShort(SL_LAST)+'</span><span class="pl-note">'+(st.done?'Done':(st.n?'Partly done · '+st.n+' of 14':'Not started'))+'</span></div><div class="pl-bar"><i style="width:'+Math.round((st.done?14:st.n)/14*100)+'%"></i></div><button class="pl-btn solid" style="margin-top:3.4cqw" data-act="'+(st.done?'review':'intro')+'">'+label+'</button></div>';
+    card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do '+slN()+' silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-pill">Closes '+slDayShort(slLast())+'</span><span class="pl-note">'+(st.done?'Done':(st.n?'Partly done · '+st.n+' of '+slN():'Not started'))+'</span></div><div class="pl-bar"><i style="width:'+Math.round((st.done?slN():st.n)/Math.max(1,slN())*100)+'%"></i></div><button class="pl-btn solid" style="margin-top:3.4cqw" data-act="'+(st.done?'review':'intro')+'">'+label+'</button></div>';
   }
   const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the game</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
     :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the game</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
   const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div></div>';
-  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+photo+sleigh;
+  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+photo+sleigh+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
   const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
-  return '<div class="pl-center">'+SL_ICON+'<h2 style="margin-top:6cqw">Santa Shortlist</h2><div class="pl-small" style="margin-top:1.6cqw">Who’s most likely to…</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note"><b style="color:var(--ink);font-weight:500">Votes are anonymous.</b> Nobody will ever see who voted for whom, not even James. At the table, you guess which of two people got the most votes.</div></div><div class="pl-note" style="margin-top:3cqw">14 questions · about 4 minutes · closes '+slDay(SL_LAST)+'</div>'+warn+'<button class="pl-btn solid" style="margin-top:5cqw" data-act="begin">Start</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Not now</button></div>';
+  return '<div class="pl-center">'+SL_ICON+'<h2 style="margin-top:6cqw">Santa Shortlist</h2><div class="pl-small" style="margin-top:1.6cqw">Who’s most likely to…</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note"><b style="color:var(--ink);font-weight:500">Votes are anonymous.</b> Nobody will ever see who voted for whom, not even James. At the table, you guess which of two people got the most votes.</div></div><div class="pl-note" style="margin-top:3cqw">'+slN()+' questions · about '+Math.max(1,Math.round(slN()*.28))+' minutes · closes '+slDay(slLast())+'</div>'+warn+'<button class="pl-btn solid" style="margin-top:5cqw" data-act="begin">Start</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Not now</button></div>';
 }
 function slQuestion(){
-  const qi=sl.qi,key='q'+(qi+1),cur=sl.answers[key],me=slMe();
-  const faces=SL_CANDS.filter(n=>n!==me).map(n=>'<button class="pl-face'+(cur===n?' on':'')+'" type="button" data-act="face" data-n="'+n+'">'+slAv(n,'100%')+'<span>'+n+'</span></button>').join('');
-  return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">'+(qi+1)+' of 14</span><button class="pl-small" style="background:none;border:0;color:var(--dim);cursor:pointer;font-family:inherit" data-act="back">Back</button></div><div class="pl-bar"><i style="width:'+Math.round((qi+1)/14*100)+'%"></i></div><div class="pl-q"><small>Who’s most likely to…</small>'+SL_QS[qi]+'?</div><div class="pl-faces">'+faces+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:auto" data-act="skip">Skip this one</button><button class="pl-btn solid" style="width:44%" data-act="next">'+(qi===13||sl.fromReview?'Done':'Next')+'</button></div>';
+  const qs=slQs(),N=qs.length,qi=Math.min(sl.qi,N-1),q=qs[qi],cur=sl.answers[q.id],me=slMe();
+  const faces=slCands().filter(n=>n!==me).map(n=>'<button class="pl-face'+(cur===n?' on':'')+'" type="button" data-act="face" data-n="'+n+'">'+slAv(n,'100%')+'<span>'+n+'</span></button>').join('');
+  return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">'+(qi+1)+' of '+N+'</span><button class="pl-small" style="background:none;border:0;color:var(--dim);cursor:pointer;font-family:inherit" data-act="back">Back</button></div><div class="pl-bar"><i style="width:'+Math.round((qi+1)/N*100)+'%"></i></div><div class="pl-q"><small>Who’s most likely to…</small>'+hostEsc(q.text)+'?</div><div class="pl-faces">'+faces+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:auto" data-act="skip">Skip this one</button><button class="pl-btn solid" style="width:44%" data-act="next">'+(qi===N-1||sl.fromReview?'Done':'Next')+'</button></div>';
 }
 function slReview(){
-  const rows=SL_QS.map((q,i)=>{const a=sl.answers['q'+(i+1)];return '<li data-act="goq" data-i="'+i+'"><span>'+(i+1)+'</span><span>'+q.charAt(0).toUpperCase()+q.slice(1)+'</span>'+(a?'<b>'+a+'</b>':'<i>'+(sl.answers['q'+(i+1)]===null?'Skipped':'Not answered')+'</i>')+'</li>'}).join('');
+  const rows=slQs().map((q,i)=>{const a=sl.answers[q.id];return '<li data-act="goq" data-i="'+i+'"><span>'+(i+1)+'</span><span>'+hostEsc(q.text.charAt(0).toUpperCase()+q.text.slice(1))+'</span>'+(a?'<b>'+a+'</b>':'<i>'+(a===null?'Skipped':'Not answered')+'</i>')+'</li>'}).join('');
   return '<div class="pl-small">Check your votes</div><h2>Review</h2><ul class="pl-rv">'+rows+'</ul><div class="pl-foot"><button class="pl-btn solid" data-act="submit">'+(sl.submitted?'Save changes':'Submit votes')+'</button></div>';
 }
 function slDone(){
-  return '<div class="pl-center">'+slAv(slMe(),'24cqw')+'<h2 style="margin-top:5cqw">Thanks, '+slMe()+'</h2><div class="pl-sub" style="font-size:4.6cqw">Your votes are in</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note">You can change them until <b style="color:var(--ink);font-weight:500">'+slDay(SL_LAST)+'</b>. After that, voting closes and nobody can see their answers again.</div></div><button class="pl-btn" style="margin-top:5cqw" data-act="review">Change my votes</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Back to games</button></div>';
+  return '<div class="pl-center">'+slAv(slMe(),'24cqw')+'<h2 style="margin-top:5cqw">Thanks, '+slMe()+'</h2><div class="pl-sub" style="font-size:4.6cqw">Your votes are in</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note">You can change them until <b style="color:var(--ink);font-weight:500">'+slDay(slLast())+'</b>. After that, voting closes and nobody can see their answers again.</div></div><button class="pl-btn" style="margin-top:5cqw" data-act="review">Change my votes</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Back to games</button></div>';
 }
 function slCropScreen(){
   return '<div class="pl-small">Your photo</div><h2>Move and zoom</h2><div class="pl-sub">Drag to move, pinch to zoom</div><div class="pl-crop" id="plStage"></div><input class="pl-slider" id="plZoom" type="range" min="0" max="1000" value="0" aria-label="Zoom"><div class="pl-err" id="plErr">'+(sl.err||'')+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:34%" data-act="cancelcrop">Cancel</button><button class="pl-btn solid" data-act="savecrop">'+(sl.busy?'Saving…':'Save')+'</button></div>';
 }
 function slRender(soft){
   const el=document.getElementById('plBody');if(!el||!window.GUEST)return;
-  if(soft&&sl.screen!=='hub')return;
+  if(soft&&sl.screen!=='hub'&&!(sl.screen==='host'&&HOST.tab==='over'))return;
   const s=sl.screen;
-  el.innerHTML=s==='hub'?slHub():s==='intro'?slIntro():s==='q'?slQuestion():s==='review'?slReview():s==='done'?slDone():slCropScreen();
+  el.innerHTML=s==='hub'?slHub():s==='intro'?slIntro():s==='q'?slQuestion():s==='review'?slReview():s==='done'?slDone():s==='hostpin'?slHostPin():s==='host'?slHost():slCropScreen();
   el.scrollTop=0;
   if(s==='crop')slCropInit();
 }
@@ -6482,12 +6523,13 @@ async function slCropSave(){
 document.addEventListener('click',e=>{
   const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='hub')slGo('hub');
+  else if(a==='hostpin'){HOST.pinErr='';slGo('hostpin')}
   else if(a==='intro'){slLoadLocal();sl.fromReview=false;slGo(slStatus().done&&slHandled()?'review':'intro')}
   else if(a==='begin'){slLoadLocal();sl.qi=0;sl.fromReview=false;slGo('q')}
   else if(a==='review'){slLoadLocal();slGo('review')}
   else if(a==='goq'){sl.qi=+t.dataset.i;sl.fromReview=true;slGo('q')}
-  else if(a==='face'){sl.answers['q'+(sl.qi+1)]=t.dataset.n;slSave();[...document.querySelectorAll('#plBody .pl-face')].forEach(b=>b.classList.toggle('on',b===t))}
-  else if(a==='skip'){if(sl.answers['q'+(sl.qi+1)]===undefined){sl.answers['q'+(sl.qi+1)]=null;slSave()}slNext()}
+  else if(a==='face'){sl.answers[slQs()[sl.qi].id]=t.dataset.n;slSave();[...document.querySelectorAll('#plBody .pl-face')].forEach(b=>b.classList.toggle('on',b===t))}
+  else if(a==='skip'){const id=slQs()[sl.qi].id;if(sl.answers[id]===undefined){sl.answers[id]=null;slSave()}slNext()}
   else if(a==='next'){slNext()}
   else if(a==='back'){if(sl.fromReview)slGo('review');else if(sl.qi>0){sl.qi--;slGo('q')}else slGo('intro')}
   else if(a==='submit'){sl.submitted=true;slSave(true);slGo('done')}
@@ -6499,9 +6541,99 @@ document.addEventListener('click',e=>{
 });
 function slNext(){
   if(sl.fromReview){slGo('review');return}
-  if(sl.qi<13){sl.qi++;slGo('q')}else slGo('review');
+  if(sl.qi<slN()-1){sl.qi++;slGo('q')}else slGo('review');
 }
 window.addEventListener('sl-data',()=>{if(inApp)slRender(true)});
+/* ---------- host tools: questions, guests, dates and who has voted. Behind the host PIN. ---------- */
+const HOST_PIN='2026',APP_URL='https://jamesfunnell90-hub.github.io/number-8-christmas/';
+let HOST={tab:'over',cfg:null,saved:'',pinErr:'',confirmDel:''};
+let hostTimer=0;
+function hostLoad(){const c=window.__hostCfg||slDefaultCfg();HOST.cfg=JSON.parse(JSON.stringify(c));if(!HOST.cfg.questions||!HOST.cfg.questions.length)HOST.cfg.questions=slDefaultCfg().questions;if(!HOST.cfg.hidden)HOST.cfg.hidden=[];if(!HOST.cfg.away)HOST.cfg.away=[]}
+function hostSave(){
+  HOST.saved='Saving…';const el=document.getElementById('plSaved');if(el)el.textContent=HOST.saved;
+  clearTimeout(hostTimer);hostTimer=setTimeout(async()=>{
+    const c=HOST.cfg;const out={hp:HOST_PIN,opens:c.opens,closes:c.closes,questions:c.questions,hidden:c.hidden,away:c.away,next:c.next,updated:Date.now()};
+    try{await window.__saveConfig(out);window.__hostCfg=out;HOST.saved='Saved'}catch(e){HOST.saved='Could not save. Check your connection.'}
+    const e2=document.getElementById('plSaved');if(e2)e2.textContent=HOST.saved;
+  },500);
+}
+const hostToLocal=ms=>{const d=new Date(ms),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+const hostEsc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+function slHostPin(){
+  return '<div class="pl-small">Host tools</div><h2>Host PIN</h2><div class="pl-sub">Enter the host PIN to open the controls</div><div class="pl-card"><input class="pl-in" id="plHp" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="PIN" style="text-align:center;font-size:6cqw;letter-spacing:.4em"><div class="pl-err" id="plHpe">'+HOST.pinErr+'</div><button class="pl-btn solid" style="margin-top:3cqw" data-act="hostgo">Open</button></div><div class="pl-foot"><button class="pl-btn ghost" data-act="hub">Back to games</button></div>';
+}
+function slHostStatus(name){
+  const m=window.__votes&&window.__votes[name],n=slN();
+  if(m&&m.submitted)return {t:'Done',c:'ok',k:2};
+  if(m&&m.n>0)return {t:m.n+' of '+n,c:'mid',k:1};
+  return {t:'Not started',c:'',k:0};
+}
+function slHostOverview(){
+  const c=HOST.cfg,away=c.away,voters=SL_ADULTS.filter(n=>!away.includes(n)),st=voters.map(n=>slHostStatus(n));
+  const done=st.filter(s=>s.k===2).length,part=st.filter(s=>s.k===1).length,none=st.filter(s=>s.k===0).length;
+  const ph=slPhase(),phl=ph==='open'?'Open':ph==='closed'?'Closed':'Not open yet';
+  const rows=SL_CANDS.filter(n=>!away.includes(n)).map(n=>{
+    const isV=SL_ADULTS.includes(n),s=isV?slHostStatus(n):null,hasP=!!(window.__photos&&window.__photos[n]);
+    return '<li>'+slAv(n,'9cqw')+'<span class="nm">'+n+'</span>'+(isV?'<span class="pl-chip '+s.c+'">'+s.t+'</span>':'<span class="pl-chip">Not voting</span>')+'<span class="pl-chip '+(hasP?'ok':'')+'">'+(hasP?'Photo':'No photo')+'</span></li>';
+  }).join('');
+  return '<div class="pl-row" style="justify-content:space-between"><span class="pl-pill">'+phl+'</span><span class="pl-note">Closes '+slDay(slLast())+'</span></div>'
+   +'<div class="pl-stat"><div><b>'+done+'</b><span>Done</span></div><div><b>'+part+'</b><span>Partly</span></div><div><b>'+none+'</b><span>Not started</span></div></div>'
+   +'<button class="pl-btn solid" style="margin-top:3.4cqw" data-act="remind">Copy reminder message</button><div class="pl-saved" id="plCopied"></div>'
+   +'<div class="pl-note">Only completion is shown here, never anyone’s answers.</div><ul class="pl-list">'+rows+'</ul>';
+}
+function slHostQuestions(){
+  const qs=HOST.cfg.questions;
+  const rows=qs.map((q,i)=>'<div class="pl-qrow'+(q.on?'':' off')+'"><span class="no">'+(i+1)+'</span><div class="tx"><div class="pl-note" style="font-size:2.6cqw;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)">Who’s most likely to…</div><input class="pl-in" data-hq="'+i+'" value="'+hostEsc(q.text)+'" aria-label="Question '+(i+1)+'"><div class="pl-mini"><button class="'+(q.last?'on':'')+'" data-act="hq-last" data-i="'+i+'">'+(q.last?'Plays last':'Pin last')+'</button><button data-act="hq-up" data-i="'+i+'">Up</button><button data-act="hq-down" data-i="'+i+'">Down</button><button class="del" data-act="hq-del" data-i="'+i+'">'+(HOST.confirmDel==='q'+i?'Tap again to delete':'Delete')+'</button></div></div><button class="pl-sw'+(q.on?' on':'')+'" data-act="hq-on" data-i="'+i+'" aria-label="Question on or off"></button></div>').join('');
+  const active=qs.filter(q=>q.on).length;
+  return '<div class="pl-note" style="margin-top:2cqw">'+active+' of '+qs.length+' questions are switched on. Changes save by themselves.</div><div class="pl-saved" id="plSaved">'+HOST.saved+'</div>'+rows
+   +'<div class="pl-card"><div class="pl-small">Add a question</div><div class="pl-note" style="margin:1.4cqw 0">Who’s most likely to…</div><input class="pl-in" id="plNewQ" placeholder="finish the last mince pie"><button class="pl-btn solid" style="margin-top:3cqw" data-act="hq-add">Add</button></div>';
+}
+function slHostGuests(){
+  const c=HOST.cfg;
+  const rows=SL_CANDS.map(n=>{const away=c.away.includes(n),hid=c.hidden.includes(n),isV=SL_ADULTS.includes(n);
+    return '<li style="flex-wrap:wrap">'+slAv(n,'9cqw')+'<span class="nm">'+n+(isV?'':' <span class="pl-note">(child)</span>')+'</span><span class="pl-note">Here</span><button class="pl-sw'+(away?'':' on')+'" data-act="hg-away" data-n="'+n+'" aria-label="Attending"></button><span class="pl-note" style="margin-left:1.5cqw">Can be picked</span><button class="pl-sw'+(hid||away?'':' on')+'" data-act="hg-hid" data-n="'+n+'" aria-label="Can appear in the game"'+(away?' disabled':'')+'></button></li>';}).join('');
+  return '<div class="pl-note" style="margin-top:2cqw">“Here” switched off means they are not coming: they stop voting and drop out of the game. “Can be picked” off means they will not appear as a face. The baby is never included.</div><div class="pl-saved" id="plSaved">'+HOST.saved+'</div><ul class="pl-list">'+rows+'</ul>';
+}
+function slHostDates(){
+  const c=HOST.cfg;
+  return '<div class="pl-note" style="margin-top:2cqw">When the survey opens and closes. Voting stops at the closing time.</div><div class="pl-card"><div class="pl-small">Opens</div><input class="pl-in" id="plOpen" type="datetime-local" value="'+hostToLocal(c.opens)+'" style="margin-top:1.6cqw"><div class="pl-small" style="margin-top:3cqw">Closes</div><input class="pl-in" id="plClose" type="datetime-local" value="'+hostToLocal(c.closes)+'" style="margin-top:1.6cqw"><div class="pl-saved" id="plSaved" style="margin-top:2cqw">'+HOST.saved+'</div><div class="pl-row" style="margin-top:1cqw"><button class="pl-btn" data-act="hd-real">Set 1 to 20 December</button></div></div>';
+}
+function slHost(){
+  const tabs=[['over','Overview'],['q','Questions'],['g','Guests'],['d','Dates']].map(([k,l])=>'<button class="'+(HOST.tab===k?'on':'')+'" data-act="htab" data-t="'+k+'">'+l+'</button>').join('');
+  const body=HOST.tab==='q'?slHostQuestions():HOST.tab==='g'?slHostGuests():HOST.tab==='d'?slHostDates():slHostOverview();
+  return '<div class="pl-row" style="justify-content:space-between"><div><div class="pl-small">Santa Shortlist</div><h2>Host</h2></div><button class="pl-btn ghost" style="width:auto" data-act="hub">Close</button></div><div class="pl-tabs">'+tabs+'</div>'+body;
+}
+function slHostCopy(){
+  const n=slN(),msg='Hi all! A quick reminder to vote in Santa Shortlist. It takes about '+Math.max(1,Math.round(n*.28))+' minutes and closes on '+slDay(slLast())+'. Open the app, tap Play, then Santa Shortlist, and pick who is most likely to do each thing. Votes are anonymous. '+APP_URL;
+  const done=()=>{const e=document.getElementById('plCopied');if(e)e.textContent='Copied. Paste it into WhatsApp.'};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(msg).then(done,()=>slHostCopyOld(msg,done))}else slHostCopyOld(msg,done);
+}
+function slHostCopyOld(msg,done){const t=document.createElement('textarea');t.value=msg;t.style.cssText='position:fixed;opacity:0';document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){}t.remove()}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;if(a.indexOf('h')!==0&&a!=='remind')return;
+  const c=HOST.cfg,i=+t.dataset.i;
+  if(a==='hostgo'){const v=(document.getElementById('plHp')||{}).value;if(v===HOST_PIN){hostLoad();HOST.tab='over';HOST.pinErr='';slGo('host')}else{HOST.pinErr='That PIN did not work.';const m=document.getElementById('plHpe');if(m)m.textContent=HOST.pinErr}}
+  else if(a==='htab'){HOST.tab=t.dataset.t;HOST.confirmDel='';slGo('host')}
+  else if(a==='remind')slHostCopy();
+  else if(a==='hq-on'){c.questions[i].on=!c.questions[i].on;hostSave();slGo('host')}
+  else if(a==='hq-last'){const was=c.questions[i].last;c.questions.forEach(q=>q.last=false);c.questions[i].last=!was;hostSave();slGo('host')}
+  else if(a==='hq-up'&&i>0){[c.questions[i-1],c.questions[i]]=[c.questions[i],c.questions[i-1]];hostSave();slGo('host')}
+  else if(a==='hq-down'&&i<c.questions.length-1){[c.questions[i+1],c.questions[i]]=[c.questions[i],c.questions[i+1]];hostSave();slGo('host')}
+  else if(a==='hq-del'){if(HOST.confirmDel==='q'+i){c.questions.splice(i,1);HOST.confirmDel='';hostSave()}else HOST.confirmDel='q'+i;slGo('host')}
+  else if(a==='hq-add'){const el=document.getElementById('plNewQ'),v=(el.value||'').trim().replace(/[?.]+$/,'');if(v){c.questions.push({id:'q'+c.next,text:v,on:true,last:false});c.next++;hostSave();slGo('host')}}
+  else if(a==='hg-away'){const n=t.dataset.n,k=c.away.indexOf(n);if(k>-1)c.away.splice(k,1);else c.away.push(n);hostSave();slGo('host')}
+  else if(a==='hg-hid'){const n=t.dataset.n,k=c.hidden.indexOf(n);if(k>-1)c.hidden.splice(k,1);else c.hidden.push(n);hostSave();slGo('host')}
+  else if(a==='hd-real'){c.opens=new Date(2026,11,1).getTime();c.closes=new Date(2026,11,21).getTime();hostSave();slGo('host')}
+});
+document.addEventListener('input',e=>{
+  const t=e.target;if(!HOST.cfg)return;
+  if(t.dataset&&t.dataset.hq!==undefined){HOST.cfg.questions[+t.dataset.hq].text=t.value.replace(/^\s+/,'');hostSave()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;if(!HOST.cfg)return;
+  if(t.id==='plOpen'||t.id==='plClose'){const v=new Date(t.value).getTime();if(!isNaN(v)){if(t.id==='plOpen')HOST.cfg.opens=v;else HOST.cfg.closes=v;hostSave()}}
+});
+
 
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
@@ -6535,7 +6667,9 @@ try{
   window.__saveScore=(name,score)=>setDoc(doc(db,"scores",name),{name,score,updated:Date.now()}).catch(()=>{});
   window.__savePhoto=(name,img)=>setDoc(doc(db,"photos",name),{name,img,updated:Date.now()});
   window.__removePhoto=name=>deleteDoc(doc(db,"photos",name)).catch(()=>{});
+  onSnapshot(doc(db,"host","config"),d=>{window.__hostCfg=d.exists()?d.data():null;ping()},()=>{});
   window.__saveVote=(name,data)=>setDoc(doc(db,"votes",name),data);
+  window.__saveConfig=data=>setDoc(doc(db,"host","config"),data);
 }catch(e){}
 </script>
 </body>
