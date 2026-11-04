@@ -30,7 +30,7 @@
         else if(sc==='regroup')return advance(s,info);
         else if(sc==='out'||sc==='everywrong'){const L=GC.left(s);if(sc==='out'&&(s.players||[]).length&&L.length===1){s.champion=L[0];s.screen='champion';s.fresh=[]}else return advance(s,info)}
         else if(sc==='flipround'){s.flips++;s.flipResult=coin();s.coinSeq++}
-        else if(sc==='champion')s.screen=info.noResults?'idle':'results';
+        else if(sc==='champion'){s.out=[];s.crossed=[];s.fresh=[];s.champion='';s.paused=false;s.screen='regroup'}
         else if(sc==='results'||sc==='pick'){s.screen='idle'}
         break;
       case 'back':
@@ -48,6 +48,8 @@
       case 'players':s.players=Array.isArray(arg)?arg.slice():[];s.out=[];s.crossed=[];s.fresh=[];break;
       case 'toggle':{s.out=(s.out||[]).slice();const k=s.out.indexOf(arg);if(k>=0)s.out.splice(k,1);else if((s.players||[]).includes(arg))s.out.push(arg);s.crossed=(s.crossed||[]).filter(n=>s.out.includes(n));break}
       case 'again':if(sc==='champion'){s.out=[];s.crossed=[];s.fresh=[];s.champion='';s.paused=false;s.screen='regroup'}break;
+      case 'results':if(sc==='champion')s.screen=info.noResults?'idle':'results';break;
+      case 'crown':{const L=GC.left(s);if(sc==='out'&&(s.players||[]).length&&L.length===1){s.champion=L[0];s.screen='champion';s.fresh=[]}else return st;break}
       case 'reveal':if(sc==='countdown'){s.screen='reveal';s.revSeq++}else return st;break;
       case 'pause':s.paused=!s.paused;break;
       case 'mute':s.muted=!s.muted;break;
@@ -71,7 +73,7 @@
   /* plain-English label for the big button on the remote (describes the action, not what is coming) */
   GC.left=st=>(st.players||[]).filter(n=>!(st.out||[]).includes(n));
   GC.nextLabel=function(st){
-    const m={idle:'Start the game',title:'How to play',howto:st.ret?'Back to the game':'Practice flip',practice:st.flipped?'Start round 1':'Flip the coin',coin:'Back to the game',question:'Show the faces',faces:'Start the countdown',countdown:'Skip to the votes',regroup:'Start the next question',reveal:'Wrong guessers are out',out:GC.left(st).length===1&&(st.players||[]).length?'Crown the winner':'Next round',everywrong:'Next round',flipround:'Flip again',champion:'Full results',results:'Finish',pick:'Finish'};
+    const m={idle:'Start the game',title:'How to play',howto:st.ret?'Back to the game':'Practice flip',practice:st.flipped?'Start round 1':'Flip the coin',coin:'Back to the game',question:'Show the faces',faces:'Start the countdown',countdown:'Skip to the votes',regroup:'Start the next question',reveal:'Wrong guessers are out',out:GC.left(st).length===1&&(st.players||[]).length?'Skip to the winner':'Next round',everywrong:'Next round',flipround:'Flip again',champion:'Play again: everyone back in',results:'Finish',pick:'Finish'};
     return m[st.screen]||'Next';
   };
   GC.screenName=function(st){

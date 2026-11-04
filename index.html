@@ -6696,6 +6696,7 @@ function hostRehearse(){
   const favs={};qs.forEach(q=>favs[q.id]=cands[Math.floor(rr()*cands.length)]);
   voters.forEach(v=>{res[v]={};qs.forEach(q=>{let a=rr()<.6?favs[q.id]:cands[Math.floor(rr()*cands.length)];if(a===v)a=cands[(cands.indexOf(a)+1)%cands.length];res[v][q.id]=a})});
   const g=buildGame({questions:qs,candidates:cands,responses:res,settings:(slCfg()&&slCfg().settings)||(HOST.cfg&&HOST.cfg.settings)||{},seed});
+  [[7,5],[7,6],[7,5]].forEach((v,i)=>{const r=g.rounds[i];if(!r)return;const w=r.winningSide,l=w==='heads'?'tails':'heads';r[w+'Votes']=v[0];r[l+'Votes']=v[1]});
   HOST.build.reh={g,texts:Object.fromEntries(qs.map(q=>[q.id,q.text]))};
 }
 function hostRoundList(g,texts){
@@ -6774,10 +6775,9 @@ function slHostRemote(){
    +hostProgress(st,info)
    +'<button class="pl-btn solid" data-act="hr-cmd" data-c="next" style="margin-top:3cqw;padding:7cqw 3cqw;font-size:4.4cqw">'+GC.nextLabel(st)+'</button>'
    +'<div class="pl-row" style="margin-top:2.4cqw">'+mk('back','Back')+mk('pause',st.paused?'Resume':'Pause')+'</div>'
-   +(st.screen==='champion'?'<button class="pl-btn solid" data-act="hr-again" style="margin-top:2.4cqw;padding:5cqw 3cqw;font-size:4.2cqw">Play again: everyone back in, next question</button>':'')
    +hostRoster(st)
    +'<div class="pl-small" style="margin-top:4cqw">More</div><div class="pl-stat" style="grid-template-columns:repeat(2,1fr)">'
-   +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to fire'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
+   +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','results|Full results','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to fire'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
    +'</div>'+hostStartButtons(st);
 }
 function hostProgress(st,info){
