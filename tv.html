@@ -72,6 +72,14 @@ body.sd .banner{display:block}
 #confetti{position:absolute;inset:0;pointer-events:none;z-index:2}
 .champ .av{border-color:var(--gold);border-width:1vmin}
 .rslide{max-width:84vw}
+#roster{position:absolute;inset:0;pointer-events:none;display:none;z-index:1}
+#roster.on{display:block}
+#roster .col{position:absolute;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;width:17vmin}
+#roster .col.l{left:2.5vmin}#roster .col.r{right:2.5vmin}
+#roster .pl{display:flex;flex-direction:column;align-items:center;text-align:center}
+#roster .pl span{font-family:var(--serif);font-weight:600;line-height:1.1;margin-top:.3vmin}
+#roster .cnt{position:absolute;left:50%;bottom:2.4vmin;transform:translateX(-50%);font:500 2.4vmin var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
+.qbig,.qtop{max-width:68vw!important}
 #paused{position:fixed;right:3vmin;top:3vmin;background:rgba(0,0,0,.6);border:.3vmin solid var(--gold);color:var(--gold);font:700 2.6vmin var(--sans);letter-spacing:.3em;padding:1vmin 2.6vmin;border-radius:5vmin;display:none;z-index:9}
 body.paused #paused{display:block}
 #water{position:fixed;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:8;font:700 18vmin var(--sans);letter-spacing:.3em;color:rgba(212,179,106,.1);transform:rotate(-14deg)}
@@ -89,6 +97,7 @@ body.noaudio #tap{display:block}
 <body class="noaudio">
 <div id="stage">
   <div class="banner">Sudden death</div>
+  <div id="roster"></div>
 
   <section class="sc" id="s-idle"><div class="snow" id="snow"></div>
     <div class="small">Coming up after mains</div>
@@ -268,10 +277,19 @@ function runResults(){
   show();slideTimer=setInterval(show,5200);
 }
 /* ---------- render ---------- */
+function drawRoster(){
+  const el=$('#roster'),show=['question','faces','countdown','reveal','out','everywrong'].includes(S.screen),left=GC.left(S);
+  if(!show||!(S.players||[]).length){el.className='';return}
+  el.className='on';
+  const half=Math.ceil(left.length/2),per=Math.max(half,1),slot=Math.min(24,86/per),sz=slot*.64,fs=Math.max(2.3,slot*.2);
+  const col=(arr,c)=>'<div class="col '+c+'" style="gap:'+(slot*.08)+'vmin">'+arr.map(n=>'<div class="pl">'+av(n,sz)+'<span style="font-size:'+fs+'vmin">'+esc(n)+'</span></div>').join('')+'</div>';
+  el.innerHTML=col(left.slice(0,half),'l')+col(left.slice(half),'r')+'<div class="cnt">'+left.length+' still in</div>';
+}
 function render(){
   const sc=S.screen;
   document.body.classList.toggle('paused',!!S.paused);document.body.classList.toggle('reh',S.mode==='rehearsal');document.body.classList.toggle('sd',!!S.sd&&['question','faces','countdown','reveal','out','everywrong'].includes(sc));
   $$('.sc').forEach(e=>e.classList.toggle('on',e.id==='s-'+sc));
+  drawRoster();
   const it=curItem();
   if(sc==='idle'){const st=[S.mode==='rehearsal'?'Rehearsal':'',CFG&&CFG.locked?'Locked':'',cached?'Offline ready':'',online?'Connected':'Offline'].filter(Boolean).join(' · ');$('#status').textContent=st}else $('#status').textContent='';
   if(sc==='question'&&it)$('#q-text').innerHTML='<small>Round '+(S.k==='r'&&!S.sd?S.n:'')+(S.sd?'Sudden death':'')+'</small>Who’s most likely to '+esc(qText(it))+'?';

@@ -6751,7 +6751,7 @@ async function hostStartMode(mode){
     await window.__saveRehearsal({hp:HOST_PIN,rounds:r.g.rounds,spares:r.g.spares,questions:r.texts,summary:r.g.summary,updated:Date.now()});
     window.__rehearsal={rounds:r.g.rounds,spares:r.g.spares,questions:r.texts};
   }
-  const st=GC.init(mode);st.seq=((window.__gstate&&window.__gstate.seq)||0)+1;window.__gstate=st;
+  let st=GC.init(mode);st.seq=((window.__gstate&&window.__gstate.seq)||0)+1;st.players=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n));window.__gstate=st;
   await window.__saveState(st);slGo('host');
 }
 function slHostRemote(){
@@ -6772,9 +6772,19 @@ function slHostRemote(){
    +'<div class="pl-card hot" style="text-align:center"><div class="pl-small">On the TV now</div><div class="pl-ttl" style="font-size:7cqw;margin-top:1.4cqw">'+GC.screenName(st)+'</div><div class="pl-note" style="margin-top:1cqw">'+(rn?rn+' · ':'')+spareLeft+' spare'+(spareLeft===1?'':'s')+' left'+(st.paused?' · PAUSED':'')+'</div></div>'
    +'<button class="pl-btn solid" data-act="hr-cmd" data-c="next" style="margin-top:3cqw;padding:7cqw 3cqw;font-size:4.4cqw">'+GC.nextLabel(st)+'</button>'
    +'<div class="pl-row" style="margin-top:2.4cqw">'+mk('back','Back')+mk('pause',st.paused?'Resume':'Pause')+'</div>'
+   +hostRoster(st)
    +'<div class="pl-small" style="margin-top:4cqw">More</div><div class="pl-stat" style="grid-template-columns:repeat(2,1fr)">'
    +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to fire'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
    +'</div>'+hostStartButtons(st);
+}
+function hostRoster(st){
+  const pl=st.players||[];if(!pl.length)return '';
+  const left=GC.left(st);
+  let h='<div class="pl-small" style="margin-top:4cqw">Still playing: '+left.length+' of '+pl.length+' (tap anyone who is out)</div><div class="pl-faces" style="margin-top:2cqw">'
+   +pl.map(n=>{const o=(st.out||[]).includes(n);return '<button class="pl-face" type="button" data-act="hr-tog" data-n="'+n+'" style="'+(o?'opacity:.3;filter:grayscale(1)':'')+'">'+slAv(n,'100%')+'<span>'+(o?'<s>'+n+'</s>':n)+'</span></button>'}).join('')+'</div>';
+  if(left.length===1)h+='<button class="pl-btn solid" data-act="hr-win" data-n="'+left[0]+'" style="margin-top:3cqw;padding:5cqw 3cqw;font-size:4.2cqw">'+left[0]+' wins! Go to the winner page</button>';
+  else if(left.length===0)h+='<div class="pl-note" style="margin-top:2cqw">Everyone is out. Tap someone to put them back in.</div>';
+  return h;
 }
 function hostStartButtons(st){
   const m=HOST.build&&HOST.build.meta,lk=!!HOST.cfg.locked;
@@ -6783,7 +6793,8 @@ function hostStartButtons(st){
 document.addEventListener('click',e=>{
   const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;
   if(a==='hr-cmd')hostSend(t.dataset.c);
-  else if(a==='hr-pick')hostSend('pick',t.dataset.n);
+  else if(a==='hr-pick'||a==='hr-win')hostSend('pick',t.dataset.n);
+  else if(a==='hr-tog')hostSend('toggle',t.dataset.n);
   else if(a==='hr-reh'){hostStartMode('rehearsal')}
   else if(a==='hr-real'){hostStartMode('real')}
   else if(a==='hs-sw'){const k=t.dataset.k;HOST.cfg.settings=HOST.cfg.settings||{};HOST.cfg.settings[k]=!hostSet(HOST.cfg,k);hostSave();slGo('host')}
