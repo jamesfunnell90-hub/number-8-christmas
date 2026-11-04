@@ -6599,8 +6599,8 @@ function slHostDates(){
   return '<div class="pl-note" style="margin-top:2cqw">When the survey opens and closes. Voting stops at the closing time.</div><div class="pl-card"><div class="pl-small">Opens</div><input class="pl-in" id="plOpen" type="datetime-local" value="'+hostToLocal(c.opens)+'" style="margin-top:1.6cqw"><div class="pl-small" style="margin-top:3cqw">Closes</div><input class="pl-in" id="plClose" type="datetime-local" value="'+hostToLocal(c.closes)+'" style="margin-top:1.6cqw"><div class="pl-saved" id="plSaved" style="margin-top:2cqw">'+HOST.saved+'</div><div class="pl-row" style="margin-top:1cqw"><button class="pl-btn" data-act="hd-real">Set 1 to 20 December</button></div></div>';
 }
 function slHost(){
-  const tabs=[['over','Overview'],['q','Questions'],['g','Guests'],['d','Dates']].map(([k,l])=>'<button class="'+(HOST.tab===k?'on':'')+'" data-act="htab" data-t="'+k+'">'+l+'</button>').join('');
-  const body=HOST.tab==='q'?slHostQuestions():HOST.tab==='g'?slHostGuests():HOST.tab==='d'?slHostDates():slHostOverview();
+  const tabs=[['over','Overview'],['q','Questions'],['g','Guests'],['d','Dates'],['b','Build']].map(([k,l])=>'<button class="'+(HOST.tab===k?'on':'')+'" data-act="htab" data-t="'+k+'">'+l+'</button>').join('');
+  const body=HOST.tab==='q'?slHostQuestions():HOST.tab==='g'?slHostGuests():HOST.tab==='d'?slHostDates():HOST.tab==='b'?slHostBuild():slHostOverview();
   return '<div class="pl-row" style="justify-content:space-between"><div><div class="pl-small">Santa Shortlist</div><h2>Host</h2></div><button class="pl-btn ghost" style="width:auto" data-act="hub">Close</button></div><div class="pl-tabs">'+tabs+'</div>'+body;
 }
 function slHostCopy(){
@@ -6633,6 +6633,98 @@ document.addEventListener('change',e=>{
   const t=e.target;if(!HOST.cfg)return;
   if(t.id==='plOpen'||t.id==='plClose'){const v=new Date(t.value).getTime();if(!isNaN(v)){if(t.id==='plOpen')HOST.cfg.opens=v;else HOST.cfg.closes=v;hostSave()}}
 });
+
+/* ---------- the game builder (same code as survey/build-core.js; used for Rehearsal) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const DEFAULT_SETTINGS={minResponses:5,maxAppearances:3,targetRounds:10,maxSameSideStreak:3};
+function buildGame({questions,candidates,responses,settings,seed}){
+  const S=Object.assign({},DEFAULT_SETTINGS,settings||{});
+  seed=(seed===undefined||seed===null)?Math.floor(Math.random()*2147483647):seed;
+  const rng=mulberry32(seed),pick=a=>a[Math.floor(rng()*a.length)];
+  const cands=candidates.slice().sort();
+  const pairs=[],unusable={few:0,tie:0};
+  for(const q of questions){
+    const votes={};cands.forEach(n=>votes[n]=0);let total=0;
+    Object.keys(responses).sort().forEach(v=>{const a=responses[v]&&responses[v][q.id];if(a===null||a===undefined)return;total++;if(a in votes)votes[a]++});
+    if(total<S.minResponses){unusable.few++;continue}
+    const ranked=cands.slice().sort((x,y)=>votes[y]-votes[x]||(x<y?-1:1));
+    if(ranked.length<2){unusable.few++;continue}
+    const top=ranked[0];
+    if(votes[ranked[1]]===votes[top]){unusable.tie++;continue}
+    const secondCount=votes[ranked[1]],seconds=cands.filter(n=>n!==top&&votes[n]===secondCount),runner=pick(seconds);
+    pairs.push({qid:q.id,last:!!q.last,top,runner,topVotes:votes[top],runnerVotes:votes[runner],margin:(votes[top]-votes[runner])/total,spareOnly:votes[runner]===0});
+  }
+  // main run: easiest to hardest, any pinned-last question moved to the end
+  const main=pairs.filter(p=>!p.spareOnly&&!p.last).sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1));
+  const pinned=pairs.find(p=>p.last);
+  const count={},chosen=[],skipped=[];
+  const ok=(p,prev,noBack)=>(count[p.top]||0)<S.maxAppearances&&(count[p.runner]||0)<S.maxAppearances&&!(noBack&&prev&&(prev.top===p.top||prev.top===p.runner||prev.runner===p.top||prev.runner===p.runner));
+  const take=p=>{chosen.push(p);count[p.top]=(count[p.top]||0)+1;count[p.runner]=(count[p.runner]||0)+1};
+  const room=()=>S.targetRounds-(pinned?1:0);
+  for(const p of main){if(chosen.length>=room())break;if(ok(p,chosen[chosen.length-1],true))take(p);else skipped.push(p)}
+  // retry the skipped ones, relaxing no-back-to-back before the appearance cap
+  for(const p of skipped.slice()){if(chosen.length>=room())break;if(ok(p,null,false)){take(p);skipped.splice(skipped.indexOf(p),1)}}
+  chosen.sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1));
+  if(pinned&&(count[pinned.top]||0)<S.maxAppearances&&(count[pinned.runner]||0)<S.maxAppearances&&!pinned.spareOnly)chosen.push(pinned);
+  // Heads or Tails
+  const wins=[];
+  const assign=(p,isSpare,useStreak)=>{
+    let side=rng()<.5?'heads':'tails';
+    if(useStreak){const n=S.maxSameSideStreak,last=wins.slice(-n);if(last.length===n&&last.every(s=>s===last[0]))side=last[0]==='heads'?'tails':'heads';wins.push(side)}
+    const other=side==='heads'?'tails':'heads',r={qid:p.qid,isSpare,marginPct:Math.round(p.margin*1000)/10,winningSide:side};
+    r[side+'Guest']=p.top;r[other+'Guest']=p.runner;r[side+'Votes']=p.topVotes;r[other+'Votes']=p.runnerVotes;
+    return r;
+  };
+  const rounds=chosen.map((p,i)=>Object.assign({roundNo:i+1},assign(p,false,true)));
+  const used=new Set(chosen.map(p=>p.qid));
+  const spares=pairs.filter(p=>!used.has(p.qid)).sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1)).map(p=>assign(p,true,false));
+  const featured=new Set();rounds.forEach(r=>{featured.add(r.headsGuest);featured.add(r.tailsGuest)});
+  const summary={questionsUsable:pairs.length,skippedFewVotes:unusable.few,skippedTie:unusable.tie,rounds:rounds.length,spares:spares.length,peopleNotFeatured:cands.filter(n=>!featured.has(n)).length,
+    warning:rounds.length<S.targetRounds?('Only '+rounds.length+' rounds available'):''};
+  return {rounds,spares,summary,seed,settings:S};
+}
+
+
+/* ---------- host: Build tab ---------- */
+HOST.build={meta:null,loaded:false,reh:null,reveal:null,confirm:false,busy:false};
+function hostBuildLoad(){
+  if(HOST.build.loaded)return;HOST.build.loaded=true;
+  fetch('game-meta.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(j=>{HOST.build.meta=j;if(HOST.tab==='b'&&sl.screen==='host')slGo('host')}).catch(()=>{});
+}
+const FAKE_NAMES=['Alex','Bea','Chris','Dana','Eli','Faye','Gus','Hana','Ian','Jo','Kit','Lou','Max','Nell'];
+function hostRehearse(){
+  const qs=slQs().map(q=>({id:q.id,text:q.text,last:!!q.last})),voters=FAKE_NAMES.slice(0,13),cands=FAKE_NAMES.slice();
+  let seed=Math.floor(Math.random()*1e9),rr=mulberry32(seed),res={};
+  const favs={};qs.forEach(q=>favs[q.id]=cands[Math.floor(rr()*cands.length)]);
+  voters.forEach(v=>{res[v]={};qs.forEach(q=>{let a=rr()<.6?favs[q.id]:cands[Math.floor(rr()*cands.length)];if(a===v)a=cands[(cands.indexOf(a)+1)%cands.length];res[v][q.id]=a})});
+  const g=buildGame({questions:qs,candidates:cands,responses:res,settings:{},seed});
+  HOST.build.reh={g,texts:Object.fromEntries(qs.map(q=>[q.id,q.text]))};
+}
+function hostRoundList(g,texts){
+  const row=(r,spare)=>'<li style="align-items:flex-start;flex-direction:column;gap:1cqw"><div class="pl-note" style="font-size:2.7cqw;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)">'+(spare?'Spare':'Round '+r.roundNo)+'</div><div style="font-size:3.3cqw">Who’s most likely to '+hostEsc(texts[r.qid]||r.qid)+'?</div><div class="pl-note"><b style="color:var(--gold);font-weight:500">Heads</b> '+r.headsGuest+' ('+r.headsVotes+') · <b style="color:#c9d1d3;font-weight:500">Tails</b> '+r.tailsGuest+' ('+r.tailsVotes+') · '+r.winningSide+' wins</div></li>';
+  return '<ul class="pl-list">'+g.rounds.map(r=>row(r,false)).join('')+g.spares.map(r=>row(r,true)).join('')+'</ul>';
+}
+function hostSummary(s){
+  return '<div class="pl-stat"><div><b>'+s.rounds+'</b><span>Rounds</span></div><div><b>'+s.spares+'</b><span>Spares</span></div><div><b>'+s.peopleNotFeatured+'</b><span>Not featured</span></div></div><div class="pl-note" style="margin-top:2cqw">'+s.questionsUsable+' questions usable · '+s.skippedFewVotes+' skipped for too few votes · '+s.skippedTie+' skipped for a tie for first'+(s.warning?'<br><span style="color:var(--berry)">'+s.warning+'. Sudden death will cover the end.</span>':'')+'</div>';
+}
+function slHostBuild(){
+  hostBuildLoad();const B=HOST.build,m=B.meta;
+  let real;
+  if(m){real='<div class="pl-card hot"><div class="pl-small">Real game</div><div class="pl-ttl" style="font-size:5.4cqw;margin-top:1cqw">Built</div><div class="pl-note">'+new Date(m.built).toLocaleString('en-GB',{day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'})+' · '+m.voters+' sealed ballots opened</div>'+hostSummary(m.summary)+'<div class="pl-note" style="margin-top:2cqw">You can’t see names, questions or results here, so you can play fairly.</div></div>';}
+  else real='<div class="pl-card"><div class="pl-small">Real game</div><div class="pl-ttl" style="font-size:5.4cqw;margin-top:1cqw">Not built yet</div><div class="pl-note">After the survey closes, the sealed votes are tallied on James’s Mac and the rounds are published. Nobody sees who voted for whom, and you stay blind.</div></div>';
+  const rh=B.reh?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Rehearsal · made-up guests</div>'+hostSummary(B.reh.g.summary)+'<div class="pl-note" style="margin-top:2cqw">This used your real questions with 14 pretend guests and random votes. It never touches real votes.</div><button class="pl-btn" style="margin-top:3cqw" data-act="hb-reh">Build another</button></div>'+hostRoundList(B.reh.g,B.reh.texts)):'<div class="pl-card"><div class="pl-small">Rehearsal</div><div class="pl-note" style="margin-top:1.4cqw">Try the whole build with 14 made-up guests and random votes, using your real questions. Nothing real is touched.</div><button class="pl-btn solid" style="margin-top:3cqw" data-act="hb-reh">Build a rehearsal game</button></div>';
+  let rev='';
+  if(m){rev=B.reveal?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Revealed</div><div class="pl-note">Real rounds, with vote counts. You have now seen the answers.</div></div>'+hostRoundList(B.reveal.g,B.reveal.texts)):(B.confirm?'<div class="pl-card" style="border-color:var(--berry)"><div class="pl-ttl" style="font-size:4.6cqw">Reveal everything?</div><div class="pl-note" style="margin-top:1.4cqw">You won’t be able to play fairly. This shows every round with the names and vote counts, for checking only.</div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="hb-reveal-go">Show me</button><button class="pl-btn ghost" data-act="hb-reveal-no" style="width:auto">Cancel</button></div></div>':'<div class="pl-hostlink"><button data-act="hb-reveal">Reveal everything (for checking only)</button></div>');}
+  return '<div class="pl-note" style="margin-top:2cqw">Build settings: '+DEFAULT_SETTINGS.targetRounds+' rounds, at least '+DEFAULT_SETTINGS.minResponses+' votes a question, nobody in more than '+DEFAULT_SETTINGS.maxAppearances+' rounds, no side wins more than '+DEFAULT_SETTINGS.maxSameSideStreak+' times in a row.</div>'+real+rh+rev;
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;if(a.indexOf('hb-')!==0)return;
+  if(a==='hb-reh'){hostRehearse();slGo('host')}
+  else if(a==='hb-reveal'){HOST.build.confirm=true;slGo('host')}
+  else if(a==='hb-reveal-no'){HOST.build.confirm=false;slGo('host')}
+  else if(a==='hb-reveal-go'){const m=HOST.build.meta;fetch(m.file,{cache:'no-store'}).then(r=>r.json()).then(j=>{HOST.build.reveal={g:j,texts:j.questions};HOST.build.confirm=false;slGo('host')}).catch(()=>{HOST.build.confirm=false;slGo('host')})}
+});
+
 
 
 /* ---------- tabs and entering the app */
