@@ -80,6 +80,23 @@ body.sd .banner{display:block}
 #roster .pl span{font-family:var(--serif);font-weight:600;line-height:1.1;margin-top:.3vmin}
 #roster .cnt{position:absolute;left:50%;bottom:2.4vmin;transform:translateX(-50%);font:500 2.4vmin var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--gold);white-space:nowrap}
 .qbig,.qtop{max-width:68vw!important}
+#out-grid .ttl{font:600 3vmin var(--sans);letter-spacing:.4em;text-transform:uppercase;color:var(--berry);margin-bottom:3vmin}
+#out-grid .rows{display:flex;flex-direction:column;align-items:center;gap:3vmin}
+#out-grid .row{display:flex;gap:2.4vmin;justify-content:center}
+#out-grid .t{position:relative;display:flex;flex-direction:column;align-items:center}
+#out-grid .t .nm{font-family:var(--serif);font-weight:600;line-height:1.1;margin-top:.6vmin}
+#out-grid .t.old{opacity:.55;filter:grayscale(.6)}
+#out-grid .t.old .x line{stroke:#e0332b}
+#out-grid .t.old .nm{text-decoration:line-through}
+#out-grid .x{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+#out-grid .x line{stroke:#e0332b;stroke-width:9;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;filter:drop-shadow(0 0 .6vmin rgba(0,0,0,.7))}
+#out-grid .t.old .x line,#out-grid .t.done .x line{stroke-dashoffset:0}
+#out-grid .t.fresh .x line{animation:draw .35s ease-out forwards;animation-delay:var(--d)}
+#out-grid .t.fresh .x line+line{animation-delay:calc(var(--d) + .22s)}
+#out-grid .t.fresh .av{animation:hit .5s ease-out;animation-delay:var(--d)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes hit{0%{transform:scale(1)}40%{transform:scale(1.12) rotate(-3deg)}100%{transform:scale(1)}}
+#out-grid .sub{font:500 3.4vmin var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-top:3.4vmin}
 #paused{position:fixed;right:3vmin;top:3vmin;background:rgba(0,0,0,.6);border:.3vmin solid var(--gold);color:var(--gold);font:700 2.6vmin var(--sans);letter-spacing:.3em;padding:1vmin 2.6vmin;border-radius:5vmin;display:none;z-index:9}
 body.paused #paused{display:block}
 #water{position:fixed;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none;z-index:8;font:700 18vmin var(--sans);letter-spacing:.3em;color:rgba(212,179,106,.1);transform:rotate(-14deg)}
@@ -145,14 +162,17 @@ body.noaudio #tap{display:block}
 
   <section class="sc" id="s-faces"><div class="qtop" id="f-q"></div><div class="pair" id="f-pair"></div></section>
 
-  <section class="sc" id="s-countdown"><div class="qtop" id="c-q"></div><div class="pair dim" id="c-pair"></div><div class="cdnum" id="c-num">15</div></section>
+  <section class="sc" id="s-countdown"><div class="qtop" id="c-q"></div><div class="pair dim" id="c-pair"></div><div class="cdnum" id="c-num">3</div></section>
 
   <section class="sc" id="s-reveal"><div class="qtop" id="r-q"></div><div class="pair" id="r-pair"></div><div class="verdict" id="r-verdict"></div></section>
 
   <section class="sc" id="s-out">
+    <div id="out-grid" style="display:none;width:100%"></div>
+    <div id="out-old">
     <div class="how" style="width:auto"><svg viewBox="0 0 100 100" style="width:36vmin;height:36vmin;stroke:var(--berry)"><circle cx="50" cy="22" r="10"/><path d="M50 32v28M50 44l-16 8M50 44l16 8M34 52l32-4M50 60l-12 26M50 60l12 26"/></svg></div>
     <div class="big" style="font-size:10vmin;margin-top:3vmin">Wrong?</div>
     <div class="big" style="font-size:6.6vmin;color:var(--gold);margin-top:1.6vmin">Arms folded, you’re out.</div>
+    </div>
   </section>
 
   <section class="sc" id="s-everywrong">
@@ -220,7 +240,7 @@ let cd={seq:-1,left:0,last:-1,done:false,t:0},rv={seq:-1,timers:[]};
 function runCountdown(){
   const it=curItem();if(!it)return;
   $('#c-q').innerHTML=qTopHtml(it);$('#c-pair').innerHTML=faceBlock(it,'c');
-  if(cd.seq!==S.cdSeq){cd={seq:S.cdSeq,left:setting('countdown',15),last:-1,done:false,t:performance.now()};$('#c-pair').classList.add('dim');$('#c-num').className='cdnum'}
+  if(cd.seq!==S.cdSeq){cd={seq:S.cdSeq,left:setting('countdown',3),last:-1,done:false,t:performance.now()};$('#c-pair').classList.add('dim');$('#c-num').className='cdnum'}
 }
 setInterval(()=>{
   const now=performance.now(),dt=(now-cd.t)/1000;cd.t=now;
@@ -277,8 +297,25 @@ function runResults(){
   show();slideTimer=setInterval(show,5200);
 }
 /* ---------- render ---------- */
+let outKey='';
+function drawOut(){
+  const g=$('#out-grid'),old=$('#out-old'),pl=S.players||[];
+  if(S.screen!=='out'){outKey='';return}
+  if(!pl.length){g.style.display='none';old.style.display='';return}
+  const key=S.seq+'|'+(S.fresh||[]).join()+'|'+(S.crossed||[]).join();
+  if(key===outKey)return;outKey=key;
+  g.style.display='block';old.style.display='none';
+  const rows=pl.length>7?2:1,cols=Math.ceil(pl.length/rows),sz=Math.min(24,150/cols),fs=Math.max(2.6,sz*.17);
+  const fresh=S.fresh||[],crossed=S.crossed||[];let k=0,html='<div class="ttl">Wrong guessers are out</div><div class="rows">';
+  const tile=n=>{const isF=fresh.includes(n),isO=crossed.includes(n)&&!isF,d=isF?(1.1+(k++)*1.15):0;
+    return '<div class="t '+(isO?'old':isF?'fresh':'')+'" style="--d:'+d+'s">'+av(n,sz)+'<div class="nm" style="font-size:'+fs+'vmin">'+esc(n)+'</div>'+(isO||isF?'<svg class="x" viewBox="0 0 100 100" style="width:'+sz+'vmin;height:'+sz+'vmin"><line x1="14" y1="14" x2="86" y2="86" pathLength="100"/><line x1="86" y1="14" x2="14" y2="86" pathLength="100"/></svg>':'')+'</div>'};
+  for(let r=0;r<rows;r++)html+='<div class="row">'+pl.slice(r*cols,(r+1)*cols).map(tile).join('')+'</div>';
+  html+='</div><div class="sub">'+(fresh.length?'':'Nobody out this round · ')+(pl.length-crossed.length)+' still in</div>';
+  g.innerHTML=html;
+  fresh.forEach((n,i)=>setTimeout(()=>{if(outKey===key){tone(110,.4,'sine',.5,0,45);noise(.25,.35,0,700)}},(1.1+i*1.15)*1000+250));
+}
 function drawRoster(){
-  const el=$('#roster'),show=['question','faces','countdown','reveal','out','everywrong'].includes(S.screen),left=GC.left(S);
+  const el=$('#roster'),show=['question','faces','countdown','reveal','everywrong'].includes(S.screen),left=(S.players||[]).filter(n=>!(S.crossed||[]).includes(n));
   if(!show||!(S.players||[]).length){el.className='';return}
   el.className='on';
   const half=Math.ceil(left.length/2),per=Math.max(half,1),slot=Math.min(24,86/per),sz=slot*.64,fs=Math.max(2.3,slot*.2);
@@ -289,7 +326,7 @@ function render(){
   const sc=S.screen;
   document.body.classList.toggle('paused',!!S.paused);document.body.classList.toggle('reh',S.mode==='rehearsal');document.body.classList.toggle('sd',!!S.sd&&['question','faces','countdown','reveal','out','everywrong'].includes(sc));
   $$('.sc').forEach(e=>e.classList.toggle('on',e.id==='s-'+sc));
-  drawRoster();
+  drawRoster();drawOut();
   const it=curItem();
   if(sc==='idle'){const st=[S.mode==='rehearsal'?'Rehearsal':'',CFG&&CFG.locked?'Locked':'',cached?'Offline ready':'',online?'Connected':'Offline'].filter(Boolean).join(' · ');$('#status').textContent=st}else $('#status').textContent='';
   if(sc==='question'&&it)$('#q-text').innerHTML='<small>Round '+(S.k==='r'&&!S.sd?S.n:'')+(S.sd?'Sudden death':'')+'</small>Who’s most likely to '+esc(qText(it))+'?';
@@ -354,7 +391,7 @@ $('#snow').innerHTML=Array.from({length:50},()=>'<i style="left:'+Math.random()*
 if('serviceWorker' in navigator&&!DEMO)navigator.serviceWorker.register('sw.js').catch(()=>{});
 if(DEMO){
   /* a tiny made-up game so the screens can be checked on their own: add ?demo to the address */
-  DATA={rounds:[{roundNo:1,qid:'a',headsGuest:'Colin',tailsGuest:'Eileen',headsVotes:7,tailsVotes:3,winningSide:'heads'},{roundNo:2,qid:'b',headsGuest:'Lana',tailsGuest:'Oliver',headsVotes:2,tailsVotes:6,winningSide:'tails'}],spares:[{qid:'c',headsGuest:'Sue',tailsGuest:'Andy',headsVotes:5,tailsVotes:4,winningSide:'heads'}],questions:{a:'ask for seconds',b:'fall asleep on the sofa',c:'be on Father Christmas’s naughty list'},settings:{countdown:15,drumroll:3}};
+  DATA={rounds:[{roundNo:1,qid:'a',headsGuest:'Colin',tailsGuest:'Eileen',headsVotes:7,tailsVotes:3,winningSide:'heads'},{roundNo:2,qid:'b',headsGuest:'Lana',tailsGuest:'Oliver',headsVotes:2,tailsVotes:6,winningSide:'tails'}],spares:[{qid:'c',headsGuest:'Sue',tailsGuest:'Andy',headsVotes:5,tailsVotes:4,winningSide:'heads'}],questions:{a:'ask for seconds',b:'fall asleep on the sofa',c:'be on Father Christmas’s naughty list'},settings:{countdown:3,drumroll:3}};
   window.__tv={command,get S(){return S},apply};
   render();
 }else{
