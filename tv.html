@@ -382,7 +382,7 @@ function drawOut(){
   if(key===outKey)return;outKey=key;
   g.style.display='block';old.style.display='none';
   const rows=pl.length>7?2:1,cols=Math.ceil(pl.length/rows),sz=Math.min(24,150/cols),fs=Math.max(2.6,sz*.17);
-  const fresh=S.fresh||[],crossed=S.crossed||[],step=Math.min(1.15,6/Math.max(1,(S.fresh||[]).length));let k=0,k0=0,html='<div class="ttl">Wrong guessers are out</div><div class="rows">';
+  const fresh=S.fresh||[],crossed=S.crossed||[],step=Math.min(1.15,6/Math.max(1,(S.fresh||[]).length));let k=0,k0=0,html='<div class="ttl">Who survived?</div><div class="rows">';
   const tile=n=>{const isF=fresh.includes(n),isO=crossed.includes(n)&&!isF,d=isF?(1.1+(k++)*step):0;
     return '<div class="t '+(isO?'old':isF?'fresh':'')+'" data-n="'+esc(n)+'" style="--d:'+d+'s">'+av(n,sz)+'<div class="nm" style="font-size:'+fs+'vmin">'+esc(n)+'</div>'+(isO||isF?crossSvg(sz,'o'+(k0++),n.length*131+n.charCodeAt(0)*17+n.charCodeAt(n.length-1)):'')+'</div>'};
   for(let r=0;r<rows;r++)html+='<div class="row">'+pl.slice(r*cols,(r+1)*cols).map(tile).join('')+'</div>';
@@ -390,7 +390,7 @@ function drawOut(){
   g.innerHTML=html;
   const still=pl.filter(n=>!crossed.includes(n));
   if(still.length===1&&pl.length>1)setTimeout(()=>finalSeq(still[0],key),(1.1+fresh.length*step+(fresh.length?1.7:.8))*1000);
-  fresh.forEach((n,i)=>setTimeout(()=>{if(outKey===key){tone(110,.4,'sine',.5,0,45);noise(.25,.35,0,700)}},(1.1+i*step)*1000+250));
+  fresh.forEach((n,i)=>{const at=(1.1+i*step)*1000;setTimeout(()=>{if(outKey===key){tone(125,.32,'sine',.5,0,50);noise(.2,.3,0,800,'lowpass');noise(.05,.2,0,2400,'highpass')}},at+80);setTimeout(()=>{if(outKey===key){tone(92,.6,'sine',.7,0,36);noise(.3,.4,0,520,'lowpass');noise(.06,.22,0,1800,'highpass')}},at+330)});
 }
 function drawRoster(){
   const el=$('#roster'),show=['question','faces','countdown','reveal','everywrong'].includes(S.screen),left=(S.players||[]).filter(n=>!(S.crossed||[]).includes(n));
