@@ -6644,7 +6644,7 @@ document.addEventListener('change',e=>{
 
 /* ---------- the game builder (same code as survey/build-core.js; used for Rehearsal) ---------- */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const DEFAULT_SETTINGS={minResponses:5,maxAppearances:3,targetRounds:14,maxSameSideStreak:3,noBackToBack:true,easyToHard:true,countdown:3,drumroll:1,fullResults:true};
+const DEFAULT_SETTINGS={minResponses:5,minAppearances:2,targetRounds:14,maxSameSideStreak:3,noBackToBack:true,easyToHard:true,countdown:3,drumroll:1,fullResults:true};
 function buildGame({questions,candidates,responses,settings,seed}){
   const S=Object.assign({},DEFAULT_SETTINGS,settings||{});
   seed=(seed===undefined||seed===null)?Math.floor(Math.random()*2147483647):seed;
@@ -6659,21 +6659,36 @@ function buildGame({questions,candidates,responses,settings,seed}){
     if(ranked.length<2){unusable.few++;continue}
     const top=ranked[0];
     if(votes[ranked[1]]===votes[top]){unusable.tie++;continue}
+    // the most picked person always wins. The other face is normally second place, but may be a lower-placed person (up to fifth) so that everyone gets enough rounds
     const secondCount=votes[ranked[1]],seconds=cands.filter(n=>n!==top&&votes[n]===secondCount),runner=pick(seconds);
-    pairs.push({qid:q.id,last:!!q.last,top,runner,topVotes:votes[top],runnerVotes:votes[runner],margin:(votes[top]-votes[runner])/total,spareOnly:votes[runner]===0});
+    const opts=ranked.slice(1,5).filter(n=>votes[n]>0&&votes[n]<votes[top]).map(n=>({name:n,votes:votes[n],cost:(secondCount-votes[n])/total}));
+    pairs.push({qid:q.id,last:!!q.last,top,runner,topVotes:votes[top],runnerVotes:votes[runner],total,secondCount,opts,margin:(votes[top]-votes[runner])/total,spareOnly:votes[runner]===0});
   }
-  // main run: easiest to hardest, any pinned-last question moved to the end
-  const main=pairs.filter(p=>!p.spareOnly&&!p.last).sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1));
-  const pinned=pairs.find(p=>p.last);
-  const count={},chosen=[],skipped=[];
-  const ok=(p,prev,noBack)=>(count[p.top]||0)<S.maxAppearances&&(count[p.runner]||0)<S.maxAppearances&&!(noBack&&prev&&(prev.top===p.top||prev.top===p.runner||prev.runner===p.top||prev.runner===p.runner));
-  const take=p=>{chosen.push(p);count[p.top]=(count[p.top]||0)+1;count[p.runner]=(count[p.runner]||0)+1};
-  const room=()=>S.targetRounds-(pinned?1:0);
-  for(const p of main){if(chosen.length>=room())break;if(ok(p,chosen[chosen.length-1],true))take(p);else skipped.push(p)}
-  // retry the skipped ones, relaxing no-back-to-back before the appearance cap
-  for(const p of skipped.slice()){if(chosen.length>=room())break;if(ok(p,null,false)){take(p);skipped.splice(skipped.indexOf(p),1)}}
-  chosen.sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1));
-  if(pinned&&(count[pinned.top]||0)<S.maxAppearances&&(count[pinned.runner]||0)<S.maxAppearances&&!pinned.spareOnly)chosen.push(pinned);
+  const byMargin=(a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1);
+  const setRunner=(p,o)=>{p.runner=o.name;p.runnerVotes=o.votes;p.margin=(p.topVotes-o.votes)/p.total};
+  let main=pairs.filter(p=>!p.spareOnly&&!p.last);if(S.easyToHard)main=main.sort(byMargin);
+  const pinned=pairs.find(p=>p.last&&!p.spareOnly);
+  const room=S.targetRounds-(pinned?1:0);
+  let chosen=main.slice(0,Math.max(0,room));
+  // give everyone at least minAppearances rounds where it can be done: score = people-rounds counted up to the minimum, minus a small cost for dropping down the ranking
+  const slots=()=>chosen.concat(pinned?[pinned]:[]);
+  const score=(list)=>{const c={};list.forEach(p=>{c[p.top]=(c[p.top]||0)+1;c[p.runner]=(c[p.runner]||0)+1});let s=0;cands.forEach(n=>s+=Math.min(c[n]||0,S.minAppearances)*1000);list.forEach(p=>{const o=p.opts.find(x=>x.name===p.runner);s-=o?o.cost:0});return s};
+  if(S.minAppearances>0){
+    for(let pass=0;pass<40;pass++){
+      let changed=false;
+      for(const p of slots()){
+        let best=score(slots()),bo=null;const keep=p.runner;
+        for(const o of p.opts){if(o.name===p.runner)continue;const was={r:p.runner,v:p.runnerVotes,m:p.margin};setRunner(p,o);const sc=score(slots());p.runner=was.r;p.runnerVotes=was.v;p.margin=was.m;if(sc>best+1e-9){best=sc;bo=o}}
+        if(bo){setRunner(p,bo);changed=true}
+      }
+      if(!changed)break;
+    }
+  }
+  let chosenOrdered=chosen.slice();
+  if(S.easyToHard)chosenOrdered.sort(byMargin);
+  if(S.noBackToBack){const share=(a,b)=>a.top===b.top||a.top===b.runner||a.runner===b.top||a.runner===b.runner;
+    for(let i=1;i<chosenOrdered.length;i++)if(share(chosenOrdered[i-1],chosenOrdered[i])){for(let j=i+1;j<Math.min(chosenOrdered.length,i+4);j++){if(!share(chosenOrdered[i-1],chosenOrdered[j])&&Math.abs(chosenOrdered[j].margin-chosenOrdered[i].margin)<.09){const t=chosenOrdered[i];chosenOrdered[i]=chosenOrdered[j];chosenOrdered[j]=t;break}}}}
+  if(pinned)chosenOrdered.push(pinned);
   // Heads or Tails
   const wins=[];
   const assign=(p,isSpare,useStreak)=>{
@@ -6683,11 +6698,11 @@ function buildGame({questions,candidates,responses,settings,seed}){
     r[side+'Guest']=p.top;r[other+'Guest']=p.runner;r[side+'Votes']=p.topVotes;r[other+'Votes']=p.runnerVotes;
     return r;
   };
-  const rounds=chosen.map((p,i)=>Object.assign({roundNo:i+1},assign(p,false,true)));
-  const used=new Set(chosen.map(p=>p.qid));
+  const rounds=chosenOrdered.map((p,i)=>Object.assign({roundNo:i+1},assign(p,false,true)));
+  const used=new Set(chosenOrdered.map(p=>p.qid));
   const spares=pairs.filter(p=>!used.has(p.qid)).sort((a,b)=>b.margin-a.margin||(a.qid<b.qid?-1:1)).map(p=>assign(p,true,false));
-  const featured=new Set();rounds.forEach(r=>{featured.add(r.headsGuest);featured.add(r.tailsGuest)});
-  const summary={questionsUsable:pairs.length,skippedFewVotes:unusable.few,skippedTie:unusable.tie,rounds:rounds.length,spares:spares.length,peopleNotFeatured:cands.filter(n=>!featured.has(n)).length,
+  const cnt={};rounds.forEach(r=>{[r.headsGuest,r.tailsGuest].forEach(n=>cnt[n]=(cnt[n]||0)+1)});
+  const summary={questionsUsable:pairs.length,skippedFewVotes:unusable.few,skippedTie:unusable.tie,rounds:rounds.length,spares:spares.length,peopleNotFeatured:cands.filter(n=>!cnt[n]).length,peopleBelowMinimum:cands.filter(n=>(cnt[n]||0)<S.minAppearances).length,
     warning:rounds.length<S.targetRounds?('Only '+rounds.length+' rounds available'):''};
   return {rounds,spares,summary,seed,settings:S};
 }
@@ -6714,7 +6729,7 @@ function hostRoundList(g,texts){
   return '<ul class="pl-list">'+g.rounds.map(r=>row(r,false)).join('')+g.spares.map(r=>row(r,true)).join('')+'</ul>';
 }
 function hostSummary(s){
-  return '<div class="pl-stat"><div><b>'+s.rounds+'</b><span>Rounds</span></div><div><b>'+s.spares+'</b><span>Spares</span></div><div><b>'+s.peopleNotFeatured+'</b><span>Not featured</span></div></div><div class="pl-note" style="margin-top:2cqw">'+s.questionsUsable+' questions usable · '+s.skippedFewVotes+' skipped for too few votes · '+s.skippedTie+' skipped for a tie for first'+(s.warning?'<br><span style="color:var(--berry)">'+s.warning+'. Sudden death will cover the end.</span>':'')+'</div>';
+  return '<div class="pl-stat" style="grid-template-columns:repeat(4,1fr)"><div><b>'+s.rounds+'</b><span>Rounds</span></div><div><b>'+s.spares+'</b><span>Spares</span></div><div><b>'+s.peopleNotFeatured+'</b><span>Not featured</span></div><div><b>'+(s.peopleBelowMinimum===undefined?'-':s.peopleBelowMinimum)+'</b><span>Under minimum</span></div></div><div class="pl-note" style="margin-top:2cqw">'+s.questionsUsable+' questions usable · '+s.skippedFewVotes+' skipped for too few votes · '+s.skippedTie+' skipped for a tie for first'+(s.warning?'<br><span style="color:var(--berry)">'+s.warning+'. Sudden death will cover the end.</span>':'')+'</div>';
 }
 function slHostBuild(){
   hostBuildLoad();const B=HOST.build,m=B.meta;
@@ -6724,7 +6739,7 @@ function slHostBuild(){
   const rh=B.reh?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Rehearsal · made-up guests</div>'+hostSummary(B.reh.g.summary)+'<div class="pl-note" style="margin-top:2cqw">This used your real questions with 14 pretend guests and random votes. It never touches real votes.</div><button class="pl-btn" style="margin-top:3cqw" data-act="hb-reh">Build another</button></div>'+hostRoundList(B.reh.g,B.reh.texts)):'<div class="pl-card"><div class="pl-small">Rehearsal</div><div class="pl-note" style="margin-top:1.4cqw">Try the whole build with 14 made-up guests and random votes, using your real questions. Nothing real is touched.</div><button class="pl-btn solid" style="margin-top:3cqw" data-act="hb-reh">Build a rehearsal game</button></div>';
   let rev='';
   if(m){rev=B.reveal?('<div class="pl-card"><div class="pl-small" style="color:var(--berry)">Revealed</div><div class="pl-note">Real rounds, with vote counts. You have now seen the answers.</div></div>'+hostRoundList(B.reveal.g,B.reveal.texts)):(B.confirm?'<div class="pl-card" style="border-color:var(--berry)"><div class="pl-ttl" style="font-size:4.6cqw">Reveal everything?</div><div class="pl-note" style="margin-top:1.4cqw">You won’t be able to play fairly. This shows every round with the names and vote counts, for checking only.</div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="hb-reveal-go">Show me</button><button class="pl-btn ghost" data-act="hb-reveal-no" style="width:auto">Cancel</button></div></div>':'<div class="pl-hostlink"><button data-act="hb-reveal">Reveal everything (for checking only)</button></div>');}
-  return '<div class="pl-note" style="margin-top:2cqw">Build settings: '+hostSet(HOST.cfg,'targetRounds')+' rounds, at least '+hostSet(HOST.cfg,'minResponses')+' votes a question, nobody in more than '+hostSet(HOST.cfg,'maxAppearances')+' rounds, no side wins more than '+hostSet(HOST.cfg,'maxSameSideStreak')+' times in a row, '+hostSet(HOST.cfg,'countdown')+' seconds to answer. Change them in Settings.</div>'+real+rh+rev;
+  return '<div class="pl-note" style="margin-top:2cqw">Build settings: '+hostSet(HOST.cfg,'targetRounds')+' rounds, at least '+hostSet(HOST.cfg,'minResponses')+' votes a question, everyone in at least '+hostSet(HOST.cfg,'minAppearances')+' rounds if possible, no side wins more than '+hostSet(HOST.cfg,'maxSameSideStreak')+' times in a row, '+hostSet(HOST.cfg,'countdown')+' seconds to answer. Change them in Settings.</div>'+real+rh+rev;
 }
 document.addEventListener('click',e=>{
   const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;if(a.indexOf('hb-')!==0)return;
@@ -6735,7 +6750,7 @@ document.addEventListener('click',e=>{
 });
 
 /* ---------- host: Settings tab, Remote tab and Lock ---------- */
-const SET_FIELDS=[['countdown','Countdown (3, 2, 1) length in seconds',1,120,'Counts down once you press Start the countdown. Default 3, so it runs 3, 2, 1.'],['drumroll','Pause before the votes count up (seconds)',0,10,'A short drumroll, then the votes tick up one at a time.'],['targetRounds','Rounds in the main run',1,20,''],['minResponses','Fewest votes a question needs',1,13,''],['maxAppearances','Most rounds one person can be in',1,10,''],['maxSameSideStreak','Most times one side can win in a row',1,10,'']];
+const SET_FIELDS=[['countdown','Countdown (3, 2, 1) length in seconds',1,120,'Counts down once you press Start the countdown. Default 3, so it runs 3, 2, 1.'],['drumroll','Pause before the votes count up (seconds)',0,10,'A short drumroll, then the votes tick up one at a time.'],['targetRounds','Rounds in the main run',1,20,''],['minResponses','Fewest votes a question needs',1,13,''],['minAppearances','Fewest rounds each person is in',0,5,'Everyone is placed in at least this many rounds where it can be done. There is no upper limit: the most picked person always wins their round, and the other face can be a lower-placed person to make up the numbers.'],['maxSameSideStreak','Most times one side can win in a row',1,10,'']];
 const SET_SWITCHES=[['noBackToBack','Never the same person in two rounds running'],['easyToHard','Order rounds from easy to close'],['fullResults','Show the full results slideshow at the end']];
 function hostSet(c,k){const v=c.settings&&c.settings[k];return v===undefined?DEFAULT_SETTINGS[k]:v}
 function slHostDates(){
@@ -6787,7 +6802,7 @@ function slHostRemote(){
    +'<div class="pl-row" style="margin-top:2.4cqw">'+mk('back','Back')+mk('pause',st.paused?'Resume':'Pause')+'</div>'
    +hostRoster(st)
    +'<div class="pl-small" style="margin-top:4cqw">More</div><div class="pl-stat" style="grid-template-columns:repeat(2,1fr)">'
-   +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','results|Full results','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to fire'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
+   +['skip|Skip round','everywrong|Everyone wrong','suddendeath|Sudden death','flip|Coin flip','rules|Show rules','winner|Winner','results|Full results','mute|'+(st.muted?'Unmute':'Mute'),'exit|Exit to the start'].map(x=>{const [c,l]=x.split('|');return '<button class="pl-btn" data-act="hr-cmd" data-c="'+c+'" style="padding:3.4cqw 1cqw">'+l+'</button>'}).join('')
    +'</div>'+hostStartButtons(st);
 }
 function hostProgress(st,info){

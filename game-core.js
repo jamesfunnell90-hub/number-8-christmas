@@ -65,7 +65,7 @@
       case 'rules':s.ret=sc;s.screen='howto';break;
       case 'winner':s.ret='';s.screen='pick';break;
       case 'pick':s.champion=arg||'';s.screen='champion';break;
-      case 'exit':s.screen='idle';s.paused=false;break;
+      case 'exit':{const f=GC.init(s.mode);f.seq=s.seq;f.players=s.players||[];f.muted=s.muted;return f}
       default:return st;
     }
     return s;
