@@ -20,6 +20,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+html,body,button,input,a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 64px}
 .wrap{max-width:900px;margin:0 auto}
@@ -45,11 +46,11 @@ h1{font-size:clamp(32px,5vw,46px);line-height:1.05;margin:8px 0 10px}
 
 /* the house, cropped to drop the garage: viewBox x 100..830 of 1000 */
 .house{position:absolute;left:0;right:0;top:42cqw;overflow:hidden;perspective:900px}
-.hs{position:relative;width:100%;padding-bottom:93.15%}
+.hs{position:relative;width:100%;padding-bottom:85.00%}
 .hs svg{position:absolute;display:block;max-width:none}
 .hs .main{left:0;top:0;width:100%;height:100%}
-.hs .leafsvg{left:41.26%;top:66.84%;width:8.52%;height:21.18%}
-.door{position:absolute;left:41.26%;top:66.84%;width:8.52%;height:21.18%}
+.hs .leafsvg{left:46.11%;top:66.84%;width:7.78%;height:21.18%}
+.door{position:absolute;left:46.11%;top:66.84%;width:7.78%;height:21.18%}
 .door .light{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,#ffe9b0,#f2b84b 55%,#c4782a);opacity:0;transition:opacity .5s}
 .leafsvg{transform-origin:1% 50%;transition:transform 1s cubic-bezier(.5,0,.2,1)}
 .fade{position:absolute;inset:0;background:linear-gradient(rgba(16,41,31,0) 0,rgba(16,41,31,0) 61%,var(--panel2) 76%);pointer-events:none}
@@ -154,7 +155,9 @@ body{padding:0!important;overflow:hidden}
 #app .gamelink{position:absolute;left:0;right:0;bottom:3.4cqw;z-index:3;display:flex;justify-content:center;align-items:center;gap:7px;background:none;border:0;color:var(--gold);font:500 3.1cqw var(--sans);letter-spacing:.2em;text-transform:uppercase;padding:6px;cursor:pointer;text-shadow:0 1px 6px rgba(10,24,18,.9)}
 #app .gamelink svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
 #app .gamelink span{border-bottom:1px solid rgba(212,179,106,.5);padding-bottom:1px}
-#app #cv{position:absolute;inset:0;width:100%;height:100%;display:none;touch-action:manipulation;z-index:2}
+#app #cv{position:absolute;inset:0;width:100%;height:100%;display:none;touch-action:none;z-index:2}
+#app .hero,#app .hero *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+#app .hero #cv{-webkit-user-drag:none}
 #app .hero.game #cv{display:block}
 #app .hud{position:absolute;z-index:4;left:12px;right:12px;top:10px;display:none;justify-content:space-between;align-items:center;pointer-events:none}
 #app .hero.game .hud{display:flex}
@@ -267,7 +270,7 @@ body{padding:0!important;overflow:hidden}
   <div class="phone"><div class="screen" id="scr">
     <div class="scene" id="scene">
       <div class="lk"><div class="a">FUNNELL’S</div><div class="b">CHRISTMAS SPECTACULAR</div><div class="d">Christmas Day</div><div class="y"><i></i><span>MMXXVI</span><i></i></div></div>
-      <div class="house"><div class="hs"><svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="80 0 730 680" class="main" aria-hidden="true">
+      <div class="house"><div class="hs"><svg preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" viewBox="12.3 0 800 680" class="main" aria-hidden="true">
 <defs><style>
   .ink,.gold,.soft{fill:none;stroke-linecap:round;stroke-linejoin:round}
   .ink{stroke:#f1e7cc} .gold{stroke:#d4b36a} .soft{stroke:#2c5440}
@@ -6011,10 +6014,9 @@ body{padding:0!important;overflow:hidden}
         <ul class="tl" id="tl"></ul>
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
-    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
+    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
   <button class="on" data-v="welcome"><svg viewBox="0 0 16 16"><path d="M2 8l6-5 6 5v6H2zM6.5 14v-4h3v4"/></svg>Welcome</button>
   <button data-v="menu"><svg viewBox="0 0 16 16"><path d="M3 2v12M3 2c3-1 5 1 9 0v7c-4 1-6-1-9 0"/></svg>Menu</button>
-  <button data-v="drinks"><svg viewBox="0 0 16 16"><path d="M4 2h8l-1 5a3 3 0 0 1-6 0zM8 10v4M5 14h6"/></svg>Drinks</button>
   <button data-v="table"><svg viewBox="0 0 16 16"><circle cx="5" cy="6" r="2"/><circle cx="11" cy="6" r="2"/><path d="M2 13c0-3 6-3 6 0M8 13c0-3 6-3 6 0"/></svg>Table</button>
   <button data-v="santa"><svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="7"/><path d="M2 7h12M8 7v7M8 7C6 2 3 3 4 5c.5 1 3 2 4 2zM8 7c2-5 5-4 4-2-.5 1-3 2-4 2z"/></svg>Santa</button>
   <button data-v="play"><svg viewBox="0 0 16 16"><path d="M8 2l2 4 4 .5-3 3 .8 4.5L8 12l-3.8 2 .8-4.5-3-3L6 6z"/></svg>Play</button>
@@ -6434,7 +6436,8 @@ function slHub(){
   const lbRows=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)).slice(0,5);
   const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map((r,i)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
   const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div>'+lb+'</div>';
-  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+photo+sleigh+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
+  const quiz='<div class="pl-card"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-note">Live at the table on Christmas Day. Tap here to get your practice in before the big day.</div></div><span class="pl-pill">Soon</span></div></div>';
+  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
   const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
@@ -6872,6 +6875,8 @@ function paintBring(){
 let inApp=false;
 function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();slLoadLocal();slRender();render(new Date());scr.classList.add('app')}
 document.getElementById('welcome').addEventListener('click',enterApp);
+document.querySelector('#app .hero').addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>{if(e.target&&e.target.closest&&e.target.closest('#app .hero'))e.preventDefault()});
 </script>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
