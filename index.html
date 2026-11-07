@@ -6011,13 +6011,14 @@ body{padding:0!important;overflow:hidden}
         <ul class="tl" id="tl"></ul>
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
-    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
+    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="drinks"><h2>Drinks</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section><section class="view pl" data-v="hostv"><div class="pl-pg" id="hoBody"></div></section></div><nav class="apptabs" id="apptabs">
   <button class="on" data-v="welcome"><svg viewBox="0 0 16 16"><path d="M2 8l6-5 6 5v6H2zM6.5 14v-4h3v4"/></svg>Welcome</button>
   <button data-v="menu"><svg viewBox="0 0 16 16"><path d="M3 2v12M3 2c3-1 5 1 9 0v7c-4 1-6-1-9 0"/></svg>Menu</button>
   <button data-v="drinks"><svg viewBox="0 0 16 16"><path d="M4 2h8l-1 5a3 3 0 0 1-6 0zM8 10v4M5 14h6"/></svg>Drinks</button>
   <button data-v="table"><svg viewBox="0 0 16 16"><circle cx="5" cy="6" r="2"/><circle cx="11" cy="6" r="2"/><path d="M2 13c0-3 6-3 6 0M8 13c0-3 6-3 6 0"/></svg>Table</button>
   <button data-v="santa"><svg viewBox="0 0 16 16"><rect x="2" y="7" width="12" height="7"/><path d="M2 7h12M8 7v7M8 7C6 2 3 3 4 5c.5 1 3 2 4 2zM8 7c2-5 5-4 4-2-.5 1-3 2-4 2z"/></svg>Santa</button>
   <button data-v="play"><svg viewBox="0 0 16 16"><path d="M8 2l2 4 4 .5-3 3 .8 4.5L8 12l-3.8 2 .8-4.5-3-3L6 6z"/></svg>Play</button>
+  <button data-v="hostv" id="hostTab" style="display:none"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14c0-3 2-4.500 5-4.500s5 1.500 5 4.500M8 1v1"/></svg>Host</button>
 </nav></div>
   </div></div>
 </div>
@@ -6429,8 +6430,8 @@ function slHub(){
     const label=st.done?'Change my votes':(st.n?'Carry on voting':'Start voting');
     card='<div class="pl-card hot">'+head+'<div class="pl-note" style="margin-top:3cqw">Vote on who is most likely to do '+slN()+' silly things. Results are revealed at the dinner table.</div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-pill">Closes '+slDayShort(slLast())+'</span><span class="pl-note">'+(st.done?'Done':(st.n?'Partly done · '+st.n+' of '+slN():'Not started'))+'</span></div><div class="pl-bar"><i style="width:'+Math.round((st.done?slN():st.n)/Math.max(1,slN())*100)+'%"></i></div><button class="pl-btn solid" style="margin-top:3.4cqw" data-act="'+(st.done?'review':'intro')+'">'+label+'</button></div>';
   }
-  const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the game</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
-    :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the game</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
+  const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the games and around the app</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
+    :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the games and around the app</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
   const lbRows=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)).slice(0,5);
   const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map((r,i)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
   const sleigh='<div class="pl-card" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div><div class="pl-ttl" style="font-size:4.8cqw">Sleigh dash</div><div class="pl-note">The rooftop game</div></div><span class="pl-pill">Play</span></div>'+lb+'</div>';
@@ -6453,7 +6454,7 @@ function slDone(){
   return '<div class="pl-center">'+slAv(slMe(),'24cqw')+'<h2 style="margin-top:5cqw">Thanks, '+slMe()+'</h2><div class="pl-sub" style="font-size:4.6cqw">Your votes are in</div><div class="pl-card" style="text-align:left;margin-top:5cqw"><div class="pl-note">You can change them until <b style="color:var(--ink);font-weight:500">'+slDay(slLast())+'</b>. After that, voting closes and nobody can see their answers again.</div></div><button class="pl-btn" style="margin-top:5cqw" data-act="review">Change my votes</button><button class="pl-btn ghost" style="margin-top:1cqw" data-act="hub">Back to games</button></div>';
 }
 function slCropScreen(){
-  return '<div class="pl-small">Your photo</div><h2>Move and zoom</h2><div class="pl-sub">Drag to move, pinch to zoom</div><div class="pl-crop" id="plStage"></div><input class="pl-slider" id="plZoom" type="range" min="0" max="1000" value="0" aria-label="Zoom"><div class="pl-err" id="plErr">'+(sl.err||'')+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:34%" data-act="cancelcrop">Cancel</button><button class="pl-btn solid" data-act="savecrop">'+(sl.busy?'Saving…':'Save')+'</button></div>';
+  return '<div class="pl-small">'+(sl.cropFor&&sl.cropFor!==slMe()?sl.cropFor+"’s photo":'Your photo')+'</div><h2>Move and zoom</h2><div class="pl-sub">Drag to move, pinch to zoom</div><div class="pl-crop" id="plStage"></div><input class="pl-slider" id="plZoom" type="range" min="0" max="1000" value="0" aria-label="Zoom"><div class="pl-err" id="plErr">'+(sl.err||'')+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:34%" data-act="cancelcrop">Cancel</button><button class="pl-btn solid" data-act="savecrop">'+(sl.busy?'Saving…':'Save')+'</button></div>';
 }
 function slRender(soft){
   const el=document.getElementById('plBody');if(!el||!window.GUEST)return;
@@ -6476,7 +6477,7 @@ function slLoadImage(file){
     const m=1024,k=Math.min(1,m/Math.max(img.naturalWidth,img.naturalHeight)),cv=document.createElement('canvas');
     cv.width=Math.round(img.naturalWidth*k);cv.height=Math.round(img.naturalHeight*k);
     cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);
-    sl.crop={cv,iw:cv.width,ih:cv.height};sl.err='';sl.busy=false;slGo('crop');
+    sl.crop={cv,iw:cv.width,ih:cv.height};sl.err='';sl.busy=false;if(ho.active)hoRender();else slGo('crop');
   };
   img.onerror=()=>{URL.revokeObjectURL(url);alert('Sorry, that photo would not open. Try another one.')};
   img.src=url;
@@ -6526,9 +6527,9 @@ async function slCropSave(){
   const url=slCropOutput();
   try{
     if(!window.__savePhoto)throw new Error('offline');
-    await window.__savePhoto(slMe(),url);
-    window.__photos=window.__photos||{};window.__photos[slMe()]=url;
-    sl.busy=false;sl.crop=null;slGo('hub');
+    const who=sl.cropFor||slMe();await window.__savePhoto(who,url);
+    window.__photos=window.__photos||{};window.__photos[who]=url;
+    sl.busy=false;sl.crop=null;sl.cropFor=null;if(ho.active){ho.active=false;hoRender()}else slGo('hub');
   }catch(e){sl.busy=false;sl.err='That did not save. Check your connection and try again.';const b=document.querySelector('#plBody [data-act=savecrop]'),m=document.getElementById('plErr');if(b)b.textContent='Save';if(m)m.textContent=sl.err}
 }
 /* ---- clicks ---- */
@@ -6545,8 +6546,8 @@ document.addEventListener('click',e=>{
   else if(a==='next'){slNext()}
   else if(a==='back'){if(sl.fromReview)slGo('review');else if(sl.qi>0){sl.qi--;slGo('q')}else slGo('intro')}
   else if(a==='submit'){sl.submitted=true;slSave(true);slGo('done')}
-  else if(a==='photo')slPick();
-  else if(a==='cancelcrop'){sl.crop=null;slGo('hub')}
+  else if(a==='photo'){sl.cropFor=null;slPick()}
+  else if(a==='cancelcrop'){sl.crop=null;sl.cropFor=null;slGo('hub')}
   else if(a==='savecrop'){const b=t;b.textContent='Saving…';slCropSave()}
   else if(a==='rmphoto'){if(window.__removePhoto){window.__removePhoto(slMe());if(window.__photos)delete window.__photos[slMe()];slRender()}}
   else if(a==='sleigh'){document.querySelector('#apptabs [data-v=welcome]').click();setTimeout(()=>{const g=document.getElementById('gamelink');if(g)g.click()},300)}
@@ -6555,7 +6556,34 @@ function slNext(){
   if(sl.fromReview){slGo('review');return}
   if(sl.qi<slN()-1){sl.qi++;slGo('q')}else slGo('review');
 }
-window.addEventListener('sl-data',()=>{if(inApp)slRender(true)});
+/* ---- Host tab: photos for everyone (host PIN) ---- */
+const HO_GUESTS=SL_CANDS.concat(['Cooper']);
+let ho={pin:false,err:'',active:false};
+function hoRender(){
+  const el=document.getElementById('hoBody');if(!el||!window.GUEST)return;
+  let h;
+  if(!ho.pin){
+    h='<div class="pl-small">Host</div><h2>Host PIN</h2><div class="pl-sub">Enter the host PIN to open the host controls</div><div class="pl-card"><input class="pl-in" id="hoHp" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="PIN" style="text-align:center;font-size:6cqw;letter-spacing:.4em"><div class="pl-err">'+ho.err+'</div><button class="pl-btn solid" style="margin-top:3cqw" data-act="hogo">Open</button></div>';
+  }else if(ho.active&&sl.crop){
+    h=slCropScreen();
+  }else{
+    h='<div class="pl-small">Host</div><h2>Guest photos</h2><div class="pl-sub">Add a photo for anyone. They can change or remove theirs on the Play tab.</div><ul class="pl-list">'
+     +HO_GUESTS.map(n=>{const has=!!(window.__photos&&window.__photos[n]);return '<li>'+slAv(n,'11cqw')+'<span class="nm">'+n+'</span><button class="pl-chip" data-act="hoadd" data-n="'+n+'" style="cursor:pointer;background:none">'+(has?'Change':'Add')+'</button>'+(has?'<button class="pl-chip" data-act="horm" data-n="'+n+'" style="cursor:pointer;background:none">Remove</button>':'')+'</li>'}).join('')
+     +'</ul><div class="pl-foot"><button class="pl-btn ghost" data-act="holock">Lock host tab</button></div>';
+  }
+  const top=el.scrollTop;el.innerHTML=h;el.scrollTop=top;
+  if(ho.pin&&ho.active&&sl.crop)slCropInit();
+}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('#hoBody [data-act]');if(!t)return;const a=t.dataset.act;
+  if(a==='hogo'){const v=(document.getElementById('hoHp')||{}).value;if(v===HOST_PIN){ho.pin=true;ho.err=''}else ho.err='That PIN did not work.';hoRender()}
+  else if(a==='holock'){ho.pin=false;ho.active=false;hoRender()}
+  else if(a==='hoadd'){sl.cropFor=t.dataset.n;ho.active=true;slPick()}
+  else if(a==='horm'){if(window.__removePhoto){window.__removePhoto(t.dataset.n);if(window.__photos)delete window.__photos[t.dataset.n];hoRender()}}
+  else if(a==='cancelcrop'){sl.crop=null;sl.cropFor=null;ho.active=false;hoRender()}
+  else if(a==='savecrop'){t.textContent='Saving…';slCropSave()}
+});
+window.addEventListener('sl-data',()=>{if(inApp){slRender(true);if(ho.pin&&!(ho.active&&sl.crop))hoRender()}});
 /* ---------- host tools: questions, guests, dates and who has voted. Behind the host PIN. ---------- */
 const HOST_PIN='2026',APP_URL='https://jamesfunnell90-hub.github.io/number-8-christmas/';
 let HOST={tab:'over',cfg:null,saved:'',pinErr:'',confirmDel:''};
@@ -6851,6 +6879,7 @@ document.addEventListener('change',e=>{
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.v==='play'){slLoadLocal();sl.screen='hub';slRender()}
+  if(b.dataset.v==='hostv'){ho.active=false;hoRender()}
   if(b.dataset.v!=='santa'&&(saOpenName||saBusy)){saOpenName=null;saBusy=false;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
   document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
@@ -6865,7 +6894,7 @@ function paintBring(){
   document.getElementById('bring').innerHTML=items.map((x,i)=>'<b'+(i>0?' class="b2"':'')+'>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>').join('');
 }
 let inApp=false;
-function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();slLoadLocal();slRender();render(new Date());scr.classList.add('app')}
+function enterApp(){if(inApp||!window.GUEST)return;inApp=true;if(window.GUEST==='James')document.getElementById('hostTab').style.display='';paintBring();renderSanta();slLoadLocal();slRender();render(new Date());scr.classList.add('app')}
 document.getElementById('welcome').addEventListener('click',enterApp);
 </script>
 <script type="module">
