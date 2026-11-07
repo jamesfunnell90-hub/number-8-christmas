@@ -6586,7 +6586,7 @@ function qzCats(){
       if(!x||!x.q||!Array.isArray(x.options)||x.options.length<2)return null;
       let ai=typeof x.answer==='number'?x.answer:QZ_L.indexOf(String(x.answer||'').trim().toUpperCase());
       if(ai<0||ai>=x.options.length)return null;
-      return {id:x.id||('c'+(ci+1)+'q'+(qi+1)),cat:nm,q:x.q,options:x.options,ai};
+      return {id:x.id||('c'+(ci+1)+'q'+(qi+1)),cat:nm,q:x.q,options:x.options,ai,expl:x.explanation||''};
     }).filter(Boolean)};
   });
 }
@@ -6614,7 +6614,7 @@ function qzStart(){
   const st=qzMe(),items=[];
   qzCats().forEach(c=>{const av=c.qs.filter(x=>!st.seen.includes(x.id));if(av.length)items.push(av[Math.floor(Math.random()*av.length)])});
   if(!items.length){QZ.run=null;qzSaveRun();return false}
-  QZ.run={items:items.map(x=>({id:x.id,cat:x.cat,q:x.q,options:x.options,ai:x.ai,picked:null})),i:0,score:0};
+  QZ.run={items:items.map(x=>({id:x.id,cat:x.cat,q:x.q,options:x.options,ai:x.ai,expl:x.expl||'',picked:null})),i:0,score:0};
   QZ.sel=null;QZ.reveal=false;qzSaveRun();return true;
 }
 function qzBoards(){
@@ -6647,11 +6647,11 @@ function qzQuestion(){
     else if(QZ.sel===k)c+=' sel';
     return '<button class="'+c+'" type="button" data-act="qzopt" data-k="'+k+'"'+(QZ.reveal?' disabled':'')+'><b>'+QZ_L[k]+'</b><span>'+String(o).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></button>';
   }).join('');
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const right=QZ.reveal&&it.picked===it.ai;
-  const fb=QZ.reveal?'<div class="pl-ttl" style="font-size:5.6cqw;margin:1cqw 0 0;color:'+(right?'#8fd19a':'var(--berry)')+'">'+(right?'Correct!':'Not quite.')+'</div>'+(right?'':'<div class="pl-note">The answer was '+QZ_L[it.ai]+'.</div>'):'';
+  const fb=QZ.reveal?'<div class="pl-ttl" style="font-size:5.6cqw;margin:1cqw 0 0;color:'+(right?'#8fd19a':'var(--berry)')+'">'+(right?'Correct!':'Not quite.')+'</div>'+'<div class="pl-note" style="margin-top:1cqw">'+esc(it.expl||('The answer was '+QZ_L[it.ai]+'.'))+'</div>':'';
   const last=r.i>=n-1;
   const foot=QZ.reveal?'<button class="pl-btn solid" data-act="qznext">'+(last?'See my score':'Next question')+'</button>':'<button class="pl-btn solid" data-act="qzconfirm"'+(QZ.sel===null?' disabled':'')+'>Confirm</button>';
-  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">Question '+(r.i+1)+' of '+n+'</span><span class="pl-pill">'+esc(it.cat)+'</span></div><div class="qz-q">'+esc(it.q)+'</div>'+opts+fb+'<div class="pl-foot">'+foot+'</div>';
 }
 function qzResult(){
