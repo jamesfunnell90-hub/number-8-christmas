@@ -6664,7 +6664,7 @@ function qzQuestion(){
   const it=r.items[r.i],n=r.items.length;
   const opts=it.options.map((o,k)=>{
     let c='qz-o';
-    if(QZ.reveal){if(k===it.ai)c+=' right';else if(k===it.picked)c+=' wrong';else c+=' dim'}
+    if(QZ.reveal){if(k===it.ai)c+=' right';else if(k===it.picked)c+=' wrong';else return ''}
     else if(QZ.sel===k)c+=' sel';
     return '<button class="'+c+'" type="button" data-act="qzopt" data-k="'+k+'"'+(QZ.reveal?' disabled':'')+'><b>'+QZ_L[k]+'</b><span>'+String(o).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></button>';
   }).join('');
