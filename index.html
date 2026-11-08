@@ -6613,6 +6613,7 @@ function slNext(){
   if(sl.qi<slN()-1){sl.qi++;slGo('q')}else slGo('review');
 }
 /* ---- Auntie Sue's quiz: 9 categories, one random unseen question from each, score drives the leaderboard ---- */
+try{if(localStorage.getItem('qz_epoch')!=='2'){Object.keys(localStorage).filter(k=>/^qz_(stats|run)_/.test(k)).forEach(k=>localStorage.removeItem(k));localStorage.setItem('qz_epoch','2')}}catch(e){}
 let QZ={bank:null,run:null,sel:null,reveal:false};
 fetch('quiz.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{QZ.bank=j;if(typeof inApp!=='undefined'&&inApp)slRender(true)}).catch(()=>{QZ.bank={categories:[]}});
 const QZ_L='ABCDEF';
