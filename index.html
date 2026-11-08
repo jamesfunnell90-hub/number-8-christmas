@@ -223,6 +223,25 @@ body{padding:0!important;overflow:hidden}
 #app .qz-o.wrong b{background:var(--berry);color:#fff;border-color:var(--berry)}
 #app .qz-o.dim{opacity:.55}
 #app .qz-res{font-family:var(--serif);font-weight:600;font-size:6.4cqw;margin:2cqw 0 0}
+#app .qz-hero{position:relative;text-align:center;border:1px solid var(--gold-deep);border-radius:14px;padding:3.6cqw 4cqw 3.4cqw;margin-top:2.4cqw;background:radial-gradient(circle at 50% 0%,#2f6a52 0%,#1d4636 48%,#17382b 100%);box-shadow:0 1.4cqw 3.6cqw rgba(0,0,0,.32)}
+#app .qz-ring{position:relative;width:34cqw;height:34cqw;margin:0 auto}
+#app .qz-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+#app .qz-ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#app .qz-ring .t b{font:600 11cqw/1 var(--serif);color:var(--gold)}
+#app .qz-ring .t span{font-size:3.2cqw;letter-spacing:.2em;color:var(--dim);margin-top:1cqw}
+#app .qz-hd{font-family:var(--serif);font-weight:600;font-size:6.4cqw;line-height:1.1;margin-top:2.4cqw}
+#app .qz-dots{display:flex;justify-content:center;gap:1.8cqw;margin-top:2.6cqw}
+#app .qz-dots i{width:5.4cqw;height:5.4cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;font:600 3cqw var(--sans);font-style:normal}
+#app .qz-dots i.y{background:#6fae7a;color:#10291f}
+#app .qz-dots i.n{background:var(--berry);color:#fff}
+#app .qz-ins{border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:3.6cqw 4cqw;margin-top:3cqw}
+#app .qz-ins .r{display:flex;gap:3cqw;align-items:flex-start;padding:1.4cqw 0}
+#app .qz-ins .r+.r{border-top:1px solid rgba(255,255,255,.07);margin-top:1cqw;padding-top:2.4cqw}
+#app .qz-ins .ic{flex:none;width:8cqw;height:8cqw;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:4cqw}
+#app .qz-ins .up .ic{background:rgba(111,174,122,.25);color:#8fd19a}
+#app .qz-ins .dn .ic{background:rgba(224,185,92,.2);color:var(--gold)}
+#app .qz-ins .tx{font-size:3.7cqw;line-height:1.35;color:var(--ink)}
+#app .qz-ins .tx b{font-weight:600;color:var(--gold)}
 #app .qz-big{font-family:var(--serif);font-weight:600;font-size:15cqw;color:var(--gold);line-height:1;margin:2cqw 0}
 #app .soon{align-items:center;justify-content:center;text-align:center;padding:0 12cqw}
 #app .soon h2{font-family:var(--serif);font-weight:600;font-size:9cqw;margin:0 0 6px}
@@ -6676,10 +6695,27 @@ function qzQuestion(){
   const pg='<div class="qz-pg">'+r.items.map((_,k)=>'<i class="'+(k<r.i||(k===r.i&&QZ.reveal)?'d':(k===r.i?'c':''))+'"></i>').join('')+'</div>';
   return '<div class="pl-small">Question '+(r.i+1)+' of '+n+'</div>'+pg+'<div class="qz-qc"><span class="qz-cat">'+esc(it.cat)+'</span><div class="qz-q">'+esc(it.q)+'</div></div>'+opts+fb+'<div class="pl-foot">'+foot+'</div>';
 }
+function qzInsight(){
+  const st=qzMe(),cats=qzCats(),wr=new Set(st.seen.filter(x=>String(x).indexOf('w:')===0).map(x=>x.slice(2)));
+  const rows=cats.map(c=>{const a=c.qs.filter(q=>st.seen.includes(q.id)).length,w=c.qs.filter(q=>wr.has(q.id)).length;return {name:c.name,a,p:a?Math.round((a-w)/a*100):0}}).filter(x=>x.a>=2);
+  if(rows.length<2)return '<div class="r"><div class="tx">Play a few more rounds and I’ll tell you where you’re shining and where to brush up.</div></div>';
+  rows.sort((x,y)=>y.p-x.p||y.a-x.a);
+  const top=rows[0],low=rows[rows.length-1],nm=x=>'<b>'+x.name+'</b>',out=[];
+  if(top.p>=70)out.push(['up','★',['You’re smashing '+nm(top)+' with '+top.p+'% right.','Top marks for '+nm(top)+' so far. '+top.p+'% and climbing!','Nobody’s catching you on '+nm(top)+' at '+top.p+'%.'][top.name.length%3]]);
+  else if(top.p>=50)out.push(['up','★',nm(top)+' is your best subject so far at '+top.p+'%.']);
+  else out.push(['up','★',nm(top)+' is your strongest at '+top.p+'%. Keep going, it gets easier!']);
+  if(low.name!==top.name&&low.p<top.p){out.push(['dn','!',low.p<50?['Training session: swot up on '+nm(low)+', only '+low.p+'% so far.','Extra training needed on '+nm(low)+'. It’s catching you out at '+low.p+'%.'][low.name.length%2]:'Training tip: a little more practice on '+nm(low)+' ('+low.p+'%).'])}
+  else if(top.p>=70)out.push(['up','✓','No weak spots yet. Training complete, Auntie Sue should be worried!']);
+  return out.map(o=>'<div class="r '+o[0]+'"><span class="ic">'+o[1]+'</span><div class="tx">'+o[2]+'</div></div>').join('');
+}
 function qzResult(){
-  const r=QZ.run,n=r?r.items.length:0,sc=r?r.score:0,p=n?Math.round(sc/n*100):0,st=qzMe(),rem=qzRemaining();
-  const again=rem>0?'<button class="pl-btn solid" data-act="qzstart">Play again</button>':'<div class="pl-note" style="color:var(--gold)">You’ve answered every question. Well done!</div>';
-  return '<div class="pl-small">Auntie Sue’s Christmas Quiz</div><h2>Your score</h2><div class="pl-card hot" style="text-align:center"><div class="qz-big">'+sc+' / '+n+'</div><div class="pl-ttl" style="font-size:7cqw">'+p+'%</div><div class="pl-note" style="margin-top:2cqw">Overall: '+(st.answered?Math.round(st.correct/st.answered*100):0)+'% across '+st.runs+(st.runs===1?' round':' rounds')+'</div></div><div class="pl-foot" style="flex-direction:column;align-items:stretch">'+again+'<button class="pl-btn ghost" data-act="qzhome">Leaderboard</button></div>';
+  const r=QZ.run,n=r?r.items.length:0,sc=r?r.score:0,p=n?Math.round(sc/n*100):0,rem=qzRemaining();
+  const again=rem>0?'<button class="pl-btn solid" data-act="qzstart">Play again</button>':'<div class="pl-note" style="color:var(--gold);text-align:center">You’ve answered every question. Well done!</div>';
+  const hd=p===100?'A perfect round!':p>=78?'Brilliant!':p>=56?'Nicely done!':p>=34?'Getting there!':'Good effort!';
+  const C=2*Math.PI*52,off=(C*(1-(n?sc/n:0))).toFixed(1);
+  const ring='<div class="qz-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/><circle cx="60" cy="60" r="52" fill="none" stroke="#e0b95c" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off+'"/></svg><div class="t"><b>'+sc+'/'+n+'</b><span>'+p+'%</span></div></div>';
+  const dots='<div class="qz-dots">'+(r?r.items.map(x=>'<i class="'+(x.picked===x.ai?'y':'n')+'">'+(x.picked===x.ai?'✓':'✗')+'</i>').join(''):'')+'</div>';
+  return '<div class="pl-small">Auntie Sue’s Christmas Quiz</div><div class="qz-hero">'+ring+'<div class="qz-hd">'+hd+'</div>'+dots+'</div><div class="qz-ins"><div class="pl-small" style="margin-bottom:1.4cqw">Player insights</div><div class="pl-ttl" style="font-size:5cqw;margin-bottom:1.6cqw">Your training programme</div>'+qzInsight()+'</div><div class="pl-foot" style="flex-direction:column;align-items:stretch">'+again+'<button class="pl-btn ghost" data-act="qzhome">Leaderboard</button></div>';
 }
 document.addEventListener('click',e=>{
   const t=e.target.closest('#plBody [data-act]');if(!t)return;const a=t.dataset.act;if(a.indexOf('qz')!==0)return;
@@ -6690,7 +6726,7 @@ document.addEventListener('click',e=>{
   else if(a==='qzconfirm'){
     if(QZ.sel===null||QZ.reveal||!QZ.run)return;
     const it=QZ.run.items[QZ.run.i];it.picked=QZ.sel;const ok=it.picked===it.ai;if(ok)QZ.run.score++;
-    const st=qzMe();if(!st.seen.includes(it.id))st.seen.push(it.id);st.answered++;if(ok)st.correct++;if(QZ.run.i>=QZ.run.items.length-1){st.runs++;const n=QZ.run.items.length,sc=QZ.run.score;if(!st.bestN||sc/n>st.best/st.bestN||(sc/n===st.best/st.bestN&&n>st.bestN)){st.best=sc;st.bestN=n}}qzSave(st);
+    const st=qzMe();if(!st.seen.includes(it.id))st.seen.push(it.id);if(!ok&&!st.seen.includes('w:'+it.id))st.seen.push('w:'+it.id);st.answered++;if(ok)st.correct++;if(QZ.run.i>=QZ.run.items.length-1){st.runs++;const n=QZ.run.items.length,sc=QZ.run.score;if(!st.bestN||sc/n>st.best/st.bestN||(sc/n===st.best/st.bestN&&n>st.bestN)){st.best=sc;st.bestN=n}}qzSave(st);
     QZ.reveal=true;qzSaveRun();slRender();
   }
   else if(a==='qznext'){
