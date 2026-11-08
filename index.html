@@ -194,10 +194,28 @@ body{padding:0!important;overflow:hidden}
 #app .view.on{display:flex}
 #app .top{padding-top:max(24px,calc(env(safe-area-inset-top,0px) + 12px))}
 #app .qz-n{display:block;font:400 2.4cqw var(--sans);letter-spacing:.04em;color:var(--dim);text-align:right;margin-top:.2cqw}
-#app .qz-q{font-family:var(--serif);font-weight:600;font-size:6cqw;line-height:1.2;margin:3cqw 0 4cqw}
-#app .qz-o{display:flex;align-items:center;gap:3cqw;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:3cqw;margin-bottom:2.4cqw;font:400 3.7cqw/1.25 var(--sans);cursor:pointer}
-#app .qz-o b{flex:none;width:7.5cqw;height:7.5cqw;border-radius:50%;border:1px solid var(--gold-deep);color:var(--gold);display:flex;align-items:center;justify-content:center;font:600 3.4cqw var(--sans)}
-#app .qz-o.sel{border-color:var(--gold);background:#1d4636}
+#app .qz-q{font-family:var(--serif);font-weight:600;font-size:6cqw;line-height:1.22;margin:0}
+#app .qz-qc{border:1px solid var(--gold-deep);background:linear-gradient(135deg,#235240,#17382b);border-radius:12px;padding:4cqw;margin:3cqw 0 4cqw;box-shadow:0 1.2cqw 3cqw rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.04)}
+#app .qz-qc .qz-cat{display:inline-block;font-size:2.7cqw;letter-spacing:.18em;text-transform:uppercase;color:#10291f;background:var(--gold);border-radius:20px;padding:.8cqw 2.8cqw;margin-bottom:2.6cqw;font-weight:600}
+#app .qz-pg{display:flex;gap:1.2cqw;margin-top:2.4cqw}
+#app .qz-pg i{flex:1;height:1.6cqw;border-radius:1cqw;background:rgba(255,255,255,.12)}
+#app .qz-pg i.d{background:var(--gold-deep)}
+#app .qz-pg i.c{background:var(--gold);box-shadow:0 0 2cqw rgba(224,185,92,.55)}
+#app .qz-fb{border-radius:12px;padding:3.4cqw 4cqw;margin-top:1cqw;border:1px solid}
+#app .qz-fb.ok{background:rgba(111,174,122,.16);border-color:#6fae7a}
+#app .qz-fb.no{background:rgba(190,80,70,.16);border-color:var(--berry)}
+#app .qz-2{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw;margin-top:3cqw}
+#app .qz-2>div{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:3cqw 2.4cqw;min-width:0}
+#app .qz-2.in>div{background:rgba(0,0,0,.14)}
+#app .qz-2 .pl-lbh{margin-top:0;padding-top:0;border:0;font-size:2.6cqw;letter-spacing:.2em}
+#app .qz-2 .pl-lb li{gap:1.6cqw;padding:1.3cqw 0}
+#app .qz-2 .pl-lb .rk{width:3cqw;font-size:3cqw}
+#app .qz-2 .pl-lb .nm{font-size:3.3cqw;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#app .qz-2 .pl-lb b{font-size:3.6cqw;text-align:right;line-height:1.05}
+#app .qz-2 .pl-lb .nm small{display:block;text-align:left;margin:0;font-size:2.2cqw;color:var(--dim);letter-spacing:.02em;line-height:1.2}
+#app .qz-o{display:flex;align-items:center;gap:3cqw;width:100%;text-align:left;border:1.5px solid var(--gold-deep);background:linear-gradient(135deg,#1d4636,#173a2d);color:var(--ink);border-radius:12px;padding:3.2cqw;margin-bottom:2.6cqw;font:500 3.9cqw/1.25 var(--sans);cursor:pointer;box-shadow:0 .8cqw 2cqw rgba(0,0,0,.25)}
+#app .qz-o b{flex:none;width:8.6cqw;height:8.6cqw;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font:600 4cqw var(--serif)}
+#app .qz-o.sel{border-color:var(--gold);background:linear-gradient(135deg,#2c5e48,#245140);box-shadow:0 0 0 1px var(--gold),0 0 3.4cqw rgba(224,185,92,.35)}
 #app .qz-o.sel b{background:var(--gold);color:#10291f}
 #app .qz-o.right{border-color:#6fae7a;background:#1f4a33}
 #app .qz-o.right b{background:#6fae7a;color:#10291f;border-color:#6fae7a}
@@ -6451,7 +6469,7 @@ function slHub(){
   const lbRows=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)).slice(0,5);
   const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map((r,i)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
   const sleigh='<div class="pl-card hot" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div class="pl-row">'+SLEIGH_ICON.replace('class="pl-ico"','style="width:23.500cqw;height:13.500cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Sleigh dash</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">How many presents can you deliver?</div></div></div></div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Tap to play</span></div>'+lb+'</div>';
-  const quizOn=qzReady(),quiz='<div class="pl-card"'+(quizOn?' data-act="qzopen" style="cursor:pointer"':'')+'><div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">To be presented on Christmas Day</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">Tap here to get your practice in.</span><span class="pl-pill">'+(quizOn?'Play':'Soon')+'</span></div></div>';
+  const quizOn=qzReady(),quiz='<div class="pl-card"'+(quizOn?' data-act="qzopen" style="cursor:pointer"':'')+'><div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">To be presented on Christmas Day</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">Tap here to get your practice in.</span><span class="pl-pill">'+(quizOn?'Play':'Soon')+'</span></div>'+(quizOn?qzCols(5,true):'')+'</div>';
   return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
@@ -6623,20 +6641,23 @@ function qzBoards(){
   const best=all.filter(x=>x.bn>0).sort((x,y)=>y.b/y.bn-x.b/x.bn||y.bn-x.bn||x.n.localeCompare(y.n));
   return {life,best};
 }
+function qzCols(n,inner){
+  const me=slMe(),B=qzBoards(),li=(r,i,v,sub)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'7cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+(sub?'<small class="qz-n">'+sub+'</small>':'')+'</span><b>'+v+'</b></li>',
+    none='<div class="pl-note" style="margin-top:1.4cqw">No scores yet</div>',
+    br=B.best.slice(0,n).map((r,i)=>li(r,i,r.b+'/'+r.bn)).join(''),
+    lr=B.life.slice(0,n).map((r,i)=>li(r,i,r.p+'%',r.a+' answered')).join('');
+  return '<div class="qz-2'+(inner?' in':'')+'"><div><div class="pl-lbh">Best round</div>'+(br?'<ol class="pl-lb">'+br+'</ol>':none)+'</div><div><div class="pl-lbh">Lifetime</div>'+(lr?'<ol class="pl-lb">'+lr+'</ol>':none)+'</div></div>';
+}
 function qzHome(){
   const me=slMe(),st=qzMe(),rem=qzRemaining(),pct=st.answered?Math.round(st.correct/st.answered*100):0,resume=qzLoadRun();
   const head='<div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">Practice round</div></div></div>';
-  const B=qzBoards(),li=(r,i,v)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span>'+v+'</li>',
-    bestRows=B.best.slice(0,10).map((r,i)=>li(r,i,'<b>'+r.b+' / '+r.bn+'</b>')).join(''),
-    lifeRows=B.life.slice(0,10).map((r,i)=>li(r,i,'<b>'+r.p+'%<small class="qz-n">'+r.a+' answered</small></b>')).join('');
   let btn;
   if(rem===0&&!resume)btn='<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">You’ve answered every question. Well done!</div>';
   else btn='<button class="pl-btn solid" style="margin-top:3.4cqw" data-act="qzstart">'+(resume?'Carry on':(st.runs?'Play again':'Play'))+'</button>';
   return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">Play</span><button class="pl-btn ghost" style="width:auto" data-act="hub">Back</button></div><div class="pl-card hot">'+head
     +'<div class="pl-note" style="margin-top:3cqw">Nine questions, one from each category. Pick A, B, C or D, then confirm. You never get the same question twice.</div>'+btn+'</div>'
-    +(st.answered?'<div class="pl-card"><div class="pl-lbh" style="margin-top:0;padding-top:0;border:0">Your score so far</div><div class="qz-res">'+pct+'%</div><div class="pl-note">'+st.correct+' right out of '+st.answered+' · '+st.runs+(st.runs===1?' round':' rounds')+' · '+rem+' questions left</div></div>':'')
-    +'<div class="pl-card"><div class="pl-lbh" style="margin-top:0;padding-top:0;border:0">Best round</div>'+(bestRows?'<ol class="pl-lb">'+bestRows+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>')+'</div>'
-    +'<div class="pl-card"><div class="pl-lbh" style="margin-top:0;padding-top:0;border:0">Lifetime</div>'+(lifeRows?'<ol class="pl-lb">'+lifeRows+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>')+'</div>';
+    +(st.answered?'<div class="pl-card"><div class="pl-lbh" style="margin-top:0;padding-top:0;border:0">Your score</div><div class="qz-res">'+pct+'%</div><div class="pl-note">'+st.correct+' right out of '+st.answered+' · '+st.runs+(st.runs===1?' round':' rounds')+'</div></div>':'')
+    +qzCols(10,false);
 }
 function qzQuestion(){
   const r=QZ.run;if(!r)return qzHome();
@@ -6649,10 +6670,11 @@ function qzQuestion(){
   }).join('');
   const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const right=QZ.reveal&&it.picked===it.ai;
-  const fb=QZ.reveal?'<div class="pl-ttl" style="font-size:5.6cqw;margin:1cqw 0 0;color:'+(right?'#8fd19a':'var(--berry)')+'">'+(right?'Correct!':'Not quite.')+'</div>'+'<div class="pl-note" style="margin-top:1cqw">'+esc(it.expl||('The answer was '+QZ_L[it.ai]+'.'))+'</div>':'';
+  const fb=QZ.reveal?'<div class="qz-fb '+(right?'ok':'no')+'"><div class="pl-ttl" style="font-size:5.6cqw;color:'+(right?'#8fd19a':'#ff9a8c')+'">'+(right?'Correct!':'Not quite.')+'</div>'+'<div class="pl-note" style="margin-top:1cqw;color:var(--ink)">'+esc(it.expl||('The answer was '+QZ_L[it.ai]+'.'))+'</div></div>':'';
   const last=r.i>=n-1;
   const foot=QZ.reveal?'<button class="pl-btn solid" data-act="qznext">'+(last?'See my score':'Next question')+'</button>':'<button class="pl-btn solid" data-act="qzconfirm"'+(QZ.sel===null?' disabled':'')+'>Confirm</button>';
-  return '<div class="pl-row" style="justify-content:space-between"><span class="pl-small">Question '+(r.i+1)+' of '+n+'</span><span class="pl-pill">'+esc(it.cat)+'</span></div><div class="qz-q">'+esc(it.q)+'</div>'+opts+fb+'<div class="pl-foot">'+foot+'</div>';
+  const pg='<div class="qz-pg">'+r.items.map((_,k)=>'<i class="'+(k<r.i||(k===r.i&&QZ.reveal)?'d':(k===r.i?'c':''))+'"></i>').join('')+'</div>';
+  return '<div class="pl-small">Question '+(r.i+1)+' of '+n+'</div>'+pg+'<div class="qz-qc"><span class="qz-cat">'+esc(it.cat)+'</span><div class="qz-q">'+esc(it.q)+'</div></div>'+opts+fb+'<div class="pl-foot">'+foot+'</div>';
 }
 function qzResult(){
   const r=QZ.run,n=r?r.items.length:0,sc=r?r.score:0,p=n?Math.round(sc/n*100):0,st=qzMe(),rem=qzRemaining();
