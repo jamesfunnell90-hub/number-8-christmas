@@ -63,9 +63,9 @@ h1{font-size:clamp(32px,5vw,46px);line-height:1.05;margin:8px 0 10px}
 .dots.shake{animation:shake .4s}
 @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.keys button{height:9cqw;min-height:30px;border:1px solid var(--line);background:rgba(23,56,43,.85);border-radius:20px;font:500 5.4cqw var(--serif);color:var(--ink);cursor:pointer}
+.keys button{height:9.6cqw;min-height:32px;border:1px solid var(--line);background:rgba(23,56,43,.85);border-radius:20px;font:500 6.2cqw/1 var(--sans);font-variant-numeric:lining-nums;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .keys button:active{background:var(--panel)}
-.keys button.ghost{border-color:transparent;background:none;color:var(--dim);font:400 9.5px var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.keys button.ghost{border-color:transparent;background:none;color:var(--dim);font:400 6.2cqw/1 var(--sans)}
 .msg{min-height:16px;text-align:center;font-size:11px;color:var(--berry);margin-top:6px}
 
 /* the glow and the welcome that follows */
@@ -119,9 +119,9 @@ body{padding:0!important;overflow:hidden}
 #app .hero .snow i{position:absolute;top:-8px;border-radius:50%;background:#f4ecd6;animation:fall linear infinite}
 @keyframes fall{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(var(--sw),34cqw,0)}100%{transform:translate3d(0,70cqw,0)}}
 #app .hero .drift{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:20cqw;display:block}
-#app .hero .in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:6cqw}
-#app .hero .num{font-family:var(--serif);font-weight:600;font-size:25cqw;line-height:1;color:var(--ink);text-shadow:0 2px 16px rgba(10,24,18,.7)}
-#app .hero .lbl{font-size:3.4cqw;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);margin-top:4px;padding-left:.32em}
+#app .hero .in{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding-bottom:16cqw}
+#app .hero .num{font-family:var(--serif);font-weight:600;font-size:25cqw;line-height:1.05;margin-bottom:3.4cqw;color:var(--ink);text-shadow:0 2px 16px rgba(10,24,18,.7)}
+#app .hero .lbl{font-size:4.6cqw;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-top:4px;padding-left:.28em}
 #app .hero .sub{font-family:var(--serif);font-style:italic;font-size:4.4cqw;color:var(--ink);margin-top:4px}
 @media (prefers-reduced-motion:reduce){#app .hero .flake svg,#app .hero .snow i{animation:none}}
 #app .sec{padding:0 16px;margin-top:18px}
@@ -152,9 +152,9 @@ body{padding:0!important;overflow:hidden}
 #app .hero.game{height:84cqw}
 #app .hero .in,#app .hero .flake,#app .hero .snow,#app .hero .drift,#app .gamelink{transition:opacity .35s}
 #app .hero.game .in,#app .hero.game .flake,#app .hero.game .snow,#app .hero.game .drift,#app .hero.game .gamelink{opacity:0;pointer-events:none}
-#app .gamelink{position:absolute;left:0;right:0;bottom:3.4cqw;z-index:3;display:flex;justify-content:center;align-items:center;gap:7px;background:none;border:0;color:var(--gold);font:500 3.1cqw var(--sans);letter-spacing:.2em;text-transform:uppercase;padding:6px;cursor:pointer;text-shadow:0 1px 6px rgba(10,24,18,.9)}
+#app .gamelink{position:absolute;left:50%;transform:translateX(-50%);bottom:4cqw;z-index:3;display:flex;justify-content:center;align-items:center;gap:2.4cqw;white-space:nowrap;background:linear-gradient(135deg,#1d4636,#17382b);border:1.5px solid var(--gold);border-radius:14px;color:var(--gold);font:500 3cqw var(--sans);letter-spacing:.16em;text-transform:uppercase;padding:3cqw 5cqw;cursor:pointer;box-shadow:0 1cqw 3cqw rgba(0,0,0,.35)}
 #app .gamelink svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
-#app .gamelink span{border-bottom:1px solid rgba(212,179,106,.5);padding-bottom:1px}
+#app .gamelink span{border:0;padding:0}
 #app #cv{position:absolute;inset:0;width:100%;height:100%;display:none;touch-action:none;z-index:2}
 #app .hero,#app .hero *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 #app .hero #cv{-webkit-user-drag:none}
@@ -204,14 +204,15 @@ body{padding:0!important;overflow:hidden}
 #app .qz-fb{border-radius:12px;padding:3.4cqw 4cqw;margin-top:1cqw;border:1px solid}
 #app .qz-fb.ok{background:rgba(111,174,122,.16);border-color:#6fae7a}
 #app .qz-fb.no{background:rgba(190,80,70,.16);border-color:var(--berry)}
-#app .qz-2{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw;margin-top:3cqw}
-#app .qz-2>div{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:3cqw 2.4cqw;min-width:0}
+#app .qz-2{display:grid;grid-template-columns:1fr;gap:2.4cqw;margin-top:3cqw}
+#app .pl-lb li.sep{border-top:1px dashed var(--gold-deep);margin-top:1cqw;padding-top:2cqw}
+#app .qz-2>div{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:3.4cqw 3.6cqw;min-width:0}
 #app .qz-2.in>div{background:rgba(0,0,0,.14)}
 #app .qz-2 .pl-lbh{margin-top:0;padding-top:0;border:0;font-size:2.6cqw;letter-spacing:.2em}
 #app .qz-2 .pl-lb li{gap:1.6cqw;padding:1.3cqw 0}
 #app .qz-2 .pl-lb .rk{width:3cqw;font-size:3cqw}
-#app .qz-2 .pl-lb .nm{font-size:3.3cqw;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#app .qz-2 .pl-lb b{font-size:3.6cqw;text-align:right;line-height:1.05}
+#app .qz-2 .pl-lb .nm{font-size:3.9cqw;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#app .qz-2 .pl-lb b{font-size:4.4cqw;text-align:right;line-height:1.05}
 #app .qz-2 .pl-lb .nm small{display:block;text-align:left;margin:0;font-size:2.2cqw;color:var(--dim);letter-spacing:.02em;line-height:1.2}
 #app .qz-o{display:flex;align-items:center;gap:3cqw;width:100%;text-align:left;border:1.5px solid var(--gold-deep);background:linear-gradient(135deg,#1d4636,#173a2d);color:var(--ink);border-radius:12px;padding:3.2cqw;margin-bottom:2.6cqw;font:500 3.9cqw/1.25 var(--sans);cursor:pointer;box-shadow:0 .8cqw 2cqw rgba(0,0,0,.25)}
 #app .qz-o b{flex:none;width:8.6cqw;height:8.6cqw;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;font:600 4cqw var(--serif)}
@@ -246,7 +247,7 @@ body{padding:0!important;overflow:hidden}
 #app .soon{align-items:center;justify-content:center;text-align:center;padding:0 12cqw}
 #app .soon h2{font-family:var(--serif);font-weight:600;font-size:9cqw;margin:0 0 6px}
 #app .soon p{color:var(--dim);margin:0;font-size:13px}
-#app .apptabs{flex:none;display:flex;justify-content:space-around;border-top:1px solid var(--line);background:var(--panel2);padding:8px 4px max(12px,env(safe-area-inset-bottom,0px));font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+#app .apptabs{flex:none;display:flex;justify-content:space-around;border-top:1px solid var(--line);background:var(--panel2);padding:4px 4px max(9px,env(safe-area-inset-bottom,0px));font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
 #app .apptabs button{background:none;border:0;color:inherit;font:inherit;letter-spacing:inherit;text-transform:inherit;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:0 6px}
 #app .apptabs svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.4}
 #app .apptabs .on{color:var(--gold)}
@@ -272,7 +273,13 @@ body{padding:0!important;overflow:hidden}
 #app .sa-tag p{margin:0;font-size:3.4cqw;color:var(--dim)}
 #app .sa-tag p b{color:var(--ink);font-weight:500}
 #app .apptabs{padding-left:0;padding-right:0;font-size:8.4px;letter-spacing:.05em}
-#app .apptabs button{padding:0 2px;flex:1}
+#app .apptabs button{padding:0 2px;flex:1;gap:1px;font-weight:500;color:#cfd8c9}
+#app .apptabs svg{width:25px;height:25px;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+#app .apptabs button.on{color:var(--gold);font-weight:600}
+#app .apptabs button.on svg{fill:rgba(224,185,92,.2);filter:drop-shadow(0 0 5px rgba(224,185,92,.55));animation:tabfloat 2.6s ease-in-out infinite}
+#app .apptabs button:active svg{transform:scale(.82)}
+@keyframes tabfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px) scale(1.06)}}
+@media (prefers-reduced-motion:reduce){#app .apptabs button.on svg{animation:none}}
 
 /* the unwrap: bow unties, lid lifts, a golden ticket rises and grows to replace the box */
 #app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
@@ -6469,6 +6476,7 @@ async function slPush(){
 const SL_ICON='<svg class="pl-ico" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="13" y="5" width="38" height="50" rx="3.5" fill="#f4ecd6" stroke="#a2792b" stroke-width="2"/><path d="M19 13h18" stroke="#a2792b" stroke-width="2.4"/><path d="M42 11.5l1.5 3 3.3.4-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.4z" fill="#d4b36a"/><g stroke="#10291f" stroke-width="2.4"><path d="M19 27l2.6 2.6 5-5.6"/><path d="M31 27h14" opacity=".55"/><path d="M19 37l2.6 2.6 5-5.6"/><path d="M31 37h14" opacity=".55"/><path d="M19 47l2.6 2.6 5-5.6" opacity=".35"/><path d="M31 47h9" opacity=".3"/></g><circle cx="46" cy="50" r="7" fill="#c4523f" stroke="#f4ecd6" stroke-width="1.8"/><path d="M46 46.5l1.1 2.3 2.5.3-1.8 1.7.5 2.5-2.3-1.2-2.3 1.2.5-2.5-1.8-1.7 2.5-.3z" fill="#f4ecd6"/></svg>';
 const SLEIGH_ICON='<svg class="pl-ico" viewBox="-18 10 80 46" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M30 33h25l-2.500 11c-.5 2-2 3-4 3H35c-2 0-3.500-1-4-3z" fill="#c4523f" stroke="#f4ecd6" stroke-width="1.8"/><path d="M27 52c7 2.500 24 2.500 31 0 3-1.500 3.500-5.500.5-7.500" stroke="#d4b36a" stroke-width="2.400"/><path d="M36 47v5M50 47v5" stroke="#d4b36a" stroke-width="2"/><path d="M30 38c-5 0-8 1-10 3M13 38c-3 0-4.500 .5-6 1.500" stroke="#d4b36a" stroke-width="1.800"/><g transform="translate(-17 0)" opacity=".75"><g transform="translate(33 0) scale(-1 1)"><g stroke="#f4ecd6" stroke-width="2"><path d="M7 38h11c2 0 3-1.500 3-3.500V33c0-1.500-1-2.500-2.500-2.500H11c-2.500 0-4 2-4 4.500z" fill="#a2792b"/><path d="M10 38v8M17 38v8M20.500 31.500l2.500-5 4 1.500"/><circle cx="26.500" cy="26.500" r="3.500" fill="#a2792b"/><circle cx="28.500" cy="25.500" r="1.100" fill="#c4523f" stroke="none"/></g><path d="M24 23l-2-6M24 20l-4-1M28 22l1-6M28.500 19.500l3.500-1.500" stroke="#d4b36a" stroke-width="1.800"/></g></g><g transform="translate(33 0) scale(-1 1)"><g stroke="#f4ecd6" stroke-width="2"><path d="M7 38h11c2 0 3-1.500 3-3.500V33c0-1.500-1-2.500-2.500-2.500H11c-2.500 0-4 2-4 4.500z" fill="#a2792b"/><path d="M10 38v8M17 38v8M20.500 31.500l2.500-5 4 1.500"/><circle cx="26.500" cy="26.500" r="3.500" fill="#a2792b"/><circle cx="28.500" cy="25.500" r="1.100" fill="#c4523f" stroke="none"/></g><path d="M24 23l-2-6M24 20l-4-1M28 22l1-6M28.500 19.500l3.500-1.500" stroke="#d4b36a" stroke-width="1.800"/></g><path d="M45 14l1.200 2.500 2.700.4-2 1.900.5 2.700-2.400-1.300-2.400 1.300.5-2.700-2-1.900 2.700-.4z" fill="#d4b36a" stroke="none"/></svg>';
 const QUIZ_ICON='<svg class="pl-ico" viewBox="0 0 64 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14h44c2 0 3 1 3 3v24c0 2-1 3-3 3H33l-9 9v-9H10c-2 0-3-1-3-3V17c0-2 1-3 3-3z" fill="#f4ecd6" stroke="#a2792b" stroke-width="2"/><path d="M26 24c0-4 3-6 7-6s7 2 7 6c0 3-2 4-4 5.500-1.500 1-2.500 2-2.500 4" stroke="#10291f" stroke-width="3"/><circle cx="33.500" cy="39" r="1.800" fill="#10291f" stroke="none"/><path d="M50 6l1.300 2.700 3 .4-2.200 2.100.5 3-2.600-1.400-2.700 1.400.5-3-2.100-2.100 3-.4z" fill="#d4b36a" stroke="none"/><circle cx="48" cy="52" r="7" fill="#c4523f" stroke="#f4ecd6" stroke-width="1.800"/><path d="M45 52h6M48 49v6" stroke="#f4ecd6" stroke-width="1.800"/></svg>';
+function plTop(arr,me){const t=arr.slice(0,5).map((r,i)=>({r,i})),k=arr.findIndex(r=>r.n===me);if(k>=5)t.push({r:arr[k],i:k,sep:true});return t}
 function slHub(){
   const me=slMe(),ph=slPhase(),st=slStatus(),has=!!(window.__photos&&window.__photos[me]);
   let card='';
@@ -6485,11 +6493,11 @@ function slHub(){
   }
   const photo=has?'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw')+'<div style="flex:1"><div class="pl-ttl" style="font-size:4.8cqw">Your photo</div><div class="pl-note">This is how you appear in the games and around the app</div></div></div><div class="pl-row" style="margin-top:3cqw"><button class="pl-btn" data-act="photo">Change</button><button class="pl-btn ghost" data-act="rmphoto" style="width:auto">Remove</button></div></div>'
     :'<div class="pl-card"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the games and around the app</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
-  const lbRows=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)).slice(0,5);
-  const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map((r,i)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
+  const lbAll=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)),lbRows=plTop(lbAll,me);
+  const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map(t=>{const r=t.r;return '<li class="'+(r.n===me?'me':'')+(t.sep?' sep':'')+'"><span class="rk">'+(t.i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>'}).join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
   const sleigh='<div class="pl-card hot" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div class="pl-row">'+SLEIGH_ICON.replace('class="pl-ico"','style="width:23.500cqw;height:13.500cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Sleigh dash</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">How many presents can you deliver?</div></div></div></div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Tap to play</span></div>'+lb+'</div>';
   const quizOn=qzReady(),quiz='<div class="pl-card"'+(quizOn?' data-act="qzopen" style="cursor:pointer"':'')+'><div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">To be presented on Christmas Day</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">Tap here to get your practice in.</span><span class="pl-pill">'+(quizOn?'Play':'Soon')+'</span></div>'+(quizOn?qzCols(5,true):'')+'</div>';
-  return '<div class="pl-small">Play</div><h2>Games</h2><div class="pl-sub">Hello, '+me+'</div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
+  return '<div class="pl-small">Play</div><h2>Festive fun</h2><div class="pl-sub">Hello, '+me+'</div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
   const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
@@ -6662,10 +6670,10 @@ function qzBoards(){
   return {life,best};
 }
 function qzCols(n,inner){
-  const me=slMe(),B=qzBoards(),li=(r,i,v,sub)=>'<li'+(r.n===me?' class="me"':'')+'><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'7cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+(sub?'<small class="qz-n">'+sub+'</small>':'')+'</span><b>'+v+'</b></li>',
+  const me=slMe(),B=qzBoards(),li=(t,v,sub)=>{const r=t.r,i=t.i;return '<li class="'+(r.n===me?'me':'')+(t.sep?' sep':'')+'"><span class="rk">'+(i+1)+'</span>'+slAv(r.n,'7cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+(sub?'<small class="qz-n">'+sub+'</small>':'')+'</span><b>'+v+'</b></li>'},
     none='<div class="pl-note" style="margin-top:1.4cqw">No scores yet</div>',
-    br=B.best.slice(0,n).map((r,i)=>li(r,i,r.b+'/'+r.bn)).join(''),
-    lr=B.life.slice(0,n).map((r,i)=>li(r,i,r.p+'%',r.a+' answered')).join('');
+    br=plTop(B.best,me).map(t=>li(t,t.r.b+'/'+t.r.bn)).join(''),
+    lr=plTop(B.life,me).map(t=>li(t,t.r.p+'%',t.r.a+' answered')).join('');
   return '<div class="qz-2'+(inner?' in':'')+'"><div><div class="pl-lbh">Best round</div>'+(br?'<ol class="pl-lb">'+br+'</ol>':none)+'</div><div><div class="pl-lbh">Lifetime</div>'+(lr?'<ol class="pl-lb">'+lr+'</ol>':none)+'</div></div>';
 }
 function qzHome(){
