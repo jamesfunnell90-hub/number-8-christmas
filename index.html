@@ -6197,7 +6197,7 @@ function render(now){
   else if(sleeps===0){num.textContent='Today';lbl.textContent='is the day';sub.textContent='Welcome to Number 8'}
   else{num.textContent='Thank you';lbl.textContent='for coming';sub.textContent='Merry Christmas from Number 8'}
   if(window.__gameHide)window.__gameHide(sleeps<=0);
-  document.getElementById('hello').textContent=(sleeps===0?'Merry Christmas, ':'Hello, ')+(window.GUEST||'');
+  document.getElementById('hello').textContent=(sleeps===0?'Merry Christmas, ':'Welcome, ')+(window.GUEST||'');
   const mins=now.getHours()*60+now.getMinutes(),today=sleeps===0,M=s=>{const[h,m]=s.split(':');return +h*60+ +m};
   document.getElementById('tl').innerHTML=TL.map((e,i)=>{
     let c='';
@@ -7102,7 +7102,6 @@ function riseIn(){
   const hi=document.getElementById('hi'),hello=document.getElementById('hello'),sub=document.querySelector('.welcome .sub'),sc=document.querySelector('.welcome .small-caps');
   if(reduce||!hi||!hello){scr.classList.add('app');return}
   scr.classList.add('rising','prerise');
-  hi.textContent='Hello, '+(window.GUEST||'');
   const a=hi.getBoundingClientRect(),b=hello.getBoundingClientRect(),fa=parseFloat(getComputedStyle(hi).fontSize),fb=parseFloat(getComputedStyle(hello).fontSize),H=scr.getBoundingClientRect().height;
   void hi.offsetWidth;
   hi.style.transform='translateY('+((b.top+b.height/2)-(a.top+a.height/2))+'px) scale('+(fb/fa)+')';
