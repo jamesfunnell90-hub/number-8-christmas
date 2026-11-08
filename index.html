@@ -277,29 +277,34 @@ body{padding:0!important;overflow:hidden}
 #app .apptabs svg{width:26px;height:26px;stroke-width:1.5;overflow:visible;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
 #app .apptabs button.on{color:var(--gold);font-weight:600}
 #app .apptabs button.on svg{filter:drop-shadow(0 0 5px rgba(224,185,92,.5))}
-#app .apptabs button.on .tb-home{animation:tabfloat 2.6s ease-in-out infinite}
-#app .apptabs .ln{stroke-dasharray:1;stroke-dashoffset:0}
-#app .apptabs button.on .ln{animation:tbwrite 4.2s ease-in-out infinite both}
-#app .apptabs button.on .ln:nth-of-type(2){animation-delay:.35s}
-#app .apptabs button.on .ln:nth-of-type(3){animation-delay:.7s}
-#app .apptabs button.on .ln:nth-of-type(4){animation-delay:1.05s}
-#app .apptabs button.on .ln:nth-of-type(5){animation-delay:1.4s}
+#app .apptabs .ln{stroke-dasharray:1;stroke-dashoffset:0;animation:tbwrite 4.2s ease-in-out infinite both}
+#app .apptabs .ln:nth-of-type(2){animation-delay:.35s}
+#app .apptabs .ln:nth-of-type(3){animation-delay:.7s}
+#app .apptabs .ln:nth-of-type(4){animation-delay:1.05s}
 @keyframes tbwrite{0%{stroke-dashoffset:1}22%,62%{stroke-dashoffset:0}82%,100%{stroke-dashoffset:1}}
-#app .apptabs button.on .claw{animation:tbclaw 4s ease-in-out infinite}
-@keyframes tbclaw{0%,100%{transform:translate(-5px,0)}25%{transform:translate(-5px,3px)}38%{transform:translate(-5px,0)}62%{transform:translate(5px,0)}75%{transform:translate(5px,3px)}88%{transform:translate(5px,0)}}
-#app .apptabs button.on .hd1,#app .apptabs button.on .hd3{animation:tbhead 1.6s ease-in-out infinite}
-#app .apptabs button.on .hd2,#app .apptabs button.on .hd4{animation:tbhead 1.6s ease-in-out .8s infinite}
-@keyframes tbhead{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px)}}
-#app .apptabs .tk{opacity:0}
-#app .apptabs button.on .gift{animation:tbshake 4.4s ease-in-out infinite;transform-origin:12px 20px}
-#app .apptabs button.on .lid{animation:tblid 4.4s ease-in-out infinite;transform-origin:12px 10px}
-#app .apptabs button.on .tk{animation:tbtk 4.4s ease-in-out infinite}
-@keyframes tbshake{0%,3%{transform:rotate(0)}6%{transform:rotate(-7deg)}10%{transform:rotate(7deg)}14%{transform:rotate(-6deg)}18%{transform:rotate(6deg)}22%{transform:rotate(-3deg)}26%,100%{transform:rotate(0)}}
-@keyframes tblid{0%,28%{transform:translateY(0)}36%,78%{transform:translateY(-2px)}88%,100%{transform:translateY(0)}}
-@keyframes tbtk{0%,26%{opacity:0;transform:translateY(8px)}40%{opacity:1;transform:translateY(-4px)}48%,76%{opacity:1;transform:translateY(-3px)}88%,100%{opacity:0;transform:translateY(8px)}}
-#app .apptabs button:active svg{transform:scale(.82)}
-@keyframes tabfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2.5px) scale(1.06)}}
-@media (prefers-reduced-motion:reduce){#app .apptabs button.on svg{animation:none}}
+#app .apptabs .claw{animation:tbclaw 4s ease-in-out infinite}
+@keyframes tbclaw{0%,100%{transform:translate(-5.5px,0)}25%{transform:translate(-5.5px,3px)}38%{transform:translate(-5.5px,0)}62%{transform:translate(5.5px,0)}75%{transform:translate(5.5px,3px)}88%{transform:translate(5.5px,0)}}
+#app .apptabs .tp{opacity:0;transform-box:fill-box;transform-origin:50% 100%}
+#app .apptabs .tp1{animation:tbp1 7s ease-in-out infinite}
+#app .apptabs .tp2{animation:tbp2 7s ease-in-out infinite}
+#app .apptabs .tp3{animation:tbp3 7s ease-in-out infinite}
+#app .apptabs .tp4{animation:tbp4 7s ease-in-out infinite}
+#app .apptabs .bob{animation:tbhead 1.4s ease-in-out infinite}
+#app .apptabs .tp2 .bob,#app .apptabs .tp4 .bob{animation-delay:.7s}
+@keyframes tbhead{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.4px)}}
+@keyframes tbp1{0%,10%{opacity:0;transform:scale(.3)}16%,84%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(.3)}}
+@keyframes tbp2{0%,24%{opacity:0;transform:scale(.3)}30%,84%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(.3)}}
+@keyframes tbp3{0%,38%{opacity:0;transform:scale(.3)}44%,84%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(.3)}}
+@keyframes tbp4{0%,52%{opacity:0;transform:scale(.3)}58%,84%{opacity:1;transform:scale(1)}90%,100%{opacity:0;transform:scale(.3)}}
+#app .apptabs .tk{opacity:0;animation:tbtk 5s ease-in-out infinite}
+#app .apptabs .gift{animation:tbshake 5s ease-in-out infinite;transform-origin:12px 21px}
+#app .apptabs .lid{animation:tblid 5s ease-in-out infinite;transform-origin:12px 9.5px}
+@keyframes tbshake{0%,6%{transform:rotate(0) scale(1)}9%{transform:rotate(-7deg)}13%{transform:rotate(7deg)}17%{transform:rotate(-7deg)}21%{transform:rotate(7deg)}24%{transform:rotate(-3deg) scale(1)}27%{transform:rotate(0) scale(1.14,.9)}31%,100%{transform:rotate(0) scale(1)}}
+@keyframes tblid{0%,25%{transform:translateY(0) rotate(0);opacity:1}35%{transform:translateY(-9px) rotate(-24deg);opacity:0}84%{transform:translateY(-9px) rotate(-24deg);opacity:0}92%,100%{transform:translateY(0) rotate(0);opacity:1}}
+@keyframes tbtk{0%,25%{opacity:0;transform:translateY(11px)}32%{opacity:1;transform:translateY(-1px)}38%,78%{opacity:1;transform:translateY(0)}88%,100%{opacity:0;transform:translateY(11px)}}
+#app .apptabs .star{animation:tbstar 1.8s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes tbstar{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.3)}}
+@media (prefers-reduced-motion:reduce){#app .apptabs svg *{animation:none!important}}
 
 /* the unwrap: bow unties, lid lifts, a golden ticket rises and grows to replace the box */
 #app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
@@ -6092,11 +6097,11 @@ body{padding:0!important;overflow:hidden}
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
     </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view soon" data-v="table"><h2>Table plan</h2><p>Coming soon. This page is still being built.</p></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
-  <button class="on" data-v="welcome"><svg class="tb-home" viewBox="0 0 16 16" style="width:25px;height:25px"><path d="M2 8l6-5 6 5v6H2zM6.5 14v-4h3v4"/></svg>Welcome</button>
+  <button class="on" data-v="welcome"><svg viewBox="0 0 24 24"><path d="M.8 9.6h15.4M2 9.6V19.5h13V9.6M12.6 5.4v4.2h1.8V6.2"/><rect x="3" y="12.2" width="2.4" height="2.6"/><rect x="11.6" y="12.2" width="2.4" height="2.6"/><rect x="7.2" y="13.6" width="2.6" height="5.9" style="fill:#c4523f;stroke:none"/><path d="M.6 19.5h22.8"/><path d="M20.4 6.4l-2.3 3.9M20.4 6.4l2.3 3.9h-4.6M20.4 9.4l-3 4.8h6zM20.4 12.8l-3.6 6.7h7.2z"/><circle class="star" cx="20.4" cy="5.2" r=".9" style="fill:#e0b95c;stroke:none"/></svg>Home</button>
   <button data-v="menu"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path class="ln" pathLength="1" d="M8.5 7h7"/><path class="ln" pathLength="1" d="M8.5 11h7"/><path class="ln" pathLength="1" d="M8.5 14.5h5"/><path class="ln" pathLength="1" d="M8.5 18h6"/></svg>Menu</button>
-  <button data-v="table"><svg viewBox="0 0 24 24"><rect x="4.5" y="9.6" width="15" height="4.8" rx="1"/><rect x="1.6" y="10.4" width="2" height="3.2" rx=".8"/><rect x="20.4" y="10.4" width="2" height="3.2" rx=".8"/><g class="hd1"><circle cx="8.4" cy="4.2" r="1.6"/><path d="M5.9 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g><g class="hd2"><circle cx="15.6" cy="4.2" r="1.6"/><path d="M13.1 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g><g class="hd3"><circle cx="8.4" cy="19.8" r="1.6"/><path d="M5.9 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g><g class="hd4"><circle cx="15.6" cy="19.8" r="1.6"/><path d="M13.1 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g></svg>Table</button>
-  <button data-v="santa"><svg viewBox="0 0 24 24"><g class="tk"><rect x="8.5" y="1.5" width="7" height="11" rx="1" style="fill:#e0b95c;stroke:#e0b95c"/><path d="M12 4.2v5.6M9.8 7h4.4" style="stroke:#10291f;stroke-width:1.4"/></g><g class="gift"><rect x="4" y="11" width="16" height="10.5" rx="1" style="fill:var(--panel2)"/><path d="M12 11v10.5"/><g class="lid"><rect x="3" y="7.5" width="18" height="4" rx="1" style="fill:var(--panel2)"/><path d="M12 7.5v4"/></g></g></svg>Santa</button>
-  <button data-v="play"><svg viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="15" rx="2"/><path d="M5.5 3.5h13"/><circle cx="7.6" cy="18.6" r="1.7"/><circle cx="16.4" cy="18.6" r="1.7"/><g class="claw"><path d="M12 3.5v5"/><path d="M9.4 13.2c0-2.8 1-4.6 2.6-4.6s2.6 1.8 2.6 4.6"/></g></svg>Play</button>
+  <button data-v="table"><svg viewBox="0 0 24 24"><rect x="4.5" y="9.6" width="15" height="4.8" rx="1"/><rect x="1.6" y="10.4" width="2" height="3.2" rx=".8"/><rect x="20.4" y="10.4" width="2" height="3.2" rx=".8"/><g class="tp tp1"><g class="bob"><circle cx="8.4" cy="4.2" r="1.6"/><path d="M5.9 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g></g><g class="tp tp2"><g class="bob"><circle cx="15.6" cy="4.2" r="1.6"/><path d="M13.1 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g></g><g class="tp tp3"><g class="bob"><circle cx="8.4" cy="19.8" r="1.6"/><path d="M5.9 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g></g><g class="tp tp4"><g class="bob"><circle cx="15.6" cy="19.8" r="1.6"/><path d="M13.1 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g></g></svg>Table</button>
+  <button data-v="santa"><svg viewBox="0 0 24 24"><g class="tk"><rect x="5.5" y="4" width="13" height="6.6" rx="1" style="fill:#e0b95c;stroke:#e0b95c"/><path d="M8.5 5.8v3M15.5 5.8v3M10.4 7.3h3.2" style="stroke:#10291f;stroke-width:1.2"/></g><g class="gift"><rect x="4" y="11" width="16" height="10.5" rx="1" style="fill:var(--panel2)"/><path d="M12 11v10.5"/><g class="lid"><rect x="3" y="7.5" width="18" height="3.5" rx="1" style="fill:var(--panel2)"/><path d="M12 7.5v3.5M12 7.5c-2.8-4-6-3.4-5-1 .7 1.6 3.2 1.2 5 1zM12 7.5c2.8-4 6-3.4 5-1-.7 1.6-3.2 1.2-5 1z"/></g></g></svg>Santa</button>
+  <button data-v="play"><svg viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="15" rx="2"/><path d="M5.5 3.5h13"/><circle cx="7" cy="18.7" r="1.5"/><circle cx="12" cy="18.7" r="1.5"/><circle cx="17" cy="18.7" r="1.5"/><g class="claw"><path d="M12 3.5v5"/><path d="M9.4 13.2c0-2.8 1-4.6 2.6-4.6s2.6 1.8 2.6 4.6"/></g></svg>Play</button>
 </nav></div>
   </div></div>
 </div>
