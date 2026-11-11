@@ -45,7 +45,7 @@ button{font:700 14px/1 var(--sans);letter-spacing:.03em;border-radius:999px;padd
 <div id="stage"></div>
 <div id="flat"></div>
 <div class="top"><h1>Table plan</h1><p id="sub">&nbsp;</p></div>
-<div id="hint">One finger to spin · pinch to zoom · tap a place</div>
+<div id="hint">One finger to slide · two to spin and zoom · tap a place</div>
 <div class="bar"><button class="solid" id="bMine">Find my seat</button><button class="ghost" id="bRoom">Whole room</button></div>
 <div id="load"><div><span>Laying the table…</span><i><b id="prog"></b></i></div></div>
 
@@ -105,7 +105,7 @@ scene.add(new THREE.Mesh(new THREE.SphereGeometry(60, 24, 16), new THREE.MeshBas
   gr.addColorStop(0, '#7fa6cf'); gr.addColorStop(.5, '#cfdcea'); gr.addColorStop(.62, '#f3e3c8'); gr.addColorStop(.63, '#33473a'); gr.addColorStop(1, '#1c2b22');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256); })})));
 
-const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 150);
+const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 130);
 // Room in viewer coordinates: X 0..3.3 (kitchen wall -> garden glass), Z 0..-5.4 (sofa end -> French doors), Y up.
 const ROOM = {x0:0, x1:3.3, z0:-5.4, z1:0};
 const CENTRE = new THREE.Vector3(1.2, 0.8, -2.95);
@@ -132,7 +132,10 @@ const candleGlow = new THREE.PointLight(0xffb060, 0.8, 2.2, 2); candleGlow.posit
 }
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = false;
+controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = true; controls.screenSpacePanning = false; controls.panSpeed = 1.1;
+// Maps-style gestures: one finger slides across the room, two fingers spin, tilt and pinch-zoom
+controls.touches = {ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_ROTATE};
+controls.mouseButtons = {LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE};
 controls.minDistance = 0.7; controls.maxDistance = 13; controls.minPolarAngle = 0.12; controls.maxPolarAngle = 1.50;
 controls.rotateSpeed = .6; controls.zoomSpeed = .8; controls.target.copy(CENTRE); controls.autoRotateSpeed = 0.7;
 
@@ -336,12 +339,26 @@ renderer.domElement.addEventListener('pointerup', e => {
   if (hit) flyToSeat(hit.object.userData.seat);
 });
 
+// two-finger twist spins the room, like a map
+{ let tw = null; const Y = new THREE.Vector3(0, 1, 0), el = renderer.domElement;
+  el.addEventListener('touchmove', e => {
+    if (e.touches.length !== 2) { tw = null; return; }
+    const a = Math.atan2(e.touches[1].clientY - e.touches[0].clientY, e.touches[1].clientX - e.touches[0].clientX);
+    if (tw !== null) { let d = a - tw; if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI;
+      camera.position.sub(controls.target).applyAxisAngle(Y, d).add(controls.target); }
+    tw = a;
+  }, {passive:true});
+  const end = () => { tw = null; }; el.addEventListener('touchend', end); el.addEventListener('touchcancel', end);
+}
+
 // ---------- cut-away: hide whatever stands between the camera and the table
 function setVis(list, v){ for (const o of list) o.visible = v; }
 function cutaway(){
   const p = camera.position, m = .05;
   const inside = p.x > ROOM.x0 + m && p.x < ROOM.x1 - m && p.z > ROOM.z0 + m && p.z < ROOM.z1 - m && p.y < 4.9 - (p.x / 3.3) * 2.5;
-  setVis(groups.roof, inside);
+  // roof is on whenever the camera is below it (looking across the room), and lifts away when looking down from above
+  const roofY = 5.0 - Math.min(Math.max(p.x, 0), 3.3) / 3.3 * 2.6;
+  setVis(groups.roof, inside || p.y < roofY - 0.15);
   setVis(groups.near, inside || p.z < ROOM.z1);
   setVis(groups.far, inside || p.z > ROOM.z0);
   setVis(groups.right, inside || p.x < ROOM.x1);
@@ -356,6 +373,10 @@ renderer.setAnimationLoop(now => {
     const t = Math.min(1, (now - tween.s) / tween.ms), e = ease(t);
     camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.t0, tween.t1, e);
     if (t >= 1) tween = null;
+  }
+  if (!tween) {   // keep the point you are looking at within the house
+    const t = controls.target, cx = Math.min(Math.max(t.x, -3.3), 3.6), cz = Math.min(Math.max(t.z, -5.8), 0.4), cy = Math.min(Math.max(t.y, 0.3), 1.6);
+    camera.position.x += cx - t.x; camera.position.y += cy - t.y; camera.position.z += cz - t.z; t.set(cx, cy, cz);
   }
   controls.update(); cutaway();
   if (ring) { ring.userData.beam.visible = camera.position.distanceTo(ring.position) > 3.2; const s = 1 + Math.sin(now / 420) * .08; ring.scale.set(s, s, s); ring.material.opacity = .65 + Math.sin(now / 420) * .25; }
