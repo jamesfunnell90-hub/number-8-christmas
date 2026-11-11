@@ -89,7 +89,7 @@ try { await Promise.race([Promise.all([document.fonts.load('80px "Pinyon Script"
 const stage = $('stage');
 const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.88;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 stage.appendChild(renderer.domElement);
 const maxAniso = renderer.capabilities.getMaxAnisotropy();
@@ -102,36 +102,82 @@ function canvasTex(w, h, draw, opts = {}){
 }
 function rng(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
 
-// winter-afternoon sky dome
-scene.add(new THREE.Mesh(new THREE.SphereGeometry(60, 24, 16), new THREE.MeshBasicMaterial({side:THREE.BackSide, fog:false, map:canvasTex(4, 256, (g) => {
-  const gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#7fa6cf'); gr.addColorStop(.5, '#cfdcea'); gr.addColorStop(.62, '#f3e3c8'); gr.addColorStop(.63, '#33473a'); gr.addColorStop(1, '#1c2b22');
-  g.fillStyle = gr; g.fillRect(0, 0, 4, 256); })})));
+// Christmas-evening sky dome: deep blue night, a little stars, a glow on the horizon
+const ENV = .35;            // reflections dimmed for the evening
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(60, 32, 16), new THREE.MeshBasicMaterial({side:THREE.BackSide, fog:false, map:canvasTex(512, 256, (g, w, h) => {
+  const gr = g.createLinearGradient(0, 0, 0, h);
+  gr.addColorStop(0, '#050a1c'); gr.addColorStop(.42, '#101c3c'); gr.addColorStop(.6, '#2b3a63'); gr.addColorStop(.625, '#4a4f6e'); gr.addColorStop(.63, '#1a2230'); gr.addColorStop(1, '#0c1118');
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  const r = rng(11); g.fillStyle = '#fff';
+  for (let i = 0; i < 260; i++) { g.globalAlpha = .25 + r() * .6; g.fillRect(r() * w, Math.pow(r(), 1.6) * h * .5, r() < .1 ? 1.5 : 1, 1); }
+  g.globalAlpha = 1; })})));
 
 const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 130);
 // Room in viewer coordinates: X 0..3.3 (kitchen wall -> garden glass), Z 0..-5.4 (sofa end -> French doors), Y up.
 const ROOM = {x0:0, x1:3.3, z0:-5.4, z1:0};
 const CENTRE = new THREE.Vector3(1.2, 0.8, -2.95);
 
-scene.add(new THREE.HemisphereLight(0xdfeaff, 0x8a7a66, 0.55));
-const sun = new THREE.DirectionalLight(0xfff0d8, 2.6);
+scene.add(new THREE.HemisphereLight(0x5d6fa3, 0x221c16, 0.16));
+const sun = new THREE.DirectionalLight(0xa9bce8, 0.55);     // moonlight
 sun.position.set(7.5, 8, -1.5); sun.target.position.copy(CENTRE); scene.add(sun, sun.target);
 sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.02; sun.shadow.radius = 5;
 Object.assign(sun.shadow.camera, {left:-6, right:6, top:6, bottom:-6, near:1, far:25});
-const lampGlow = new THREE.PointLight(0xffc98a, 2.0, 3.5, 2); lampGlow.position.set(2.94, 1.0, -2.93); scene.add(lampGlow);
-const kitchenGlow = new THREE.PointLight(0xffd9a0, 6, 6, 1.6); kitchenGlow.position.set(-2.0, 2.0, -2.1); scene.add(kitchenGlow);
-const candleGlow = new THREE.PointLight(0xffb060, 0.8, 2.2, 2); candleGlow.position.set(1.2, 1.15, -3.95); scene.add(candleGlow);
+// lights on: floor lamp, kitchen downlights, candles, fairy lights and the wall spotlights
+const lampGlow = new THREE.PointLight(0xffb870, 3.2, 4.5, 2); lampGlow.position.set(2.94, 1.0, -2.93); scene.add(lampGlow);
+const kitchenGlow = new THREE.PointLight(0xffd9a0, 7, 6, 1.6); kitchenGlow.position.set(-2.0, 2.0, -2.1); scene.add(kitchenGlow);
+const kitchenGlow2 = new THREE.PointLight(0xffd9a0, 3, 4, 1.6); kitchenGlow2.position.set(-2.0, 2.0, -0.9); scene.add(kitchenGlow2);
+const candleGlow = new THREE.PointLight(0xffa24a, 3.2, 4.2, 2); candleGlow.position.set(1.2, 1.3, -3.95); scene.add(candleGlow);
+const tableGlow = new THREE.PointLight(0xffb565, 1.4, 3.2, 2); tableGlow.position.set(1.2, 1.25, -1.9); scene.add(tableGlow);
+const fairyGlows = [[2.5, 2.0, -5.15], [3.05, 2.0, -3.7], [3.05, 2.0, -1.4]].map(([x, y, z]) => { const l = new THREE.PointLight(0xffc77a, 1.6, 3.6, 2); l.position.set(x, y, z); scene.add(l); return l; });
+[[-0.42, 1.6], [-4.4, 1.95]].forEach(([z, y]) => {
+  const sp = new THREE.SpotLight(0xffd8a8, 6, 4, 0.7, 0.6, 2); sp.position.set(0.17, y, z); sp.target.position.set(1.0, 0.75, z < -2 ? -4.0 : -0.8); scene.add(sp, sp.target);
+});
+// soft halo sprites so the little lights read as glowing
+const haloTex = canvasTex(64, 64, (g, w) => { const gr = g.createRadialGradient(w/2, w/2, 0, w/2, w/2, w/2); gr.addColorStop(0, 'rgba(255,230,180,1)'); gr.addColorStop(.25, 'rgba(255,190,110,.55)'); gr.addColorStop(1, 'rgba(255,160,70,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
+const halos = [];
+function addHalo(pos, size, opacity){
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex, blending:THREE.AdditiveBlending, depthWrite:false, transparent:true, opacity}));
+  sp.position.copy(pos); sp.scale.setScalar(size); sp.userData.base = opacity; sp.userData.ph = Math.random() * 6.3; scene.add(sp); halos.push(sp); return sp;
+}
+const flames = [];
 
 // garden: lawn, patio, fence, hedge
 {
-  const lawn = new THREE.Mesh(new THREE.CircleGeometry(40, 40), new THREE.MeshStandardMaterial({color:0x5d8a3c, roughness:1}));
+  const lawn = new THREE.Mesh(new THREE.CircleGeometry(40, 40), new THREE.MeshStandardMaterial({color:0x5d6b86, roughness:.95}));
   lawn.rotation.x = -Math.PI/2; lawn.position.set(1.6, -0.07, -2.7); lawn.receiveShadow = true; scene.add(lawn);
-  const patio = new THREE.Mesh(new THREE.PlaneGeometry(9, 5), new THREE.MeshStandardMaterial({color:0xb9a98f, roughness:1}));
+  const patio = new THREE.Mesh(new THREE.PlaneGeometry(9, 5), new THREE.MeshStandardMaterial({color:0x56627a, roughness:.95}));
   patio.rotation.x = -Math.PI/2; patio.position.set(2.2, -0.065, -7.2); patio.receiveShadow = true; scene.add(patio);
-  const fm = new THREE.MeshStandardMaterial({color:0x8a4a38, roughness:1}), hm = new THREE.MeshStandardMaterial({color:0x2f5a2c, roughness:1});
-  [[11, -2.7, .2, 26], [1.6, -15, 26, .2], [1.6, 9, 26, .2]].forEach(([x, z, w, d]) => { const f = new THREE.Mesh(new THREE.BoxGeometry(w, 1.8, d), fm); f.position.set(x, .85, z); scene.add(f); });
+  const fm = new THREE.MeshStandardMaterial({color:0x8a4a38, roughness:1}), hm = new THREE.MeshStandardMaterial({color:0x2f5a2c, roughness:1}), sm = new THREE.MeshStandardMaterial({color:0x7a87a0, roughness:.9});
+  [[11, -2.7, .2, 26], [1.6, -15, 26, .2], [1.6, 9, 26, .2]].forEach(([x, z, w, d]) => { const f = new THREE.Mesh(new THREE.BoxGeometry(w, 1.8, d), fm); f.position.set(x, .85, z); scene.add(f);
+    const cap = new THREE.Mesh(new THREE.BoxGeometry(w + .04, .06, d + .04), sm); cap.position.set(x, 1.78, z); scene.add(cap); });
   const r = rng(7);
-  for (let i = 0; i < 16; i++) { const s = 0.9 + r() * 1.3, b = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 1), hm); b.position.set(12 + r() * 2, 1.6 + r() * 1.6, -14 + i * 1.5); scene.add(b); }
+  for (let i = 0; i < 16; i++) { const s = 0.9 + r() * 1.3, b = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 1), hm); b.position.set(12 + r() * 2, 1.6 + r() * 1.6, -14 + i * 1.5); scene.add(b);
+    const c = new THREE.Mesh(new THREE.SphereGeometry(s * .93, 12, 8, 0, 6.3, 0, 1.0), sm); c.position.copy(b.position); c.position.y += s * .1; scene.add(c); }
+}
+
+// falling snow outside (kept out of the house; it settles over the glass roof)
+const roofAt = x => x < 0 ? 2.5 : 5.05 - Math.min(x, 3.3) / 3.3 * 2.6;
+const inHouse = (x, y, z) => x > -4.0 && x < 3.4 && z > -5.5 && z < 0.1 && y < roofAt(x);
+const SNOW = 2600, snowPos = new Float32Array(SNOW * 3), snowVel = new Float32Array(SNOW * 2);
+function dropFlake(i, anyHeight){
+  let x, y, z; do { x = -9 + Math.random() * 22; z = -17 + Math.random() * 25; y = anyHeight ? Math.random() * 9 : 8.5 + Math.random(); } while (inHouse(x, y, z));
+  snowPos[i * 3] = x; snowPos[i * 3 + 1] = y; snowPos[i * 3 + 2] = z; snowVel[i * 2] = .35 + Math.random() * .45; snowVel[i * 2 + 1] = Math.random() * 6.3;
+}
+for (let i = 0; i < SNOW; i++) dropFlake(i, true);
+const snowGeo = new THREE.BufferGeometry(); snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos, 3));
+const flakeTex = canvasTex(32, 32, (g, w) => { const gr = g.createRadialGradient(w/2, w/2, 0, w/2, w/2, w/2); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(.45, 'rgba(255,255,255,.7)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, w); });
+const snow = new THREE.Points(snowGeo, new THREE.PointsMaterial({map:flakeTex, size:.07, color:0xe8f0ff, transparent:true, opacity:.9, depthWrite:false, sizeAttenuation:true}));
+snow.frustumCulled = false; scene.add(snow);
+let lastT = 0;
+function stepSnow(now){
+  const dt = Math.min(.05, (now - lastT) / 1000 || 0); lastT = now; const t = now / 1000;
+  for (let i = 0; i < SNOW; i++) {
+    const k = i * 3, ph = snowVel[i * 2 + 1];
+    snowPos[k + 1] -= snowVel[i * 2] * dt;
+    snowPos[k] += (Math.sin(t * .7 + ph) * .18 + .06) * dt; snowPos[k + 2] += Math.cos(t * .5 + ph * 1.3) * .14 * dt;
+    if (snowPos[k + 1] < -0.05 || inHouse(snowPos[k], snowPos[k + 1], snowPos[k + 2])) dropFlake(i, false);
+  }
+  snowGeo.attributes.position.needsUpdate = true;
 }
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -206,7 +252,7 @@ function applyArt(o){
   if (/^Blue_Picture_Art_(\d)/.test(n)) m = new THREE.MeshStandardMaterial({map:art.marble(100 + (+RegExp.$1) * 37), roughness:.35, metalness:0});
   else if (n === 'FarWall_Art_Canvas') m = new THREE.MeshStandardMaterial({map:art.trees(), roughness:.8});
   else if (n === 'FarWall_Art_Clock') { m = new THREE.MeshStandardMaterial({map:art.clock(), roughness:.7, transparent:true, alphaTest:.35}); o.castShadow = false; }
-  if (m) { m.envMapIntensity = .4; o.material = m; }
+  if (m) { m.envMapIntensity = .4 * ENV; o.material = m; }
   return !!m;
 }
 
@@ -237,7 +283,7 @@ function cardTexture(name, mine){
 const CARD_W = 0.156, CARD_H = 0.0975, TILT = 0.42;
 function makeCard(name, mine){
   const tex = cardTexture(name, mine), grp = new THREE.Group();
-  const mat = new THREE.MeshStandardMaterial({map:tex, roughness:.75, side:THREE.FrontSide}); mat.envMapIntensity = .3;
+  const mat = new THREE.MeshStandardMaterial({map:tex, roughness:.75, side:THREE.FrontSide}); mat.envMapIntensity = .3 * ENV;
   const inner = new THREE.MeshStandardMaterial({color:0xf3ecd6, roughness:.8, side:THREE.BackSide});
   for (const flip of [0, 1]) {
     const half = new THREE.Group(); half.rotation.y = flip * Math.PI;
@@ -266,11 +312,19 @@ loader.load('room.glb', gltf => {
       o.castShadow = !glassy && !drawn && !/^(Floor|Kitchen_Floor|Wall_|Kitchen_Wall|Kitchen_Ceiling|FarWall_Solid)/.test(n);
       o.receiveShadow = !glassy;
       for (const m of mats) {
-        if (!drawn) m.envMapIntensity = m.metalness > .5 ? 1.0 : .45;
+        if (!drawn) m.envMapIntensity = (m.metalness > .5 ? 1.0 : .45) * ENV;
         if (m.name === 'Sofa_GreyCord' && !m.map) { m.map = cordTex.map; m.bumpMap = cordTex.bump; m.bumpScale = 1.5; m.color.set(0x9a9fa6); m.roughness = 1; m.envMapIntensity = .15; m.needsUpdate = true; }
         if (m.name === 'Glass') { m.opacity = .12; m.depthWrite = false; m.side = THREE.DoubleSide; m.roughness = .03; m.envMapIntensity = 1.2; }
-        if (/Glassware|Vase_Glass/.test(m.name)) { m.depthWrite = false; m.opacity = .32; m.roughness = .02; m.envMapIntensity = 1.6; }
+        if (/Glassware|Vase_Glass/.test(m.name)) { m.depthWrite = false; m.opacity = .32; m.roughness = .02; m.envMapIntensity = 1.6 * ENV; }
+        if (m.name === 'Glass') m.envMapIntensity = 1.2 * ENV;
+        if (m.name === 'Lampshade_Cream') { m.emissive.set(0xffc27a); m.emissiveIntensity = .9; }
+        if (m.name === 'Downlight') m.emissiveIntensity = 7;
+        if (m.name === 'Candle_Flame') { m.emissive.set(0xffa040); m.emissiveIntensity = 9; m.toneMapped = false; }
+        if (m.name === 'FairyLight') { m.emissiveIntensity = 6; m.toneMapped = false; }
       }
+      if (/^Candle_Flame_/.test(n)) { o.castShadow = false; flames.push(o); addHalo(o.getWorldPosition(new THREE.Vector3()), .16, .9); }
+      if (mats.some(m => m.name === 'FairyLight')) { o.castShadow = false; fairyBulbs(o); }
+      if (n === 'Kitchen_Downlights') o.castShadow = false;
     }
     if (/^Roof_/.test(tn)) groups.roof.push(o);
     else if (/^(Glazing_Near|Gable_Near)/.test(tn)) groups.near.push(o);
@@ -290,6 +344,18 @@ loader.load('room.glb', gltf => {
   overview(true);
   setTimeout(() => { if (mySeatNo && !touched) flyToSeat(+mySeatNo); }, 2200);
 }, e => { if (e.total) $('prog').style.width = Math.round(e.loaded / e.total * 100) + '%'; }, () => flatPlan());
+
+// a soft halo on each fairy-light bulb: group the light-string vertices into bulb-sized clusters
+function fairyBulbs(o){
+  const pa = o.geometry.attributes.position, v = new THREE.Vector3(), cells = new Map();
+  for (let i = 0; i < pa.count; i++) {
+    v.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld);
+    const key = Math.round(v.x / .06) + ',' + Math.round(v.y / .06) + ',' + Math.round(v.z / .06);
+    const c = cells.get(key) || cells.set(key, {x:0, y:0, z:0, n:0}).get(key); c.x += v.x; c.y += v.y; c.z += v.z; c.n++;
+  }
+  let made = 0;
+  for (const c of cells.values()) { if (made++ > 120) break; addHalo(new THREE.Vector3(c.x / c.n, c.y / c.n, c.z / c.n), .12, .32); }
+}
 
 function buildCards(){
   const hitMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false});
@@ -392,7 +458,12 @@ renderer.setAnimationLoop(now => {
   }
   controls.update(); cutaway();
   if (ring) { ring.userData.beam.visible = camera.position.distanceTo(ring.position) > 3.2; const s = 1 + Math.sin(now / 420) * .08; ring.scale.set(s, s, s); ring.material.opacity = .65 + Math.sin(now / 420) * .25; }
-  candleGlow.intensity = .8 + Math.sin(now / 90) * .08 + Math.sin(now / 37) * .05;
+  const fl = Math.sin(now / 90) * .12 + Math.sin(now / 37) * .08 + Math.sin(now / 211) * .06;
+  candleGlow.intensity = 3.2 * (1 + fl);
+  for (let i = 0; i < flames.length; i++) { const f = flames[i]; f.scale.y = 1 + Math.sin(now / 70 + i * 1.7) * .12; f.scale.x = f.scale.z = 1 - Math.sin(now / 70 + i * 1.7) * .05; }
+  for (const h of halos) h.material.opacity = h.userData.base * (h.scale.x > .14 ? (1 + fl * .8) : (.85 + Math.sin(now / 700 + h.userData.ph) * .15));
+  for (const l of fairyGlows) l.intensity = 1.6 * (.94 + Math.sin(now / 900 + l.position.z) * .06);
+  stepSnow(now);
   renderer.render(scene, camera);
 });
 window.__tp = {camera, controls, seats, groups, flyToSeat, overview, scene};
