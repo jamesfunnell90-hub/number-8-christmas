@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Table plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c1f17;--panel:#17382b;--line:#2f5443;--gold:#d4b36a;--ink:#f4ecd6;--dim:#b9c4b3;--berry:#c4523f;
+--script:"Pinyon Script","Snell Roundhand",cursive;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Jost",system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;overscroll-behavior:none}
+#stage{position:fixed;inset:0;touch-action:none}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.top{position:fixed;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top) + 14px) 16px 26px;text-align:center;pointer-events:none;
+ background:linear-gradient(rgba(12,31,23,.92),rgba(12,31,23,0))}
+.top h1{margin:0;font:600 26px/1.1 var(--serif);color:var(--ink)}
+.top p{margin:5px 0 0;font-size:13px;color:var(--dim);min-height:1.3em}
+.top p b{color:var(--gold);font-weight:700}
+.bar{position:fixed;left:0;right:0;bottom:0;display:flex;gap:10px;justify-content:center;padding:26px 16px calc(env(safe-area-inset-bottom) + 16px);
+ background:linear-gradient(rgba(12,31,23,0),rgba(12,31,23,.92));pointer-events:none}
+button{font:700 14px/1 var(--sans);letter-spacing:.03em;border-radius:999px;padding:13px 18px;border:1px solid var(--gold);cursor:pointer;pointer-events:auto}
+.solid{background:var(--gold);color:#1b1608}
+.ghost{background:rgba(12,31,23,.6);color:var(--gold)}
+#load{position:fixed;inset:0;display:grid;place-items:center;background:var(--bg);transition:opacity .6s;z-index:5;text-align:center}
+#load.gone{opacity:0;pointer-events:none}
+#load i{display:block;width:180px;height:3px;background:var(--line);border-radius:3px;margin:14px auto 0;overflow:hidden}
+#load i b{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
+#load span{font:500 22px var(--serif)}
+#hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 78px);transform:translateX(-50%);font-size:12px;color:var(--dim);
+ background:rgba(12,31,23,.7);padding:6px 12px;border-radius:999px;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+#flat{display:none;position:fixed;inset:0;overflow:auto;padding:90px 16px 100px}
+#flat .tbl{max-width:360px;margin:0 auto;display:grid;grid-template-columns:1fr 70px 1fr;gap:8px;align-items:center}
+#flat .s{padding:9px 6px;text-align:center;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:14px}
+#flat .s.me{background:var(--gold);color:#1b1608;font-weight:700;border-color:var(--gold)}
+#flat .mid{grid-column:2;background:#f4ecd6;border-radius:6px;opacity:.9}
+#flat .pair{grid-column:1/-1;display:flex;gap:8px;justify-content:center}
+#flat .pair .s,#flat .head{min-width:110px}
+#flat .head{grid-column:1/-1;justify-self:center}
+#flat small{display:block;text-align:center;color:var(--dim);margin:10px 0}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="flat"></div>
+<div class="top"><h1>Table plan</h1><p id="sub">&nbsp;</p></div>
+<div id="hint">One finger to spin · pinch to zoom · tap a place</div>
+<div class="bar"><button class="solid" id="bMine">Find my seat</button><button class="ghost" id="bRoom">Whole room</button></div>
+<div id="load"><div><span>Laying the table…</span><i><b id="prog"></b></i></div></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+/* Table plan viewer. Who is looking comes from ?me=Name (the main app passes the signed-in guest). */
+const qs = new URLSearchParams(location.search);
+const ME = (qs.get('me') || '').trim();
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const seatData = await fetch('seats.json', {cache:'no-cache'}).then(r => r.json()).then(j => j.seats).catch(() => ({}));
+const mySeatNo = Object.keys(seatData).find(k => seatData[k].toLowerCase() === ME.toLowerCase());
+const subDefault = mySeatNo ? 'Your place is glowing <b>gold</b>' : 'Every place card has a name on it';
+$('sub').innerHTML = subDefault;
+if (!mySeatNo) $('bMine').style.display = 'none';
+
+function flatPlan(){            // plain top-down plan for phones that cannot draw 3D
+  const el = $('flat'), s = (n, c = '') => '<div class="s ' + c + (String(n) === mySeatNo ? ' me' : '') + '">' + esc(seatData[n] || '') + '</div>';
+  let h = '<small>French doors</small><div class="tbl"><div class="pair">' + s(9) + s(8) + '</div>';
+  for (let i = 0; i < 6; i++) h += s(10 + i) + (i === 0 ? '<div class="mid" style="grid-row:span 6;height:100%"></div>' : '') + s(7 - i);
+  h += s(1, 'head') + '</div><small>Kitchen on the left · sofa and garden on the right</small>';
+  el.innerHTML = h; el.style.display = 'block';
+  ['stage', 'hint', 'bRoom', 'bMine'].forEach(i => $(i).style.display = 'none');
+  $('load').classList.add('gone');
+}
+
+let THREE, OrbitControls, GLTFLoader, RoomEnvironment;
+try {
+  THREE = await import('three');
+  ({OrbitControls} = await import('three/addons/controls/OrbitControls.js'));
+  ({GLTFLoader} = await import('three/addons/loaders/GLTFLoader.js'));
+  ({RoomEnvironment} = await import('three/addons/environments/RoomEnvironment.js'));
+  const t = document.createElement('canvas'); if (!(t.getContext('webgl2') || t.getContext('webgl'))) throw new Error('no webgl');
+} catch (e) { flatPlan(); throw e; }
+try { await Promise.race([Promise.all([document.fonts.load('80px "Pinyon Script"'), document.fonts.load('600 80px "Cormorant Garamond"')]), new Promise(r => setTimeout(r, 2500))]); } catch (e) {}
+
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({antialias:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+function canvasTex(w, h, draw, opts = {}){
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso; if (opts.gltf) t.flipY = false; return t;
+}
+function rng(seed){ return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+
+// winter-afternoon sky dome
+scene.add(new THREE.Mesh(new THREE.SphereGeometry(60, 24, 16), new THREE.MeshBasicMaterial({side:THREE.BackSide, fog:false, map:canvasTex(4, 256, (g) => {
+  const gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#7fa6cf'); gr.addColorStop(.5, '#cfdcea'); gr.addColorStop(.62, '#f3e3c8'); gr.addColorStop(.63, '#33473a'); gr.addColorStop(1, '#1c2b22');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 256); })})));
+
+const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 150);
+// Room in viewer coordinates: X 0..3.3 (kitchen wall -> garden glass), Z 0..-5.4 (sofa end -> French doors), Y up.
+const ROOM = {x0:0, x1:3.3, z0:-5.4, z1:0};
+const CENTRE = new THREE.Vector3(1.2, 0.8, -2.95);
+
+scene.add(new THREE.HemisphereLight(0xdfeaff, 0x8a7a66, 0.55));
+const sun = new THREE.DirectionalLight(0xfff0d8, 2.6);
+sun.position.set(7.5, 8, -1.5); sun.target.position.copy(CENTRE); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.02; sun.shadow.radius = 5;
+Object.assign(sun.shadow.camera, {left:-6, right:6, top:6, bottom:-6, near:1, far:25});
+const lampGlow = new THREE.PointLight(0xffc98a, 2.0, 3.5, 2); lampGlow.position.set(2.94, 1.0, -2.93); scene.add(lampGlow);
+const kitchenGlow = new THREE.PointLight(0xffd9a0, 6, 6, 1.6); kitchenGlow.position.set(-2.0, 2.0, -2.1); scene.add(kitchenGlow);
+const candleGlow = new THREE.PointLight(0xffb060, 0.8, 2.2, 2); candleGlow.position.set(1.2, 1.15, -3.95); scene.add(candleGlow);
+
+// garden: lawn, patio, fence, hedge
+{
+  const lawn = new THREE.Mesh(new THREE.CircleGeometry(40, 40), new THREE.MeshStandardMaterial({color:0x5d8a3c, roughness:1}));
+  lawn.rotation.x = -Math.PI/2; lawn.position.set(1.6, -0.07, -2.7); lawn.receiveShadow = true; scene.add(lawn);
+  const patio = new THREE.Mesh(new THREE.PlaneGeometry(9, 5), new THREE.MeshStandardMaterial({color:0xb9a98f, roughness:1}));
+  patio.rotation.x = -Math.PI/2; patio.position.set(2.2, -0.065, -7.2); patio.receiveShadow = true; scene.add(patio);
+  const fm = new THREE.MeshStandardMaterial({color:0x8a4a38, roughness:1}), hm = new THREE.MeshStandardMaterial({color:0x2f5a2c, roughness:1});
+  [[11, -2.7, .2, 26], [1.6, -15, 26, .2], [1.6, 9, 26, .2]].forEach(([x, z, w, d]) => { const f = new THREE.Mesh(new THREE.BoxGeometry(w, 1.8, d), fm); f.position.set(x, .85, z); scene.add(f); });
+  const r = rng(7);
+  for (let i = 0; i < 16; i++) { const s = 0.9 + r() * 1.3, b = new THREE.Mesh(new THREE.IcosahedronGeometry(s, 1), hm); b.position.set(12 + r() * 2, 1.6 + r() * 1.6, -14 + i * 1.5); scene.add(b); }
+}
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.dampingFactor = .08; controls.enablePan = false;
+controls.minDistance = 0.7; controls.maxDistance = 13; controls.minPolarAngle = 0.12; controls.maxPolarAngle = 1.50;
+controls.rotateSpeed = .6; controls.zoomSpeed = .8; controls.target.copy(CENTRE); controls.autoRotateSpeed = 0.7;
+
+// ---------- artwork drawn in the app (keeps the model file small)
+const art = {
+  marble(seed){ return canvasTex(512, 736, (g, w, h) => {
+    const r = rng(seed), bg = g.createLinearGradient(0, 0, w, h); bg.addColorStop(0, '#2f6ea8'); bg.addColorStop(.5, '#184a85'); bg.addColorStop(1, '#0d2c5c');
+    g.fillStyle = bg; g.fillRect(0, 0, w, h);
+    const cols = ['120,180,225', '70,140,205', '10,40,95', '170,210,240', '20,70,140', '6,28,70'];
+    for (let i = 0; i < 38; i++) {
+      const x = r() * w, y = r() * h, rad = 60 + r() * 190, c = cols[(r() * cols.length) | 0];
+      g.save(); g.translate(x, y); g.rotate(r() * 3.14); g.scale(1, .35 + r() * .6);
+      const gr = g.createRadialGradient(0, 0, 0, 0, 0, rad); gr.addColorStop(0, 'rgba(' + c + ',' + (.35 + r() * .35) + ')'); gr.addColorStop(.7, 'rgba(' + c + ',.12)'); gr.addColorStop(1, 'rgba(' + c + ',0)');
+      g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rad, 0, 6.3); g.fill(); g.restore();
+    }
+    g.lineCap = 'round';
+    for (let i = 0; i < 9; i++) {
+      g.strokeStyle = 'rgba(' + (i % 3 ? '205,230,250' : '8,30,80') + ',' + (.25 + r() * .4) + ')'; g.lineWidth = .8 + r() * 2.2; g.beginPath();
+      let x = r() * w, y = r() * h; g.moveTo(x, y);
+      for (let k = 0; k < 5; k++) { const nx = x + (r() - .5) * 320, ny = y + (r() - .3) * 260; g.bezierCurveTo(x + (r() - .5) * 200, y + (r() - .5) * 200, nx + (r() - .5) * 200, ny + (r() - .5) * 200, nx, ny); x = nx; y = ny; }
+      g.stroke();
+    }
+  }, {gltf:true}); },
+  trees(){ return canvasTex(768, 512, (g, w, h) => {
+    const r = rng(42); g.fillStyle = '#eef2f1'; g.fillRect(0, 0, w, h);
+    const pal = ['#0f6f78', '#1aa0a6', '#0b4f5c', '#3fc3c0', '#12838c', '#7fd9d2', '#0a3b48'];
+    for (let i = 0; i < 46; i++) {
+      const x = 14 + r() * (w - 28), top = h * (.34 + r() * .2);
+      g.strokeStyle = r() < .5 ? '#0b3440' : '#1d5560'; g.lineWidth = 1 + r() * 2.4; g.globalAlpha = .75;
+      g.beginPath(); g.moveTo(x, top); g.bezierCurveTo(x + (r() - .5) * 8, h * .6, x + (r() - .5) * 8, h * .8, x + (r() - .5) * 10, h * (.86 + r() * .1)); g.stroke();
+    }
+    for (let i = 0; i < 520; i++) {
+      const x = r() * w, y = h * (.04 + Math.pow(r(), 1.4) * .5), rad = 6 + r() * 26;
+      g.globalAlpha = .35 + r() * .45; g.fillStyle = pal[(r() * pal.length) | 0]; g.beginPath(); g.arc(x, y, rad, 0, 6.3); g.fill();
+    }
+    g.globalAlpha = .5; g.fillStyle = '#ffffff';
+    for (let i = 0; i < 90; i++) { g.beginPath(); g.arc(r() * w, h * (.05 + r() * .42), 1 + r() * 4, 0, 6.3); g.fill(); }
+    g.globalAlpha = 1;
+  }, {gltf:true}); },
+  clock(){ return canvasTex(1024, 1024, (g, w) => {
+    const c = w / 2; g.translate(c, c);
+    g.shadowColor = 'rgba(20,30,40,.45)'; g.shadowBlur = 16; g.shadowOffsetX = 10; g.shadowOffsetY = 12;
+    const ringC = '#f6f2e8';
+    g.strokeStyle = ringC; g.lineWidth = 40; g.beginPath(); g.arc(0, 0, 470, 0, 6.3); g.stroke();
+    g.lineWidth = 20; g.beginPath(); g.arc(0, 0, 285, 0, 6.3); g.stroke();
+    g.fillStyle = ringC; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '600 132px "Cormorant Garamond", Georgia, serif';
+    ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'].forEach((n, i) => { g.save(); g.rotate(i * Math.PI / 6); g.translate(0, -375); g.scale(.8, 1.15); g.fillText(n, 0, 0); g.restore(); });
+    g.lineWidth = 6; for (let i = 0; i < 12; i++) { g.save(); g.rotate(i * Math.PI / 6 + Math.PI / 12); g.beginPath(); g.moveTo(0, -295); g.lineTo(0, -452); g.stroke(); g.restore(); }
+    g.fillStyle = '#1b1b1b'; g.strokeStyle = '#1b1b1b'; g.lineCap = 'round';
+    g.save(); g.rotate(-Math.PI / 3); g.lineWidth = 20; g.beginPath(); g.moveTo(0, 40); g.lineTo(0, -215); g.stroke(); g.restore();
+    g.save(); g.rotate(Math.PI / 3); g.lineWidth = 13; g.beginPath(); g.moveTo(0, 55); g.lineTo(0, -345); g.stroke(); g.restore();
+    g.beginPath(); g.arc(0, 0, 26, 0, 6.3); g.fill();
+  }, {gltf:true}); }
+};
+function applyArt(o){
+  const n = o.name; let m = null;
+  if (/^Blue_Picture_Art_(\d)/.test(n)) m = new THREE.MeshStandardMaterial({map:art.marble(100 + (+RegExp.$1) * 37), roughness:.35, metalness:0});
+  else if (n === 'FarWall_Art_Canvas') m = new THREE.MeshStandardMaterial({map:art.trees(), roughness:.8});
+  else if (n === 'FarWall_Art_Clock') { m = new THREE.MeshStandardMaterial({map:art.clock(), roughness:.7, transparent:true, alphaTest:.35}); o.castShadow = false; }
+  if (m) { m.envMapIntensity = .4; o.material = m; }
+  return !!m;
+}
+
+// ---------- place cards with the guest's name
+function cardTexture(name, mine){
+  return canvasTex(640, 400, (g, w, h) => {
+    g.fillStyle = mine ? '#fff1c4' : '#fbf5e3'; g.fillRect(0, 0, w, h);
+    g.strokeStyle = '#c9a24f'; g.lineWidth = 9; g.strokeRect(15, 15, w - 30, h - 30);
+    g.strokeStyle = '#17382b'; g.lineWidth = 2; g.strokeRect(31, 31, w - 62, h - 62);
+    // holly sprig
+    g.save(); g.translate(w / 2, 92);
+    for (const s of [-1, 1]) { g.save(); g.scale(s, 1); g.rotate(-.35); g.fillStyle = '#1f6b3a'; g.beginPath(); g.moveTo(6, 0);
+      g.bezierCurveTo(28, -34, 52, -10, 60, -30); g.bezierCurveTo(66, -8, 92, -12, 104, 2); g.bezierCurveTo(90, 14, 66, 8, 60, 28); g.bezierCurveTo(52, 10, 28, 30, 6, 0); g.fill();
+      g.strokeStyle = '#124a27'; g.lineWidth = 2; g.beginPath(); g.moveTo(8, 0); g.lineTo(98, 2); g.stroke(); g.restore(); }
+    g.fillStyle = '#c4322f'; [[-11, 4], [11, 4], [0, -13]].forEach(([x, y]) => { g.beginPath(); g.arc(x, y, 12, 0, 6.3); g.fill(); });
+    g.fillStyle = 'rgba(255,255,255,.6)'; [[-14, 0], [8, 0], [-3, -17]].forEach(([x, y]) => { g.beginPath(); g.arc(x, y, 3, 0, 6.3); g.fill(); });
+    g.restore();
+    // name
+    g.fillStyle = '#123524'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    let size = 170; do { g.font = size + 'px "Pinyon Script", "Snell Roundhand", cursive'; size -= 6; } while (g.measureText(name).width > w - 110 && size > 60);
+    g.fillText(name, w / 2, 262 + size * .12);
+    // flourish
+    g.strokeStyle = '#c9a24f'; g.lineWidth = 3; g.beginPath(); g.moveTo(w / 2 - 150, 332); g.lineTo(w / 2 - 22, 332); g.moveTo(w / 2 + 22, 332); g.lineTo(w / 2 + 150, 332); g.stroke();
+    g.fillStyle = '#c9a24f'; g.save(); g.translate(w / 2, 332); g.beginPath();
+    for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5 - Math.PI / 2, rr = i % 2 ? 6 : 15; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } g.fill(); g.restore();
+  });
+}
+const CARD_W = 0.156, CARD_H = 0.0975, TILT = 0.42;
+function makeCard(name, mine){
+  const tex = cardTexture(name, mine), grp = new THREE.Group();
+  const mat = new THREE.MeshStandardMaterial({map:tex, roughness:.75, side:THREE.FrontSide}); mat.envMapIntensity = .3;
+  const inner = new THREE.MeshStandardMaterial({color:0xf3ecd6, roughness:.8, side:THREE.BackSide});
+  for (const flip of [0, 1]) {
+    const half = new THREE.Group(); half.rotation.y = flip * Math.PI;
+    const geo = new THREE.PlaneGeometry(CARD_W, CARD_H); geo.translate(0, CARD_H / 2, 0);
+    for (const m of [mat, inner]) { const p = new THREE.Mesh(geo, m); p.rotation.x = -TILT; p.position.z = Math.sin(TILT) * CARD_H; p.castShadow = m === mat; half.add(p); }
+    grp.add(half);
+  }
+  return grp;
+}
+
+const groups = {roof:[], near:[], far:[], right:[], left:[], kceil:[]};
+const seats = {};           // seat number -> {pos, dir, high}
+const hits = [];
+let ring, selected = null;
+
+const loader = new GLTFLoader();
+loader.load('room.glb', gltf => {
+  const root = gltf.scene; scene.add(root); root.updateMatrixWorld(true);
+  const top = o => { while (o.parent && o.parent !== root) o = o.parent; return o; };
+  root.traverse(o => {
+    const n = o.name, tn = top(o).name;
+    if (o.isMesh) {
+      const drawn = applyArt(o);
+      const mats = Array.isArray(o.material) ? o.material : [o.material];
+      const glassy = mats.some(m => m.transparent) && !drawn;
+      o.castShadow = !glassy && !drawn && !/^(Floor|Kitchen_Floor|Wall_|Kitchen_Wall|Kitchen_Ceiling|FarWall_Solid)/.test(n);
+      o.receiveShadow = !glassy;
+      for (const m of mats) {
+        if (!drawn) m.envMapIntensity = m.metalness > .5 ? 1.0 : .45;
+        if (m.name === 'Glass') { m.opacity = .12; m.depthWrite = false; m.side = THREE.DoubleSide; m.roughness = .03; m.envMapIntensity = 1.2; }
+        if (/Glassware|Vase_Glass/.test(m.name)) { m.depthWrite = false; m.opacity = .32; m.roughness = .02; m.envMapIntensity = 1.6; }
+      }
+    }
+    if (/^Roof_/.test(tn)) groups.roof.push(o);
+    else if (/^(Glazing_Near|Gable_Near)/.test(tn)) groups.near.push(o);
+    else if (/^(FarWall|FrenchDoor|FairyLights_FarWall)/.test(tn)) groups.far.push(o);
+    else if (/^(Glazing_Right|FairyLights_RightWall)/.test(tn)) groups.right.push(o);
+    else if (/^(Wall_Left|Opening_Reveal|Blue_Picture|Aircon|Wall_Spotlight|Heart_Sign|Light_Switch|Socket)/.test(tn)) groups.left.push(o);
+    else if (/^(Kitchen_Ceiling|Kitchen_Downlights)/.test(tn)) groups.kceil.push(o);
+    const m = /^Seat_(\d+)$/.exec(n);
+    if (m) {
+      const pos = new THREE.Vector3(); o.getWorldPosition(pos);
+      const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(o.getWorldQuaternion(new THREE.Quaternion())).setY(0).normalize(); // toward table centre
+      seats[+m[1]] = {pos, dir, high: o.children.some(c => /^High_Chair/.test(c.name))};
+    }
+  });
+  buildCards(); buildRing();
+  $('load').classList.add('gone');
+  overview(true);
+  setTimeout(() => { if (mySeatNo && !touched) flyToSeat(+mySeatNo); }, 2200);
+}, e => { if (e.total) $('prog').style.width = Math.round(e.loaded / e.total * 100) + '%'; }, () => flatPlan());
+
+function buildCards(){
+  const hitMat = new THREE.MeshBasicMaterial({transparent:true, opacity:0, depthWrite:false});
+  for (const k in seats) {
+    const s = seats[k], name = seatData[k]; if (!name) continue;
+    const card = makeCard(name, k === mySeatNo);
+    card.position.copy(s.pos).addScaledVector(s.dir, s.high ? 0.10 : 0.265); card.position.y += s.high ? 0.002 : 0.022;
+    card.rotation.y = Math.atan2(-s.dir.x, -s.dir.z);      // card's front faces the guest
+    scene.add(card); s.card = card;
+    const hb = new THREE.Mesh(new THREE.BoxGeometry(0.44, 0.8, 0.8), hitMat);
+    hb.position.copy(s.pos).addScaledVector(s.dir, -0.08); hb.position.y = 0.62; hb.rotation.y = card.rotation.y; hb.userData.seat = +k; scene.add(hb); hits.push(hb);
+  }
+}
+function select(k){
+  selected = k;
+  $('sub').innerHTML = String(k) === mySeatNo ? 'This is <b>your place</b>, ' + esc(seatData[k]) : '<b>' + esc(seatData[k]) + '</b> is sitting here';
+}
+function buildRing(){
+  if (!mySeatNo || !seats[mySeatNo]) return;
+  const s = seats[mySeatNo];
+  ring = new THREE.Mesh(new THREE.RingGeometry(0.2, 0.235, 48), new THREE.MeshBasicMaterial({color:0xffd978, transparent:true, opacity:.9, side:THREE.DoubleSide, depthWrite:false}));
+  ring.rotation.x = -Math.PI/2; ring.position.copy(s.pos).addScaledVector(s.dir, 0.2); ring.position.y += 0.012; scene.add(ring);
+  const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.2, 2.2, 24, 1, true), new THREE.MeshBasicMaterial({color:0xffd978, transparent:true, opacity:.13, side:THREE.DoubleSide, depthWrite:false}));
+  beam.position.copy(ring.position); beam.position.y += 1.1; scene.add(beam); ring.userData.beam = beam;
+}
+
+// ---------- camera moves
+let tween = null, touched = false;
+function flyTo(pos, target, ms = 1500){
+  controls.autoRotate = false;
+  tween = {p0:camera.position.clone(), t0:controls.target.clone(), p1:pos, t1:target, s:performance.now(), ms};
+  $('hint').style.opacity = 0;
+}
+function overview(instant){
+  const portrait = innerHeight > innerWidth;
+  const pos = new THREE.Vector3(portrait ? 7.2 : 6.6, portrait ? 8.6 : 6.2, portrait ? 3.6 : 2.6);
+  $('sub').innerHTML = subDefault; selected = null;
+  if (instant) { camera.position.copy(pos); controls.target.copy(CENTRE); controls.update(); controls.autoRotate = true; }
+  else { flyTo(pos, CENTRE.clone()); setTimeout(() => { if (!tween) controls.autoRotate = true; }, 1700); }
+}
+function flyToSeat(k){
+  const s = seats[k]; if (!s) return; select(k);
+  const target = s.pos.clone().addScaledVector(s.dir, 0.3); target.y += 0.02;
+  const pos = s.pos.clone().addScaledVector(s.dir, -0.7); pos.y = 1.55;
+  // keep the camera inside the room so walls never block the view
+  pos.x = Math.min(Math.max(pos.x, ROOM.x0 + .2), ROOM.x1 - .3); pos.z = Math.min(Math.max(pos.z, ROOM.z0 + .25), ROOM.z1 - .25);
+  flyTo(pos, target);
+}
+$('bMine').onclick = () => flyToSeat(+mySeatNo);
+$('bRoom').onclick = () => overview(false);
+
+// tap a place (a tap, not a drag) to visit it
+const ray = new THREE.Raycaster(), down = {x:0, y:0, t:0};
+renderer.domElement.addEventListener('pointerdown', e => { touched = true; tween = null; controls.autoRotate = false; $('hint').style.opacity = 0; down.x = e.clientX; down.y = e.clientY; down.t = performance.now(); });
+renderer.domElement.addEventListener('pointerup', e => {
+  if (Math.hypot(e.clientX - down.x, e.clientY - down.y) > 8 || performance.now() - down.t > 500) return;
+  ray.setFromCamera(new THREE.Vector2(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1), camera);
+  const hit = ray.intersectObjects(hits, false)[0];
+  if (hit) flyToSeat(hit.object.userData.seat);
+});
+
+// ---------- cut-away: hide whatever stands between the camera and the table
+function setVis(list, v){ for (const o of list) o.visible = v; }
+function cutaway(){
+  const p = camera.position, m = .05;
+  const inside = p.x > ROOM.x0 + m && p.x < ROOM.x1 - m && p.z > ROOM.z0 + m && p.z < ROOM.z1 - m && p.y < 4.9 - (p.x / 3.3) * 2.5;
+  setVis(groups.roof, inside);
+  setVis(groups.near, inside || p.z < ROOM.z1);
+  setVis(groups.far, inside || p.z > ROOM.z0);
+  setVis(groups.right, inside || p.x < ROOM.x1);
+  setVis(groups.left, inside || p.x > ROOM.x0);
+  setVis(groups.kceil, p.y < 2.25);
+}
+function resize(){ const w = innerWidth, h = innerHeight; if (!w || !h) return; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+renderer.setAnimationLoop(now => {
+  if (tween) {
+    const t = Math.min(1, (now - tween.s) / tween.ms), e = ease(t);
+    camera.position.lerpVectors(tween.p0, tween.p1, e); controls.target.lerpVectors(tween.t0, tween.t1, e);
+    if (t >= 1) tween = null;
+  }
+  controls.update(); cutaway();
+  if (ring) { ring.userData.beam.visible = camera.position.distanceTo(ring.position) > 3.2; const s = 1 + Math.sin(now / 420) * .08; ring.scale.set(s, s, s); ring.material.opacity = .65 + Math.sin(now / 420) * .25; }
+  candleGlow.intensity = .8 + Math.sin(now / 90) * .08 + Math.sin(now / 37) * .05;
+  renderer.render(scene, camera);
+});
+window.__tp = {camera, controls, seats, groups, flyToSeat, overview, scene};
+</script>
+</body>
+</html>
