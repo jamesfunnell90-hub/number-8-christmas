@@ -97,7 +97,8 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
   <div class="ov" id="ovStart"><div class="card">
     <div class="k">FUNNELL'S · DECEMBER GAMES</div>
     <h1>Reindeer Rally</h1>
-    <p>Frosty Hollow · 3 laps. Your reindeer runs on its own, so you only steer. Dodge the snowmen and presents, hit the candy-stripe pads for a boost, and watch out for ice. Barge the others out of the way if you dare.</p>
+    <div class="me" style="background:rgba(8,20,14,.4);border:1px solid var(--line);border-radius:14px;padding:8px 10px"><canvas id="courseMap" width="200" height="130" style="width:84px;height:55px;flex:none"></canvas><div style="flex:1;min-width:0;text-align:left"><div class="k" style="font-size:10px">TODAY'S COURSE</div><div id="courseName" style="font-family:var(--serif);font-weight:700;font-size:22px;color:var(--gold);line-height:1.1"></div><div id="courseNote" style="font-size:12px;color:var(--dim);line-height:1.35"></div></div></div>
+    <p>3 laps. Your reindeer runs on its own, so you only steer. Dodge the snowmen and presents, hit the candy-stripe pads for a boost, and watch out for ice. Barge the others out of the way if you dare.</p>
     <div class="me"><canvas id="boardPrev" width="256" height="160"></canvas>
       <div id="pick" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:0">
         <label class="fld">Racing as <select id="who"></select></label>
@@ -115,6 +116,7 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <p id="eLine"></p>
     <div class="rows" id="eRows"></div>
     <button class="go" id="bAgain">Race again</button>
+    <button class="go" id="bNew" style="background:transparent;color:var(--gold);border:1px solid var(--gold-deep)">Try another course</button>
   </div></div>
   <div id="err">This game needs WebGL, which this browser has turned off.</div>
 </div>
@@ -227,13 +229,48 @@ sun.shadow.bias=-.0008;scene.add(sun,sun.target);
 })();
 
 /* ---------- track ---------- */
-const CP=[[0,0],[40,-6],[68,14],[76,48],[52,70],[24,56],[6,76],[-30,82],[-56,58],[-46,28],[-62,2],[-42,-26],[-16,-16]];
+// three courses; one is picked at random each time the game loads (#track-N forces one)
+const TRACKS=[
+ {name:'Frosty Hollow',note:'The original loop past Number 8, the grotto and the North Pole.',
+  cp:[[0,0],[40,-6],[68,14],[76,48],[52,70],[24,56],[6,76],[-30,82],[-56,58],[-46,28],[-62,2],[-42,-26],[-16,-16]],
+  lm:{house:[.04,-1,21.5],grotto:[.29,-1,23],pole:[.47,1,12],elves:[.63,-1,14.5],tree:[.8,1,15]},
+  bb:[[.165,-1,22],[.555,-1,21.5],[.905,-1,21.5],[.705,1,19]],
+  obs:[['snowman',.075,3],['presents',.14,-3.6],['pad',.2,0],['ice',.27,0],['snowman',.33,-3.2],['snowman',.36,3.4],['presents',.43,0],['pad',.5,-2.4],['snowman',.56,2.8],['ice',.62,1.5],['presents',.69,-3.4],['snowman',.755,.4],['pad',.82,2.2],['presents',.885,3.2],['snowman',.94,-2.6]],
+  gingers:[[.105,'Eileen',0,4.6,.9],[.395,'Annette',1.6,4.6,1.1],[.595,'Arabella',3,4.2,1.3],[.725,'Steve',.8,4.8,.8],[.855,'Leanne',2.2,4.6,1.0]]},
+ {name:'Tinsel Tunnel',note:'Race through a glittering ice tunnel strung with fairy lights.',
+  cp:[[0,0],[42,-10],[78,4],[90,36],[72,62],[40,58],[14,70],[-10,92],[-46,90],[-70,62],[-58,30],[-72,2],[-46,-20],[-20,-16]],
+  tunnel:[.075,.235],
+  lm:{house:[.02,-1,21.5],grotto:[.33,-1,22],pole:[.5,1,12],elves:[.62,-1,15],tree:[.83,1,14]},
+  bb:[[.27,-1,21],[.45,-1,21],[.72,-1,21],[.92,1,18]],
+  obs:[['pad',.27,0],['snowman',.31,-3],['presents',.36,3.2],['ice',.42,0],['snowman',.47,2.8],['pad',.55,-2],['presents',.6,-3.4],['snowman',.66,0],['ice',.72,1.5],['presents',.78,3],['pad',.84,2],['snowman',.9,-2.6],['presents',.95,3]],
+  gingers:[[.155,'Eileen',0,4.2,1.0],[.39,'Annette',1.6,4.6,1.1],[.63,'Arabella',3,4.2,1.3],[.75,'Steve',.8,4.8,.8],[.87,'Leanne',2.2,4.6,1.0]]},
+ {name:'Icicle Leap',note:'Hit the boost and leap the pit of ice shards. Too slow and you crash!',
+  cp:[[0,0],[40,-8],[75,5],[88,35],[80,65],[50,80],[10,82],[-30,82],[-60,70],[-72,40],[-55,15],[-60,-15],[-30,-22]],
+  jump:{at:[40,80.5],ramp:15,gap:22,land:14,h:3.4},
+  lm:{house:[.03,-1,21.5],grotto:[.25,-1,22],pole:[.62,1,12],elves:[.72,-1,15],tree:[.9,1,14]},
+  bb:[[.15,-1,21],[.36,-1,22],[.56,-1,21],[.8,1,18]],
+  obs:[['snowman',.08,3],['presents',.14,-3.4],['pad',.2,0],['ice',.26,1],['snowman',.31,-3],['presents',.36,2.8],['snowman',.6,2.8],['ice',.65,-1.5],['presents',.7,3.2],['pad',.76,-2],['snowman',.82,0],['presents',.88,-3],['snowman',.94,2.6]],
+  gingers:[[.11,'Eileen',0,4.6,.9],[.29,'Annette',1.6,4.6,1.1],[.63,'Arabella',3,4.2,1.3],[.74,'Steve',.8,4.8,.8],[.86,'Leanne',2.2,4.6,1.0]]}];
+let TI=Math.floor(Math.random()*TRACKS.length);
+try{const mm=(location.hash||'').match(/track-(\d)/);if(mm&&TRACKS[+mm[1]])TI=+mm[1];}catch(e){}
+const TR=TRACKS[TI],SFX=TI?'_t'+TI:'';window.__RALLY_SFX=SFX;
+const CP=TR.cp;
 const curve=new THREE.CatmullRomCurve3(CP.map(p=>new THREE.Vector3(p[0],0,p[1])),true,'centripetal');
 const N=700, W=13;
 const P=[],T=[],NR=[];
 for(let i=0;i<N;i++){const u=i/N;const p=curve.getPointAt(u),t=curve.getTangentAt(u);P.push(p);T.push(t);NR.push(new THREE.Vector3(-t.z,0,t.x));}
 let LEN=0;for(let i=0;i<N;i++)LEN+=P[i].distanceTo(P[(i+1)%N]);
 const MAXV0=27;
+// HGT = road height (the jump ramps), GAP = no road (the ice-shard pit), TUN = inside the tunnel, JD = distance into the jump
+const HGT=new Float32Array(N),GAP=new Uint8Array(N),TUN=new Uint8Array(N),JD=new Float32Array(N).fill(-1);
+if(TR.tunnel){for(let i=Math.floor(TR.tunnel[0]*N);i<=Math.floor(TR.tunnel[1]*N);i++)TUN[i%N]=1;}
+let J=null;
+if(TR.jump){const j=TR.jump;let i0=0,bd=1e9;P.forEach((p,i)=>{const d=Math.hypot(p.x-j.at[0],p.z-j.at[1]);if(d<bd){bd=d;i0=i;}});
+  J={i0,ramp:j.ramp,gap:j.gap,land:j.land,h:j.h,v:40,k:.3};const tot=j.ramp+j.gap+j.land;let d=0,i=i0;
+  while(d<=tot){JD[i]=d;if(d<j.ramp)HGT[i]=j.h*Math.pow(d/j.ramp,1.15);else if(d<j.ramp+j.gap)GAP[i]=1;else HGT[i]=j.h*(1-(d-j.ramp-j.gap)/j.land);
+    const n=(i+1)%N;d+=P[i].distanceTo(P[n]);i=n;}
+  J.iEnd=i;J.arc=x=>j.h+J.k*x-12*(x/J.v)*(x/J.v);}
+function trackY(i){if(!J||JD[i]<0)return 0;const d=JD[i];if(d<J.ramp)return HGT[i];const a=J.arc(d-J.ramp);return Math.max(a,GAP[i]?0:HGT[i]);}
 
 const snowTex=canvasTex(256,256,(x)=>{x.fillStyle='#f3f6f8';x.fillRect(0,0,256,256);
   for(let k=0;k<26;k++){const g=x.createRadialGradient(rnd()*256,rnd()*256,0,128,128,0);}
@@ -242,10 +279,10 @@ const ground=new THREE.Mesh(new THREE.PlaneGeometry(900,900),new THREE.MeshLambe
 ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
 
 // a strip that follows the track; offs are lateral offsets across it, ys their heights
-function strip(offs,ys,mat,vScale){const cols=offs.length,pos=[],uv=[],idx=[];let dist=0;
+function strip(offs,ys,mat,vScale,skip){const cols=offs.length,pos=[],uv=[],idx=[];let dist=0;
   for(let i=0;i<=N;i++){const k=i%N;if(i>0)dist+=P[k].distanceTo(P[i-1]);
-    for(let j=0;j<cols;j++){const p=P[k].clone().addScaledVector(NR[k],offs[j]);pos.push(p.x,ys[j],p.z);uv.push(j/(cols-1),dist/vScale);}}
-  for(let i=0;i<N;i++)for(let j=0;j<cols-1;j++){const a=i*cols+j,b=a+1,c=a+cols,d=c+1;idx.push(a,b,c,b,d,c);}
+    for(let j=0;j<cols;j++){const p=P[k].clone().addScaledVector(NR[k],offs[j]);pos.push(p.x,ys[j]+HGT[k],p.z);uv.push(j/(cols-1),dist/vScale);}}
+  for(let i=0;i<N;i++){if(skip&&(skip(i)||skip((i+1)%N)))continue;for(let j=0;j<cols-1;j++){const a=i*cols+j,b=a+1,c=a+cols,d=c+1;idx.push(a,b,c,b,d,c);}}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
   const m=new THREE.Mesh(g,mat);m.receiveShadow=true;scene.add(m);return m;}
 const roadTex=canvasTex(256,512,(x,w,h)=>{x.fillStyle='#b4c6d2';x.fillRect(0,0,w,h);
@@ -253,13 +290,13 @@ const roadTex=canvasTex(256,512,(x,w,h)=>{x.fillStyle='#b4c6d2';x.fillRect(0,0,w
   [.22,.27,.47,.53,.73,.78].forEach((u,k)=>{x.strokeStyle='rgba(120,145,168,.38)';x.lineWidth=3;x.beginPath();for(let y=0;y<=h;y+=8){const xx=u*w+Math.sin(y/40+k)*3;y?x.lineTo(xx,y):x.moveTo(xx,y);}x.stroke();});
   const g=x.createLinearGradient(0,0,w,0);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.1,'rgba(255,255,255,0)');g.addColorStop(.9,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(255,255,255,.55)');x.fillStyle=g;x.fillRect(0,0,w,h);});
 roadTex.wrapS=roadTex.wrapT=THREE.RepeatWrapping;
-strip([-W/2,0,W/2],[.03,.03,.03],new THREE.MeshLambertMaterial({map:roadTex}),16);
+strip([-W/2,0,W/2],[.03,.03,.03],new THREE.MeshLambertMaterial({map:roadTex}),16,i=>GAP[i]);
 const kerbTex=canvasTex(32,64,(x)=>{x.fillStyle='#c4523f';x.fillRect(0,0,32,32);x.fillStyle='#f4ecd6';x.fillRect(0,32,32,32);});
 kerbTex.wrapS=kerbTex.wrapT=THREE.RepeatWrapping;
 const kerbMat=new THREE.MeshLambertMaterial({map:kerbTex});
-strip([W/2,W/2+.9],[.07,.12],kerbMat,4.4);strip([-W/2-.9,-W/2],[.12,.07],kerbMat,4.4);
+strip([W/2,W/2+.9],[.07,.12],kerbMat,4.4,i=>GAP[i]);strip([-W/2-.9,-W/2],[.12,.07],kerbMat,4.4,i=>GAP[i]);
 const bankMat=new THREE.MeshLambertMaterial({map:snowTex.clone()});bankMat.map.needsUpdate=true;bankMat.map.repeat.set(1,40);
-strip([W/2+.9,W/2+1.7,W/2+2.8,W/2+4.6],[.1,.85,.7,0],bankMat,30);strip([-W/2-4.6,-W/2-2.8,-W/2-1.7,-W/2-.9],[0,.7,.85,.1],bankMat,30);
+{const nb=i=>GAP[i]||HGT[i]>0||TUN[i]||JD[i]>=0;strip([W/2+.9,W/2+1.7,W/2+2.8,W/2+4.6],[.1,.85,.7,0],bankMat,30,nb);strip([-W/2-4.6,-W/2-2.8,-W/2-1.7,-W/2-.9],[0,.7,.85,.1],bankMat,30,nb);}
 
 /* ---------- start and finish arch ---------- */
 (function(){const ang=Math.atan2(T[0].x,T[0].z),g=new THREE.Group();g.position.copy(P[0]);g.rotation.y=ang;scene.add(g);
@@ -283,9 +320,9 @@ strip([W/2+.9,W/2+1.7,W/2+2.8,W/2+4.6],[.1,.85,.7,0],bankMat,30);strip([-W/2-4.6
 
 /* ---------- landmark spots (kept clear of trees) ---------- */
 function spot(t,side,dist){const i=Math.floor(t*N)%N,p=P[i].clone().addScaledVector(NR[i],side*dist);return {x:p.x,z:p.z,face:Math.atan2(P[i].x-p.x,P[i].z-p.z),i};}
-const LM={house:spot(.04,-1,21.5),grotto:spot(.29,-1,23),pole:spot(.47,1,12),elves:spot(.63,-1,14.5),tree:spot(.8,1,15)};
+const LM={};Object.keys(TR.lm).forEach(k=>{LM[k]=spot(...TR.lm[k]);});
 function bbSpot(t,side,dist){const s=spot(t,side,dist),b=P[(s.i-42+N)%N];s.face=Math.atan2(b.x-s.x,b.z-s.z);return s;}
-const BBS=[bbSpot(.165,-1,22),bbSpot(.555,-1,21.5),bbSpot(.905,-1,21.5),bbSpot(.705,1,19)];
+const BBS=TR.bb.map(b=>bbSpot(...b));
 const KEEP=[[LM.house,15],[LM.grotto,14],[LM.pole,7],[LM.elves,13],[LM.tree,9],...BBS.map(b=>[b,15])];
 
 /* ---------- scenery: trees (instanced) ---------- */
@@ -324,7 +361,7 @@ function farFromTrack(x,z,min){for(let i=0;i<N;i+=4){const dx=P[i].x-x,dz=P[i].z
 
 /* ---------- lamp posts along the track ---------- */
 (function(){const list=[];
-  for(let k=0;k<30;k++){const t=k/30+.017;if(t%1<.025||t%1>.985)continue;const side=k%2?1:-1,s=spot(t%1,side,W/2+5.4);
+  for(let k=0;k<30;k++){const t=k/30+.017;if(t%1<.025||t%1>.985)continue;const side=k%2?1:-1,s=spot(t%1,side,W/2+5.4);if(TUN[s.i]||JD[s.i]>=0||JD[(s.i+12)%N]>=0)continue;
     if(KEEP.some(([q,r])=>Math.hypot(q.x-s.x,q.z-s.z)<r-2))continue;list.push(s);}
   const n=list.length,post=new THREE.InstancedMesh(new THREE.CylinderGeometry(.11,.16,4.4,8),M(0x1b3a2a),n),
     base=new THREE.InstancedMesh(new THREE.CylinderGeometry(.32,.38,.5,8),M(0x1b3a2a),n),
@@ -584,6 +621,79 @@ function buildBillboard(idx){const [Wb,Hb]=BBDIM[idx]||[10,5.6],LX=Math.min(3.4,
   signs.push({userData:{redraw}});redraw();
   return g;}
 BBS.forEach((s0,k)=>{const g=buildBillboard(k);g.scale.setScalar(2.05);g.position.set(s0.x,0,s0.z);g.rotation.y=s0.face;shadowAll(g);scene.add(g);});
+/* ---------- Tinsel Tunnel: an ice tunnel over part of the track ---------- */
+(function(){if(!TR.tunnel)return;
+  const i0=Math.floor(TR.tunnel[0]*N),i1=Math.floor(TR.tunnel[1]*N),R=9.4,SEG=20;
+  const iceTex=canvasTex(256,256,(x,w,h)=>{x.fillStyle='#8fbcd8';x.fillRect(0,0,w,h);
+    for(let r=0;r<8;r++)for(let c=0;c<4;c++){const ox=(r%2)*32;x.fillStyle='rgba(255,255,255,'+(.08+rnd()*.22)+')';x.fillRect(c*64+ox+3,r*32+3,58,26);}
+    x.strokeStyle='rgba(60,110,150,.45)';x.lineWidth=3;for(let r=0;r<=8;r++){x.beginPath();x.moveTo(0,r*32);x.lineTo(w,r*32);x.stroke();for(let c=0;c<=4;c++){const xx=c*64+(r%2)*32;x.beginPath();x.moveTo(xx,r*32);x.lineTo(xx,r*32+32);x.stroke();}}
+    for(let k=0;k<400;k++){x.fillStyle='rgba(255,255,255,'+rnd()*.5+')';x.fillRect(rnd()*w,rnd()*h,1+rnd()*2,1);}},[3,1]);
+  function shell(r,mat){const pos=[],uv=[],idx=[];let dist=0,rows=0;
+    for(let i=i0;i<=i1;i++){const k=i%N;if(i>i0)dist+=P[k].distanceTo(P[(k-1+N)%N]);
+      for(let j=0;j<=SEG;j++){const a=Math.PI*j/SEG,p=P[k].clone().addScaledVector(NR[k],Math.cos(a)*r);pos.push(p.x,Math.sin(a)*r*.95,p.z);uv.push(j/SEG*3,dist/8);}rows++;}
+    for(let q=0;q<rows-1;q++)for(let j=0;j<SEG;j++){const a=q*(SEG+1)+j,b=a+1,c=a+SEG+1,d=c+1;idx.push(a,c,b,b,c,d);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();
+    const m=new THREE.Mesh(g,mat);m.castShadow=true;m.receiveShadow=true;scene.add(m);return m;}
+  shell(R,new THREE.MeshLambertMaterial({map:iceTex,emissive:0x0c2c44,side:THREE.DoubleSide}));
+  shell(R+1.3,new THREE.MeshLambertMaterial({map:snowTex,side:THREE.DoubleSide}));
+  const lp=[],gl=[];let dd=0;
+  for(let i=i0;i<=i1;i++){const k=i%N;if(i>i0)dd+=P[k].distanceTo(P[(k-1+N)%N]);
+    if(Math.floor(dd/1.3)!==Math.floor((dd-.62)/1.3))[.33,.67].forEach(f=>{const a=Math.PI*f,p=P[k].clone().addScaledVector(NR[k],Math.cos(a)*(R-.3));lp.push([p.x,Math.sin(a)*(R-.3)*.95,p.z]);});
+    if(i%14===0){const p=P[k];gl.push([p.x,R*.93,p.z]);}}
+  lights(scene,lp,.55,MULTI);
+  const gp=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(gl.flat(),3)),new THREE.PointsMaterial({size:4,map:glowTex,color:0x9fd8ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(gp);
+  const lan=new THREE.InstancedMesh(new THREE.SphereGeometry(.28,10,8),B(0xcfeeff),gl.length);const o=new THREE.Object3D();gl.forEach((p,n)=>{o.position.set(p[0],p[1]-.3,p[2]);o.updateMatrix();lan.setMatrixAt(n,o.matrix);});scene.add(lan);
+  // ribs of candy stripe every so often, and decorated entrances at both ends
+  for(let i=i0;i<=i1;i+=24){const k=i%N,g=new THREE.Group();g.position.copy(P[k]);g.rotation.y=Math.atan2(T[k].x,T[k].z);
+    const rib=new THREE.Mesh(new THREE.TorusGeometry(R-.12,.2,8,30,Math.PI),stripes(10,1));rib.scale.y=.95;g.add(rib);scene.add(g);}
+  [[i0,0],[i1,Math.PI]].forEach(([i,flip])=>{const k=i%N,g=new THREE.Group();g.position.copy(P[k]);g.rotation.y=Math.atan2(T[k].x,T[k].z)+flip;scene.add(g);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(R+.7,1.0,12,36,Math.PI),new THREE.MeshLambertMaterial({map:snowTex}));ring.scale.y=.95;g.add(ring);
+    const cane=new THREE.Mesh(new THREE.TorusGeometry(R+.2,.26,8,36,Math.PI),stripes(14,1));cane.scale.y=.95;cane.position.z=-.9;g.add(cane);
+    lights(g,Array.from({length:36},(_,n)=>{const a=Math.PI*n/35;return [Math.cos(a)*(R+.7),Math.sin(a)*(R+.7)*.95,-1.05];}),.6,MULTI);
+    for(let n=0;n<22;n++){const a=Math.PI*(.12+.76*n/21),L=.4+rnd()*1.1,ic=new THREE.Mesh(new THREE.ConeGeometry(.12,L,6),new THREE.MeshLambertMaterial({color:0xcfeefc,emissive:0x1a3a4a}));
+      ic.rotation.x=Math.PI;ic.position.set(Math.cos(a)*(R-.1),Math.sin(a)*(R-.1)*.95-L/2,-.4);g.add(ic);}
+    const sg=board(g,'TINSEL TUNNEL',6.4,1.3,0,R*.95+2.1,-.6,{bg:'#123248',fg:'#cfeeff',line:'#d4b36a'});sg.rotation.y=Math.PI;});
+})();
+
+/* ---------- Icicle Leap: a ramp, a pit of glowing ice shards, a landing ramp ---------- */
+(function(){if(!J)return;
+  const idx=[];for(let i=J.i0;i!==J.iEnd;i=(i+1)%N)idx.push(i);
+  const skirt=new THREE.MeshLambertMaterial({color:0xcfdde8,map:snowTex,side:THREE.DoubleSide}),pos=[];
+  [-1,1].forEach(sd=>{for(let n=0;n<idx.length-1;n++){const a=idx[n],b=idx[n+1];if(GAP[a]||GAP[b]||(HGT[a]<=0&&HGT[b]<=0))continue;
+    const pa=P[a].clone().addScaledVector(NR[a],sd*(W/2+.9)),pb=P[b].clone().addScaledVector(NR[b],sd*(W/2+.9)),ha=HGT[a]+.12,hb=HGT[b]+.12;
+    pos.push(pa.x,0,pa.z,pb.x,0,pb.z,pa.x,ha,pa.z, pb.x,0,pb.z,pb.x,hb,pb.z,pa.x,ha,pa.z);}});
+  const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.computeVertexNormals();
+  const sk=new THREE.Mesh(sg,skirt);sk.castShadow=true;sk.receiveShadow=true;scene.add(sk);
+  // candy-stripe rails along both ramps
+  const runs=[idx.filter(i=>!GAP[i]&&JD[i]<J.ramp),idx.filter(i=>!GAP[i]&&JD[i]>=J.ramp+J.gap)];
+  runs.forEach(run=>{if(run.length<3)return;[-1,1].forEach(sd=>{const pts=run.map(i=>{const p=P[i].clone().addScaledVector(NR[i],sd*(W/2+.6));p.y=HGT[i]+1.0;return p;});
+    const rail=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),pts.length*2,.14,8),stripes(30,1));rail.castShadow=true;scene.add(rail);
+    run.forEach((i,n)=>{if(n%4)return;const p=P[i].clone().addScaledVector(NR[i],sd*(W/2+.6)),post=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,1.0,6),M(0xd4b36a));post.position.set(p.x,HGT[i]+.5,p.z);scene.add(post);});});});
+  // the lip and the landing edge
+  const lipI=runs[0][runs[0].length-1],landI=runs[1][0];
+  [[lipI,0],[landI,Math.PI]].forEach(([i,fl])=>{const g=new THREE.Group();g.position.copy(P[i]);g.rotation.y=Math.atan2(T[i].x,T[i].z)+fl;scene.add(g);
+    const face=new THREE.Mesh(new THREE.PlaneGeometry(W+1.8,HGT[i]+.12),new THREE.MeshLambertMaterial({color:0x9fb8cc,map:snowTex,side:THREE.DoubleSide}));face.position.set(0,(HGT[i]+.12)/2,.02);g.add(face);
+    const bar=new THREE.Mesh(new THREE.BoxGeometry(W,.16,.35),M(0xd4b36a,{emissive:0x4a3508}));bar.position.set(0,HGT[i]+.1,0);g.add(bar);
+    lights(g,Array.from({length:18},(_,n)=>[-W/2+n*W/17,HGT[i]+.3,0]),.5,['#7fd8ff','#ffffff']);});
+  // the pit: dark ice floor and glowing shards
+  const gi=idx.filter(i=>GAP[i]),mid=gi[Math.floor(gi.length/2)],len=J.gap+2;
+  const pit=new THREE.Group();pit.position.copy(P[mid]);pit.rotation.y=Math.atan2(T[mid].x,T[mid].z);scene.add(pit);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(W+4,len),new THREE.MeshLambertMaterial({color:0x10263a,emissive:0x081a2c}));floor.rotation.x=-Math.PI/2;floor.position.y=.03;pit.add(floor);
+  const shardMat=new THREE.MeshLambertMaterial({color:0xaeeaff,emissive:new THREE.Color(0x2a9fd0).multiplyScalar(POST?1.6:.7),transparent:true,opacity:.92});
+  const shardGeo=new THREE.OctahedronGeometry(1,0),sh=new THREE.InstancedMesh(shardGeo,shardMat,70),o=new THREE.Object3D(),sglow=[];
+  for(let n=0;n<70;n++){const x=(rnd()-.5)*(W+2.5),z=(rnd()-.5)*(len-1.5),hh=.8+rnd()*1.3;
+    o.position.set(x,hh*.45,z);o.rotation.set((rnd()-.5)*.6,rnd()*3,(rnd()-.5)*.6);o.scale.set(.3+rnd()*.35,hh,.3+rnd()*.35);o.updateMatrix();sh.setMatrixAt(n,o.matrix);
+    if(n%3===0)sglow.push(x,hh*.7,z);}
+  sh.castShadow=true;pit.add(sh);
+  pit.add(new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.Float32BufferAttribute(sglow,3)),new THREE.PointsMaterial({size:3.4,map:glowTex,color:0x7fd8ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending})));
+  // gantry and warning signs before the ramp
+  const gI=J.i0,ga=new THREE.Group();ga.position.copy(P[gI]);ga.rotation.y=Math.atan2(T[gI].x,T[gI].z);scene.add(ga);
+  [-1,1].forEach(sd=>{const p=new THREE.Mesh(new THREE.CylinderGeometry(.3,.36,8.4,14),stripes(1,5));p.position.set(sd*(W/2+1.6),4.2,0);ga.add(p);});
+  const gb=board(ga,'ICICLE LEAP',W+1.5,1.7,0,7.4,0,{bg:'#123248',fg:'#cfeeff',line:'#d4b36a'});gb.rotation.y=Math.PI;
+  [-1,1].forEach(sd=>{const wi=(J.i0-34+N)%N,p=P[wi].clone().addScaledVector(NR[wi],sd*(W/2+3.2)),g=new THREE.Group();g.position.set(p.x,0,p.z);g.rotation.y=Math.atan2(T[wi].x,T[wi].z)+Math.PI;scene.add(g);
+    const post=new THREE.Mesh(new THREE.CylinderGeometry(.1,.12,2.4,8),M(0x1b3a2a));post.position.y=1.2;g.add(post);board(g,'JUMP AHEAD',2.6,.8,0,2.6,0,{bg:'#c4523f',fg:'#f4ecd6',line:'#f4ecd6'});});
+})();
+
 
 
 /* ---------- obstacles and pads ---------- */
@@ -613,8 +723,11 @@ function ice(t,off){const a=at(t,off);const m=new THREE.Mesh(new THREE.CircleGeo
   m.rotation.x=-Math.PI/2;m.scale.set(1,1.5,1);m.rotation.z=a.ang;m.position.copy(a.p).setY(0.07);scene.add(m);
   const glint=new THREE.Mesh(new THREE.CircleGeometry(1.2,16),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.5}));glint.rotation.x=-Math.PI/2;glint.position.copy(a.p).add(new THREE.Vector3(.8,0.09,.6));scene.add(glint);
   ices.push({x:a.p.x,z:a.p.z,r:4.2});}
-snowman(.075,3);presents(.14,-3.6);pad(.2,0);ice(.27,0);snowman(.33,-3.2);snowman(.36,3.4);presents(.43,0);
-pad(.5,-2.4);snowman(.56,2.8);ice(.62,1.5);presents(.69,-3.4);snowman(.755,0.4);pad(.82,2.2);presents(.885,3.2);snowman(.94,-2.6);
+// keep obstacles off the jump (and its run-up), then add a boost pad just before the ramp
+const nearJump=t=>{if(!J)return false;const i=Math.floor(t*N)%N;for(let k=-30;k<=8;k++)if(JD[(i+k+N)%N]>=0)return true;return false;};
+const OBF={snowman,presents,pad,ice};
+TR.obs.forEach(([k,t,o])=>{if(!nearJump(t))OBF[k](t,o);});
+if(J){pad(((J.i0-20+N)%N)/N,0);pad(((J.i0-44+N)%N)/N,0);}
 
 /* ---------- gingerbread men: they wander across the track wearing guests' faces ---------- */
 const FACES={};
@@ -641,7 +754,7 @@ function ginger(t,name,phase,amp,w){const a=at(t,0),g=new THREE.Group(),body=new
     latAt(t){return this.amp*Math.sin(t*this.w+this.phase);}};
   obstacles.push(o);gingers.push(o);paintGinger(o);}
 setTimeout(()=>obstacles.forEach(o=>shadowAll(o.obj)),0);
-ginger(.105,'Eileen',0,4.6,.9);ginger(.395,'Annette',1.6,4.6,1.1);ginger(.595,'Arabella',3,4.2,1.3);ginger(.725,'Steve',.8,4.8,.8);ginger(.855,'Leanne',2.2,4.6,1.0);
+TR.gingers.forEach(gg=>{if(!nearJump(gg[0]))ginger(...gg);});
 
 /* ---------- reindeer and sleigh ---------- */
 /* ---------- faces, sleigh boards and name tags ---------- */
@@ -785,6 +898,8 @@ const mp=(x,z)=>[20+(x-bx0)*msc+(180-(bx1-bx0)*msc)/2, 20+(z-bz0)*msc+(180-(bz1-
 function drawMini(px,pz){mx.clearRect(0,0,220,220);mx.lineJoin='round';
   mx.beginPath();P.forEach((p,i)=>{const [x,y]=mp(p.x,p.z);i?mx.lineTo(x,y):mx.moveTo(x,y);});mx.closePath();
   mx.strokeStyle='#2f5443';mx.lineWidth=16;mx.stroke();mx.strokeStyle='#e9efe8';mx.lineWidth=9;mx.stroke();
+  const seg=(test,col,w)=>{mx.strokeStyle=col;mx.lineWidth=w;mx.beginPath();let on=false;P.forEach((p,i)=>{const [x,y]=mp(p.x,p.z);if(test(i)){on?mx.lineTo(x,y):mx.moveTo(x,y);on=true;}else on=false;});mx.stroke();};
+  if(TR.tunnel)seg(i=>TUN[i],'#6fb6e0',11);if(J)seg(i=>JD[i]>=0,'#d4b36a',11);
   const s=mp(P[0].x,P[0].z);mx.fillStyle='#d4b36a';mx.fillRect(s[0]-3,s[1]-7,6,14);
   const dot=(x,y,r,p,ring,lw)=>{mx.save();mx.beginPath();mx.arc(x,y,r,0,7);mx.fillStyle=p.color;mx.fill();mx.clip();
     if(p.img){const im=p.img,s=Math.max(2*r/im.width,2*r/im.height);mx.drawImage(im,x-im.width*s/2,y-im.height*s/2,im.width*s,im.height*s);}
@@ -821,9 +936,9 @@ function simRace(name,slot,home){
 }
 // best races: REMOTE holds everyone's best race from the app's database (live build fills it); this device's own copy is the fallback
 const REMOTE={};
-function loadRec(name){let loc=null;try{const j=JSON.parse(localStorage.getItem('rr_best_'+name)||'null');if(j&&j.pts&&j.total)loc=j;}catch(e){}
-  const r=REMOTE[name];return r&&(!loc||r.total<=loc.total)?r:loc;}
-function saveRec(rec){let ok=false;try{localStorage.setItem('rr_best_'+rec.name,JSON.stringify(rec));ok=true;}catch(e){}
+function loadRec(name){let loc=null;try{const j=JSON.parse(localStorage.getItem('rr_best_'+name+SFX)||'null');if(j&&j.pts&&j.total)loc=j;}catch(e){}
+  const r=REMOTE[name+SFX];return r&&(!loc||r.total<=loc.total)?r:loc;}
+function saveRec(rec){let ok=false;try{localStorage.setItem('rr_best_'+rec.name+SFX,JSON.stringify(rec));ok=true;}catch(e){}
   if(window.__saveRace){window.__saveRace(rec);ok=true;}return ok;}
 function pickRivals(){
   const real=NAMES.filter(n=>n!==me.name&&loadRec(n)).sort((a,b)=>loadRec(a).total-loadRec(b).total);
@@ -836,7 +951,7 @@ function recAt(rec,tr){const p=rec.pts,k=tr/DT_REC;
   const i=Math.floor(k),u=k-i;return [p[i][0]+(p[i+1][0]-p[i][0])*u,p[i][1]+(p[i+1][1]-p[i][1])*u];}
 function reset(){
   const h0=Math.atan2(T[0].x,T[0].z),back=-PLAYER_GRID.s;
-  st={x:P[0].x-T[0].x*back+NR[0].x*PLAYER_GRID.lat,z:P[0].z-T[0].z*back+NR[0].z*PLAYER_GRID.lat,h:h0,va:h0,sp:0,idx:0,prog:-Math.round(back/LEN*N),lap:1,boost:0,lean:0,phase:0,lapStart:0,laps:[],steer:0,rec:[]};
+  st={x:P[0].x-T[0].x*back+NR[0].x*PLAYER_GRID.lat,z:P[0].z-T[0].z*back+NR[0].z*PLAYER_GRID.lat,h:h0,va:h0,sp:0,idx:0,prog:-Math.round(back/LEN*N),y:0,vy:0,air:false,lap:1,boost:0,lean:0,phase:0,lapStart:0,laps:[],steer:0,rec:[]};
   st.idx=nearest(st.x,st.z,0);
   Object.values(pool).forEach(r=>{r.on=false;r.g.visible=false;});
   rivals=pickRivals();trailClear(myTrail);Object.values(pool).forEach(r=>trailClear(r.trail));
@@ -854,7 +969,7 @@ function moveRival(r,dt,el,racing){
   r.x=P[i].x+(P[j].x-P[i].x)*k+NR[i].x*lat;r.z=P[i].z+(P[j].z-P[i].z)*k+NR[i].z*lat;r.i=i;
   r.h=Math.atan2(T[i].x,T[i].z)-Math.atan2(lv,Math.max(r.v,4));
   r.phase+=r.v*dt*.75;
-  placeTeam(r.g,r.x,r.z,r.h,lv*.03,r.phase,racing&&r.v>1);trailPush(r.trail,r.x,r.z,r.h,racing&&r.v>2);
+  r.y=trackY(i);placeTeam(r.g,r.x,r.z,r.h,lv*.03,r.phase,racing&&r.v>1&&r.y<.05,r.y);trailPush(r.trail,r.x,r.z,r.h,racing&&r.v>2&&r.y<.05&&JD[i]<0);
   if(racing&&r.fin==null&&s>=LEN*LAPS)r.fin=el;
 }
 function bumpRivals(){
@@ -879,7 +994,7 @@ function racerTimes(el){
   return rows.sort((a,b)=>a.t-b.t);}
 reset();
 
-function placeTeam(g,x,z,h,lean,phase,run){g.position.set(x,0,z);g.rotation.y=h;g.userData.deer.rotation.z=lean;
+function placeTeam(g,x,z,h,lean,phase,run,y){g.position.set(x,y||0,z);g.rotation.y=h;g.userData.deer.rotation.z=lean;
   g.userData.legs.forEach((L,k)=>{L.rotation.x=run?Math.sin(phase+(k%2?Math.PI:0)+(k>1?Math.PI/2:0))*.75:0;});
   g.userData.deer.position.y=run?Math.abs(Math.sin(phase))*.12:0;}
 
@@ -900,6 +1015,16 @@ function update(dt,el){
   const grip=onIce?1.1:9;
   st.va+=angDiff(st.h,st.va)*Math.min(1,grip*dt);
   st.x+=Math.sin(st.va)*st.sp*dt;st.z+=Math.cos(st.va)*st.sp*dt;
+  // ramps, the jump and the tunnel walls
+  {const iN=nearest(st.x,st.z,st.idx),ln=(st.x-P[iN].x)*NR[iN].x+(st.z-P[iN].z)*NR[iN].z,lim=JD[iN]>=0?W/2-.7:(TUN[iN]?W/2+1.4:99);
+    if(Math.abs(ln)>lim){const o2=(Math.abs(ln)-lim)*Math.sign(ln);st.x-=NR[iN].x*o2;st.z-=NR[iN].z*o2;st.sp*=.985;}
+    const gY=GAP[iN]?-1:HGT[iN];
+    if(!st.air){if(st.y>.4&&gY<st.y-.35){st.air=true;st.vy=st.sp*.3;}else st.y=Math.max(0,gY);}
+    if(st.air){st.vy-=24*dt;st.y+=st.vy*dt;
+      if(st.y<=Math.max(gY,0)){
+        if(gY<0||st.y<gY-.6){toast('Crashed into the ice shards!');shake=.7;const e=J.iEnd;st.x=P[e].x;st.z=P[e].z;st.h=st.va=Math.atan2(T[e].x,T[e].z);
+          let dI=e-st.idx;if(dI<-N/2)dI+=N;st.prog+=dI;st.idx=e;st.y=0;st.air=false;st.sp=2;}
+        else{st.air=false;st.y=gY;shake=.28;toast(st.sp>20?'What a leap!':'Landed it!');}}}}
   // snowbank wall
   if(Math.abs(lat)>W/2+9){const s=Math.sign(lat);st.x-=NR[i].x*(Math.abs(lat)-(W/2+9))*s;st.z-=NR[i].z*(Math.abs(lat)-(W/2+9))*s;st.sp*=.97;
     const th=Math.atan2(T[i].x,T[i].z);st.h+=angDiff(th,st.h)*Math.min(1,dt*1.8);st.va+=angDiff(th,st.va)*Math.min(1,dt*1.8);}
@@ -922,7 +1047,8 @@ function update(dt,el){
     if(st.lap>LAPS){finish(el);}else{toast(st.lap===LAPS?'Final lap!':'Lap '+st.lap);}}
   st.lean+=(st.steer*0.14-st.lean)*Math.min(1,dt*6);
   st.phase+=st.sp*dt*.75;
-  placeTeam(team,st.x,st.z,st.h,-st.lean,st.phase,st.sp>1);trailPush(myTrail,st.x,st.z,st.h,state!=='menu'&&st.sp>2);
+  placeTeam(team,st.x,st.z,st.h,-st.lean,st.phase,st.sp>1&&!st.air,st.y);team.userData.deer.rotation.x=st.air?-Math.max(-.35,Math.min(.35,st.vy*.03)):0;
+  trailPush(myTrail,st.x,st.z,st.h,state!=='menu'&&st.sp>2&&st.y<.05);
   team.userData.sleigh.rotation.y=angDiff(st.va,st.h)*.6;
   rivals.forEach(r=>{if(r.on)moveRival(r,dt,el,state==='race'||state==='done');});
   bumpRivals();
@@ -937,7 +1063,7 @@ function update(dt,el){
   {const fx0=Math.sin(st.h)*14,fz0=Math.cos(st.h)*14;sun.target.position.set(st.x+fx0,0,st.z+fz0);sun.position.set(st.x+fx0+SUN_DIR.x*120,SUN_DIR.y*120,st.z+fz0+SUN_DIR.z*120);sun.target.updateMatrixWorld();}
   // snow spray from the runners
   {const fx1=Math.sin(st.h),fz1=Math.cos(st.h),rx=-fz1,rz=fx1,pa=spray.geometry.attributes.position.array;
-    const n=state==='race'&&st.sp>7?(st.boost>0?6:3):0;
+    const n=state==='race'&&st.sp>7&&st.y<.05?(st.boost>0?6:3):0;
     for(let e=0;e<n;e++){const p=spray.userData.next=(spray.userData.next+1)%SPN,sd=e%2?.62:-.62;
       pa[p*3]=st.x-fx1*4.6+rx*sd;pa[p*3+1]=.2;pa[p*3+2]=st.z-fz1*4.6+rz*sd;
       SPV[p*3]=-fx1*st.sp*.12+rx*sd*(1+Math.random()*2.5);SPV[p*3+1]=1.5+Math.random()*2.5;SPV[p*3+2]=-fz1*st.sp*.12+rz*sd*(1+Math.random()*2.5);}
@@ -949,9 +1075,9 @@ function update(dt,el){
   const tall=camera.aspect<.85,back=(tall?13:11)+st.sp*.06,up=tall?7.2:6;
   const cx=st.x-fx*back,cz=st.z-fz*back;
   const k=1-Math.exp(-dt*8);
-  camera.position.x+=(cx-camera.position.x)*k;camera.position.z+=(cz-camera.position.z)*k;camera.position.y+=(up-camera.position.y)*k;
+  camera.position.x+=(cx-camera.position.x)*k;camera.position.z+=(cz-camera.position.z)*k;camera.position.y+=(up+st.y-camera.position.y)*k;
   if(shake>0){shake=Math.max(0,shake-dt);camera.position.x+=(Math.random()-.5)*shake*1.4;camera.position.y+=(Math.random()-.5)*shake;}
-  camera.lookAt(st.x+fx*7,1.2,st.z+fz*7);
+  camera.lookAt(st.x+fx*7,1.2+st.y*.8,st.z+fz*7);
   camera.rotateZ(st.lean*.22);
   for(const r of rivals){if(!r.on)continue;const d=Math.hypot(r.x-camera.position.x,r.z-camera.position.z),d2=Math.hypot(r.x-Math.sin(r.h)*3.4-camera.position.x,r.z-Math.cos(r.h)*3.4-camera.position.z);
     r.g.visible=Math.min(d,d2)>3.2;if(r.g.userData.tag)r.g.userData.tag.visible=d>11;}
@@ -1040,7 +1166,7 @@ function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setS
 addEventListener('resize',resize);resize();
 camera.position.set(st.x-Math.sin(st.h)*30,14,st.z-Math.cos(st.h)*30);
 if(document.fonts)document.fonts.ready.then(()=>window.__banner&&window.__banner());
-window.__rally={get st(){return st},get state(){return state},input,LEN,P,N,get rivals(){return rivals},gingers,LM};
+window.__rally={get st(){return st},get state(){return state},input,LEN,P,N,get rivals(){return rivals},gingers,LM,J,JD,TI,step:(dt,el)=>update(dt,el),setState:v=>{state=v;},draw:()=>{if(window.__camFix)window.__camFix(camera);if(composer)composer.render(.016);else renderer.render(scene,camera);}};
 
 
 /* ---------- live build: photos come from the app's database, never from this public file ---------- */
@@ -1056,8 +1182,8 @@ window.__rally={get st(){return st},get state(){return state},input,LEN,P,N,get 
     if(window.__rallyMenuRefresh)window.__rallyMenuRefresh();}).catch(()=>{});
   window.__saveRace=rec=>{const body={fields:{name:{stringValue:rec.name},total:{doubleValue:rec.total},laps:{arrayValue:{values:rec.laps.map(x=>({doubleValue:x}))}},
       pts:{stringValue:rec.pts.map(p=>(+p[0]).toFixed(1)+','+(+p[1]).toFixed(1)).join('|')},updated:{integerValue:String(Date.now())}}};
-    return fetch(FS+'races/'+encodeURIComponent(rec.name)+'?key='+KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-      .then(r=>{if(r.ok)REMOTE[rec.name]=rec;return r.ok;}).catch(()=>false);};
+    return fetch(FS+'races/'+encodeURIComponent(rec.name+(window.__RALLY_SFX||''))+'?key='+KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(r=>{if(r.ok)REMOTE[rec.name+(window.__RALLY_SFX||'')]=rec;return r.ok;}).catch(()=>false);};
 })();
 /* ---------- menu: who you are, photo, rivals ---------- */
 const who=$('who'),prev=$('boardPrev');
@@ -1067,6 +1193,13 @@ if(QME){$('pick').hidden=true;$('meInfo').hidden=false;$('meName').textContent=m
 else if(window.__RALLY_LIVE){$('pick').hidden=true;$('meInfo').hidden=false;$('meInfo').innerHTML='<div style="color:var(--ink);font-size:14px">Open Reindeer Rally from the Play tab in the app, so you race as yourself.</div>';
   $('bStart').hidden=true;$('rivals').hidden=true;$('bBack').hidden=false;$('bBack').textContent='Open the app';}
 window.__rallyMenuRefresh=()=>{if(state==='menu')refreshMe();};
+$('courseName').textContent=TR.name;$('courseNote').textContent=TR.note;
+{const c=$('courseMap'),x=c.getContext('2d');let a=1e9,b=-1e9,cz=1e9,d=-1e9;P.forEach(p=>{a=Math.min(a,p.x);b=Math.max(b,p.x);cz=Math.min(cz,p.z);d=Math.max(d,p.z);});
+  const sc=Math.min(180/(b-a),110/(d-cz)),ox=(200-(b-a)*sc)/2,oz=(130-(d-cz)*sc)/2,q=p=>[ox+(p.x-a)*sc,oz+(p.z-cz)*sc];
+  x.lineJoin='round';x.beginPath();P.forEach((p,i)=>{const [u,v]=q(p);i?x.lineTo(u,v):x.moveTo(u,v);});x.closePath();x.strokeStyle='#f4ecd6';x.lineWidth=7;x.stroke();
+  const seg=(t,col)=>{x.strokeStyle=col;x.lineWidth=9;x.beginPath();let on=false;P.forEach((p,i)=>{const [u,v]=q(p);if(t(i)){on?x.lineTo(u,v):x.moveTo(u,v);on=true;}else on=false;});x.stroke();};
+  if(TR.tunnel)seg(i=>TUN[i],'#6fb6e0');if(J)seg(i=>JD[i]>=0,'#d4b36a');const s0=q(P[0]);x.fillStyle='#c4523f';x.beginPath();x.arc(s0[0],s0[1],6,0,7);x.fill();}
+$('bNew').onclick=()=>{let k=TI;while(k===TI)k=Math.floor(Math.random()*TRACKS.length);try{location.hash='track-'+k;}catch(e){}location.reload();};
 function refreshMe(){
   if(!me.custom)me.img=FACEIMG[me.name]||null;
   team.userData.paint(me);paintBoard(prev,me);
