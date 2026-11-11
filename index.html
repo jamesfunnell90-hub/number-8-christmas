@@ -8,7 +8,11 @@
 <meta name="theme-color" content="#10291f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-title" content="Christmas">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
 /* Layout: one working phone beside a short list of things to try. The PIN pad runs the real entry, door and glow sequence. */
 :root{
@@ -52,7 +56,7 @@ h1{font-size:clamp(32px,5vw,46px);line-height:1.05;margin:8px 0 10px}
 .hs .leafsvg{left:46.11%;top:66.84%;width:7.78%;height:21.18%}
 .door{position:absolute;left:46.11%;top:66.84%;width:7.78%;height:21.18%}
 .door .light{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,#ffe9b0,#f2b84b 55%,#c4782a);opacity:0;transition:opacity .5s}
-.leafsvg{transform-origin:1% 50%;transition:transform 1s cubic-bezier(.5,0,.2,1)}
+.leafsvg{transform-origin:1% 50%;transition:transform 1s var(--ease-io)}
 .fade{position:absolute;inset:0;background:linear-gradient(rgba(16,41,31,0) 0,rgba(16,41,31,0) 61%,var(--panel2) 76%);pointer-events:none}
 .pad{position:absolute;left:0;right:0;bottom:0;padding:0 11cqw 6cqw;transition:opacity .35s,transform .35s}
 .pad h3{font-family:var(--script);font-weight:400;color:var(--gold);font-size:9cqw;line-height:1;text-align:center;margin:0 0 4px}
@@ -77,17 +81,17 @@ h1{font-size:clamp(32px,5vw,46px);line-height:1.05;margin:8px 0 10px}
 .screen.in .welcome{animation:wsoft 2.6s ease-out both;transform-origin:50% 34%}
 @keyframes wsoft{from{transform:scale(.9)}to{transform:scale(1)}}
 .welcome .sub,.welcome .small-caps{transition:color 1.6s,transform .85s cubic-bezier(.55,0,.9,.5),opacity .7s}
-.welcome .hi{transition:color 1.6s,transform 1s cubic-bezier(.45,0,.15,1)}
+.welcome .hi{transition:color 1.6s,transform 1s var(--ease-io)}
 .screen.rising #app{opacity:1;background:transparent;transition:none}
 .screen.rising #app .views{overflow:hidden}
 .screen.rising:not(.hello-on) #app .hello{opacity:0}
-.screen.rising #app .top .date{transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s}
+.screen.rising #app .top .date{transition:transform .9s var(--ease),opacity .6s}
 .screen.prerise #app .top .date{transform:translateY(110vh)}
-#app .scroll>*:not(.top){transition:transform .95s cubic-bezier(.2,.8,.2,1)}
+#app .scroll>*:not(.top){transition:transform .95s var(--ease)}
 .screen.prerise #app .scroll>*:not(.top){transform:translateY(110vh)}
 .screen.prerise #app .apptabs{transform:translateY(120%)}
 .screen.prerise #app .scroll>*:not(.top),.screen.prerise #app .apptabs,.screen.prerise #app .top .date{transition:none!important}
-#app .apptabs{transition:transform .9s cubic-bezier(.2,.8,.2,1)}
+#app .apptabs{transition:transform .9s var(--ease)}
 .welcome .home{margin-top:auto;width:100%;opacity:0;transition:opacity 1.2s .5s;padding-bottom:6%}
 .welcome .home .card{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:12px;text-align:left;margin-bottom:8px}
 .welcome .home .card b{font-family:var(--serif);font-size:5.4cqw;color:var(--gold);font-weight:600;display:block}
@@ -162,7 +166,7 @@ body{padding:0!important;overflow:hidden}
 #app .tl li.next h4{color:var(--gold)}
 #app .tl li.done{opacity:.5}
 #app .note{font-size:11px;color:var(--dim);font-style:italic;font-family:var(--serif);text-align:center;margin:12px 0 4px;font-size:4cqw}
-#app .hero{transition:height .5s cubic-bezier(.4,0,.2,1)}
+#app .hero{transition:height .5s var(--ease-io)}
 #app .hero.game{height:84cqw}
 #app .hero .in,#app .hero .flake,#app .hero .snow,#app .hero .drift,#app .gamelink{transition:opacity .35s}
 #app .hero.game .in,#app .hero.game .flake,#app .hero.game .snow,#app .hero.game .drift,#app .hero.game .gamelink{opacity:0;pointer-events:none}
@@ -321,16 +325,16 @@ body{padding:0!important;overflow:hidden}
 @media (prefers-reduced-motion:reduce){#app .apptabs svg *{animation:none!important}}
 
 /* the unwrap: bow unties, lid lifts, a golden ticket rises and grows to replace the box */
-#app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s cubic-bezier(.3,.8,.3,1)}
+#app .sa-stage{position:relative;width:60cqw;height:56cqw;margin:8cqw auto 0;transition:height .9s var(--ease)}
 #app .sa-stage .sa-gift{position:relative;z-index:2;width:100%;margin:0;overflow:visible;transition:opacity .8s,transform .9s}
 #app .sa-gift *{transform-box:fill-box;transform-origin:center}
 #app .b-bow .pull{opacity:0}
 #app .b-bow .pull.away{transition:opacity .3s,transform .5s cubic-bezier(.4,0,.6,1);opacity:0!important;transform:translate(14px,20px)}
-#app .b-tag{transition:transform .8s cubic-bezier(.5,0,.2,1),opacity .6s}
-#app .b-lid{transition:transform .9s cubic-bezier(.4,0,.2,1),opacity .6s .3s;transform-origin:0 100%}
+#app .b-tag{transition:transform .8s var(--ease-io),opacity .6s}
+#app .b-lid{transition:transform .9s var(--ease-io),opacity .6s .3s;transform-origin:0 100%}
 #app .sa-stage.untie .b-tag{transform:translateY(26px) rotate(18deg);opacity:0}
 #app .sa-stage.lift .b-lid{transform:translate(-16px,-62px) rotate(-26deg);opacity:0}
-#app .sa-ticket{position:absolute;z-index:1;left:50%;top:50%;width:80cqw;margin-left:-40cqw;transform:translate(0,calc(-50% + 9cqw)) scale(.42);opacity:0;transition:transform 1s cubic-bezier(.25,.9,.3,1),opacity .4s;
+#app .sa-ticket{position:absolute;z-index:1;left:50%;top:50%;width:80cqw;margin-left:-40cqw;transform:translate(0,calc(-50% + 9cqw)) scale(.42);opacity:0;transition:transform 1s var(--ease),opacity .4s;
   border-radius:12px;padding:6cqw 5cqw 5.4cqw;background:linear-gradient(135deg,#f6e2a0 0,#d9b665 38%,#b98b34 68%,#e7c776 100%);box-shadow:0 10px 40px rgba(0,0,0,.5),0 0 0 1.5px #8a6420 inset;color:#2a1d06;overflow:hidden}
 #app .sa-stage.rise .sa-ticket{opacity:1;transform:translate(0,calc(-50% - 9cqw)) scale(.42)}
 #app .sa-stage.grow{height:80cqw}
@@ -470,6 +474,109 @@ body{padding:0!important;overflow:hidden}
 #app .pl-mini button.del{color:var(--berry);border-color:rgba(196,82,63,.5)}
 #app .pl-qrow.off .tx{opacity:.45}
 #app .pl-saved{font-size:2.8cqw;color:var(--gold);text-align:right;min-height:4cqw}
+
+/* ===== Theme pass, 11 Nov 2026: one type scale, three buttons, one card, the lit house, shared motion ===== */
+:root{--ease:cubic-bezier(.2,.8,.2,1);--ease-io:cubic-bezier(.45,0,.15,1);--ls-wide:.34em;--ls-label:.2em;--ls-tight:.06em;--r-card:14px;--r-in:10px}
+.screen,.screen *{font-variant-numeric:lining-nums!important}
+
+/* type: nothing under 11px, three letter spacings */
+.small-caps{font-size:max(11px,2.9cqw);letter-spacing:var(--ls-label)}
+#app .date{font-size:2.9cqw;letter-spacing:var(--ls-label)}
+#app .tl time small,#app .qz-n,#app .qz-2 .pl-lbh,#app .qz-2 .pl-lb .nm small,#app .qz-qc .qz-cat,#app .pl-pill,#app .pl-face,#app .pl-chip,#app .pl-stat span,#app .pl-hostlink button,#app .pl-saved,#app .pl-rv li i,#app .pl-mini button{font-size:2.9cqw}
+#app .over small,#app .over .nb,#app .snd{font-size:2.9cqw;letter-spacing:var(--ls-label)}
+#app .pl-small,#app .sa-small,#app .pl-lbh,#app .qz-qc .qz-cat,#app .pl-pill,#app .pl-q small{letter-spacing:var(--ls-label)!important}
+#app .apptabs{font-size:max(11px,2.9cqw);letter-spacing:var(--ls-tight)}
+#app .tl h4{font:600 5cqw/1.2 var(--serif)}
+#app .tl p{font-size:3.2cqw}
+#app .tl li{grid-template-columns:13cqw 14px 1fr}
+#app .tl::before{left:calc(13cqw + 7px)}
+#app .tl time small{white-space:nowrap}
+
+/* buttons: solid for the main action, outline for the second, plain text for the minor one */
+#app .sa-btn,#app .pl-btn,#app .over .acts button,#app .gamelink{min-height:44px;border-radius:999px;border:1px solid var(--gold);background:rgba(16,41,31,.6);color:var(--gold);font:500 max(12px,3.1cqw)/1.1 var(--sans);letter-spacing:var(--ls-label);text-transform:uppercase;align-items:center;justify-content:center;padding:0 6cqw;cursor:pointer;box-shadow:none;transition:transform .18s var(--ease),filter .18s var(--ease)}
+#app .pl-btn{display:flex;width:100%}
+#app .sa-btn,#app .over .acts button{display:inline-flex}
+#app .sa-btn.solid,#app .pl-btn.solid,#app .over .acts button.solid{background:linear-gradient(180deg,#e2c47e,#c9a55a);color:#10291f;box-shadow:0 6px 16px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.35)}
+#app .pl-btn.ghost{border-color:transparent;background:none;color:var(--dim);padding:0 3cqw;box-shadow:none}
+#app .pl-btn.pl-go{display:inline-flex;width:auto}
+#app .pl-btn[disabled]{opacity:.45;cursor:default}
+#app .sa-btn:active,#app .pl-btn:not([disabled]):active,#app .over .acts button:active,#app .gamelink:active{transform:scale(.96);filter:brightness(1.12)}
+.keys button{transition:transform .15s var(--ease),background .15s}
+.keys button:active{transform:scale(.95)}
+
+/* cards: 14px card, 10px inset, fully round buttons and photos */
+#app .pl-card,#app .qz-qc,#app .qz-hero,#app .qz-ins,#app .qz-o,#app .sa-tag,#app .sa-ticket{border-radius:var(--r-card)}
+#app .qz-2>div,#app .qz-fb,#app .pl-stat div,#app .pl-in{border-radius:var(--r-in)}
+#app .pl-card.hot,#app .card2{border:1px solid rgba(162,121,43,.75);border-radius:var(--r-card);background:linear-gradient(150deg,#1f4737,#17382b 70%);box-shadow:0 1.4cqw 3.4cqw rgba(0,0,0,.28),inset 0 0 0 1px rgba(255,255,255,.03)}
+#app .pl-card .pl-card,#app .qz-2.in>div{background:rgba(8,22,16,.35);border-color:var(--line);border-radius:var(--r-in);box-shadow:none}
+#app .pl-card[data-act],#app .qz-o,#app .apptabs button{transition:transform .18s var(--ease)}
+#app .pl-card[data-act]:active{transform:scale(.985)}
+#app .qz-o:active{transform:scale(.98)}
+#app .apptabs button:active{transform:scale(.93)}
+
+/* one page header for every tab: gold label, serif title, italic line */
+#app .pg-head{text-align:center;margin-bottom:2cqw}
+#app .pg-head .e{font:500 3cqw/1.2 var(--sans);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--gold)}
+#app .pg-head h2{font:600 8.6cqw/1.1 var(--serif);margin:1.4cqw 0 0}
+#app .pg-head .s{font:italic 500 4.4cqw/1.2 var(--serif);color:var(--dim);margin-top:1cqw}
+#app .sa-small{font-size:3cqw}
+
+/* the lit house: windows and tree lights, shared by the PIN screen and the home page */
+.hlights{position:absolute;inset:0;pointer-events:none}
+.hlights i{position:absolute;display:block;opacity:0}
+.hlights .w{border-radius:1px;background:radial-gradient(ellipse at 50% 55%,rgba(255,226,150,.95),rgba(242,184,75,.75) 60%,rgba(196,120,42,.55));mix-blend-mode:screen;box-shadow:0 0 5cqw 1cqw rgba(242,184,75,.34)}
+.hlights .t{width:1.1cqw;height:1.1cqw;margin:-.55cqw 0 0 -.55cqw;border-radius:50%;background:var(--c,#ffe9b0);box-shadow:0 0 1.6cqw .5cqw var(--c,#ffe9b0)}
+.lit .hlights .w{animation:lightup .9s ease-out both,flick 5s ease-in-out infinite}
+.lit .hlights .t{animation:lightup .5s ease-out both,twinkle 2.6s ease-in-out infinite}
+@keyframes lightup{from{opacity:0}60%{opacity:1}75%{opacity:.7}to{opacity:.92}}
+@keyframes flick{0%,100%{filter:brightness(1)}50%{filter:brightness(.82)}}
+@keyframes twinkle{0%,100%{opacity:.95}50%{opacity:.3}}
+.lsnow{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none;transition:opacity .5s}
+.lsnow i{position:absolute;top:-2cqw;border-radius:50%;background:#f4ecd6;animation:lfall linear infinite}
+@keyframes lfall{to{transform:translate3d(var(--sw),135cqw,0)}}
+.screen.going .lsnow{opacity:0}
+.screen.going .scene .hlights i,.screen.going .lsnow i{animation-play-state:paused}
+
+/* home: the house under the countdown */
+#app .hero{height:108cqw;margin:0;background:none}
+#app .hero.game{height:84cqw;background:radial-gradient(ellipse at 50% 46%,#1f4a39 0,#16382b 45%,var(--panel2) 100%)}
+#app .hero .sky{position:absolute;inset:0;background:radial-gradient(ellipse 50% 32% at 50% 33%,rgba(35,82,64,.95) 0,rgba(35,82,64,0) 100%);transition:opacity .35s}
+#app .hero .in{position:absolute;left:0;right:0;top:0;height:auto;display:block;padding:4cqw 0 0;text-align:center}
+#app .hero .num{font-size:27cqw;line-height:.9;margin:0;text-shadow:0 .6cqw 5cqw rgba(8,20,15,.8)}
+#app .hero .num.word{font-size:15cqw;line-height:1.1;padding-top:5cqw}
+#app .hero .lbl{display:flex;align-items:center;justify-content:center;gap:3cqw;margin-top:2cqw;padding:0;font:500 3.4cqw/1 var(--sans);letter-spacing:var(--ls-wide)}
+#app .hero .lbl span{padding-left:var(--ls-wide)}
+#app .hero .lbl i{height:1px;width:11cqw;background:linear-gradient(90deg,transparent,var(--gold-deep))}
+#app .hero .lbl i:last-child{background:linear-gradient(270deg,transparent,var(--gold-deep))}
+#app .hero .sub{font-size:4.4cqw;margin:1.6cqw 0 0}
+#app .hero .hhouse{position:absolute;z-index:1;left:0;right:0;bottom:6cqw;aspect-ratio:1000/680;pointer-events:none;transition:opacity .35s;-webkit-mask-image:linear-gradient(#000 0,#000 86%,transparent 100%);mask-image:linear-gradient(#000 0,#000 86%,transparent 100%)}
+#app .hero .hhouse svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#app .hero.game .sky,#app .hero.game .hhouse{opacity:0}
+#app .hero .snow{z-index:3}
+#app .hero .snow i{animation-name:fall2}
+@keyframes fall2{to{transform:translate3d(var(--sw),114cqw,0)}}
+#app .gamelink{display:flex;z-index:4;left:0;right:0;margin:0 auto;width:max-content;transform:none;bottom:1.6cqw;height:11.4cqw;padding:0 4.4cqw;gap:2.4cqw;background:rgba(16,41,31,.86);font-size:2.9cqw;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 2cqw 5cqw rgba(0,0,0,.4)}
+#app .glance2 small{display:block;font:500 2.9cqw/1.2 var(--sans);letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--gold);margin-top:1.6cqw}
+#app .itin{display:grid;grid-template-columns:repeat(3,1fr)}
+#app .itin>div{padding:4cqw 1.6cqw 3.6cqw;text-align:center;min-width:0}
+#app .itin>div+div{border-left:1px solid rgba(162,121,43,.35)}
+#app .itin .t{font:600 7.4cqw/1.05 var(--serif);margin-top:1cqw}
+#app .glance2 .n{font-size:3cqw;line-height:1.3;color:var(--dim);margin-top:.8cqw}
+#app .hic{width:8cqw;height:8cqw;fill:none;stroke:var(--ink);stroke-width:1.25;stroke-linecap:round;stroke-linejoin:round;display:block;margin:0 auto}
+#app .duo .hic{margin:0}
+#app .hic .g{stroke:var(--gold)}
+#app .hic .gf{fill:var(--gold);stroke:none}
+#app .duo{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw;margin-top:2.4cqw}
+#app .duo>div{padding:3.6cqw 3.8cqw;min-width:0}
+#app .duo b{display:block;font:600 5.4cqw/1.12 var(--serif);margin:1cqw 0 0}
+#app .duo b.b2{margin:.6cqw 0 0}
+#app .scroll>.sec{transition-delay:.08s}
+#app .scroll>.sec+.sec{transition-delay:.16s}
+
+/* tabs cross-fade */
+#app .view.on.sw{animation:viewin .28s var(--ease) both}
+@keyframes viewin{from{opacity:0;transform:translateY(2.4cqw)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.hlights i{animation:none!important;opacity:.92}.lsnow i,#app .hero .snow i{animation:none}#app .view.on.sw{animation:none}}
 </style>
 <clipPath id="patch"><path d="M0.0 0.0L1000.0 0.0L1000.0 680.0L0.0 680.0Z"/></clipPath>
 <clipPath id="c1"><rect x="40.00000000000006" y="557.2" width="788.8" height="40.8"/></clipPath>
@@ -486,7 +593,7 @@ body{padding:0!important;overflow:hidden}
 <clipPath id="c12"><path d="M318.8 434.8L412.3 373.6L505.8 434.8L495.6 434.8L412.3 382.4L329.0 434.8Z"/></clipPath>
 </defs>
 <path d="M0.0 0.0L1000.0 0.0L1000.0 680.0L0.0 680.0Z" class="f-bg"/>
-<g clip-path="url(#patch)">
+<g clip-path="url(#patch)" id="hsArt">
 <circle cx="237.6" cy="318.2" r="1.6" class="f-ink" opacity="0.44655832389301403"/>
 <circle cx="62.0" cy="60.7" r="1.6" class="f-ink" opacity="0.5503551186690794"/>
 <circle cx="49.1" cy="170.1" r="2.8" class="f-ink" opacity="0.5974913469445888"/>
@@ -3278,7 +3385,7 @@ body{padding:0!important;overflow:hidden}
 <circle cx="240.0" cy="40.0" r="1.3" class="f-gold" opacity="1.0"/>
 </g>
 </svg>
-<div class="door" id="door"><div class="light"></div></div><svg xmlns="http://www.w3.org/2000/svg" viewBox="381.2 454.5 62.2 144" preserveAspectRatio="none" class="leafsvg" aria-hidden="true">
+<div class="hlights" id="lkLights"></div><div class="door" id="door"><div class="light"></div></div><svg xmlns="http://www.w3.org/2000/svg" viewBox="381.2 454.5 62.2 144" preserveAspectRatio="none" class="leafsvg" aria-hidden="true">
 <path d="M0.0 0.0L1000.0 0.0L1000.0 680.0L0.0 680.0Z" class="f-bg"/>
 <g>
 <circle cx="237.6" cy="318.2" r="1.6" class="f-ink" opacity="0.44655832389301403"/>
@@ -6072,7 +6179,7 @@ body{padding:0!important;overflow:hidden}
 <circle cx="240.0" cy="40.0" r="1.3" class="f-gold" opacity="1.0"/>
 </g>
 </svg>
-</div><div class="pin-pill"><h3>Come on in</h3><div class="small-caps">Enter your personal PIN</div></div></div>
+</div><div class="lsnow" id="lkSnow"></div><div class="pin-pill"><h3>Come on in</h3><div class="small-caps">Enter your personal PIN</div></div></div>
       <div class="fade"></div>
     <div class="pad" id="pad">
       <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
@@ -6088,7 +6195,7 @@ body{padding:0!important;overflow:hidden}
     </div>
     <div id="app"><div class="views"><section class="view on" data-v="welcome"><div class="scroll">
       <div class="top"><div class="hello" id="hello">Hello, James</div><div class="date">Friday 25 December 2026 · Number 8</div></div>
-      <div class="hero"><div class="flake"><svg viewBox="0 0 200 200"><g transform="rotate(0 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><g transform="rotate(60 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><g transform="rotate(120 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><g transform="rotate(180 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><g transform="rotate(240 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><g transform="rotate(300 100 100)"><path d="M100 100V8M100 30l-14-14M100 30l14-14M100 54l-20-18M100 54l20-18M100 78l-12-10M100 78l12-10"/></g><circle cx="100" cy="100" r="92" stroke-dasharray="2 5"/><circle cx="100" cy="100" r="4"/></svg></div><div class="snow" id="snow"></div><svg class="drift" viewBox="0 0 360 72" preserveAspectRatio="none"><path d="M0 40C40 22 80 30 120 38S200 52 250 34 330 18 360 30V72H0Z" fill="#f4ecd6" opacity=".14"/><path d="M0 52C50 40 90 48 140 54S240 60 290 48 340 44 360 50V72H0Z" fill="#f4ecd6" opacity=".2"/><path d="M0 40C40 22 80 30 120 38S200 52 250 34 330 18 360 30" fill="none" stroke="#f4ecd6" stroke-width="1.2" opacity=".5"/><path d="M0 52C50 40 90 48 140 54S240 60 290 48 340 44 360 50" fill="none" stroke="#d4b36a" stroke-width="1" opacity=".5"/></svg><div class="in"><div class="num" id="num">52</div><div class="lbl" id="lbl">sleeps to go</div><div class="sub" id="sub">until Christmas Day</div></div>
+      <div class="hero"><div class="sky"></div><div class="in"><div class="num" id="num">52</div><div class="lbl"><i></i><span id="lbl">sleeps to go</span><i></i></div><div class="sub" id="sub">until Christmas Day</div></div><div class="hhouse"><svg viewBox="0 0 1000 680" aria-hidden="true"><use href="#hsArt"/></svg><div class="hlights" id="hmLights"></div></div><div class="snow" id="snow"></div>
         <button class="gamelink" id="gamelink" type="button"><span>Tap to make time go faster</span><svg viewBox="-24 -4 92 64" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="gl-ico"><g transform="rotate(-15 22 36)"><g transform="translate(44 0) scale(-1 1)"><path d="M30 33h25l-2.500 11c-.5 2-2 3-4 3H35c-2 0-3.500-1-4-3z" fill="#c4523f" stroke="#f4ecd6" stroke-width="1.8"/><path d="M27 52c7 2.500 24 2.500 31 0 3-1.500 3.500-5.500.5-7.500" stroke="#d4b36a" stroke-width="2.400"/><path d="M36 47v5M50 47v5" stroke="#d4b36a" stroke-width="2"/><path d="M30 38c-5 0-8 1-10 3M13 38c-3 0-4.500 .5-6 1.500" stroke="#d4b36a" stroke-width="1.800"/><g transform="translate(-17 0)" opacity=".75"><g transform="translate(33 0) scale(-1 1)"><g stroke="#f4ecd6" stroke-width="2"><path d="M7 38h11c2 0 3-1.500 3-3.500V33c0-1.500-1-2.500-2.500-2.500H11c-2.500 0-4 2-4 4.500z" fill="#a2792b"/><path d="M10 38v8M17 38v8M20.500 31.500l2.500-5 4 1.500"/><circle cx="26.500" cy="26.500" r="3.500" fill="#a2792b"/><circle cx="28.500" cy="25.500" r="1.100" fill="#c4523f" stroke="none"/></g><path d="M24 23l-2-6M24 20l-4-1M28 22l1-6M28.500 19.500l3.500-1.500" stroke="#d4b36a" stroke-width="1.800"/></g></g><g transform="translate(33 0) scale(-1 1)"><g stroke="#f4ecd6" stroke-width="2"><path d="M7 38h11c2 0 3-1.500 3-3.500V33c0-1.500-1-2.500-2.500-2.500H11c-2.500 0-4 2-4 4.500z" fill="#a2792b"/><path d="M10 38v8M17 38v8M20.500 31.500l2.500-5 4 1.500"/><circle cx="26.500" cy="26.500" r="3.500" fill="#a2792b"/><circle cx="28.500" cy="25.500" r="1.100" fill="#c4523f" stroke="none"/></g><path d="M24 23l-2-6M24 20l-4-1M28 22l1-6M28.500 19.500l3.500-1.500" stroke="#d4b36a" stroke-width="1.800"/></g><path d="M45 14l1.200 2.500 2.700.4-2 1.900.5 2.700-2.400-1.300-2.400 1.300.5-2.700-2-1.900 2.700-.4z" fill="#d4b36a" stroke="none"/></g></g></svg></button>
         <canvas id="cv"></canvas>
         <div class="hud"><div class="score"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10"/><path d="M4 10h16M12 10v10M12 10C9 4 5 5 7 8c1 1 4 2 5 2zM12 10c3-6 7-5 5-2-1 1-4 2-5 2z"/></svg><span id="pc">0</span></div><button class="snd" id="snd" type="button"><svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path id="sndx" d="M16 9l5 6M21 9l-5 6"/></svg><span id="sndt">Sound off</span></button></div>
@@ -6097,12 +6204,16 @@ body{padding:0!important;overflow:hidden}
       </div>
 
       <div class="sec"><h2>At a glance</h2>
-        <div class="glance">
-          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><path d="M5 11V8a7 7 0 0 1 14 0v3M4 11h16v2H4zM6 13l1 7h10l1-7"/></svg><small>Arrive</small><b>12:30</b><span>Welcome drink on arrival</span></div>
-          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/></svg><small>Sit down</small><b>14:00</b><span>Christmas dinner</span></div>
-          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><path d="M8 4 4 7l2 3 2-1v11h8V9l2 1 2-3-4-3c-1 2-2 3-4 3S9 6 8 4z"/></svg><small>Dress</small><b>Dress to impress</b><span>Sparkle encouraged</span></div>
-          <div class="tile"><svg class="ico" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="11"/><path d="M4 9h16M12 9v11M12 9c-2-5-6-4-5-1 .5 1.500 3 1 5 1zM12 9c2-5 6-4 5-1-.5 1.500-3 1-5 1z"/></svg><small>Bring</small><div id="bring"><b>Secret Santa</b><b class="b2">Festive cheer</b></div></div>
-          <div class="tile wide"><svg class="ico big" viewBox="0 0 24 24"><path d="M12 1v4"/><circle cx="12" cy="14" r="8"/><path d="M4.3 11.5h15.4M4.3 16.5h15.4M12 6v16M12 6c-4.500 4-4.500 12 0 16M12 6c4.500 4 4.500 12 0 16"/><path d="M21.500 3.500v3M20 5h3" stroke-width="1"/></svg><div><small>Party time</small><b>19:00</b><span>Evening food at 19:30</span></div></div>
+        <div class="glance2">
+          <div class="card2 itin">
+            <div><svg class="hic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.1h12.100c-.1 5-2.600 7.900-6.100 7.900S6.100 9.100 6 4.100zM12 12v7.100M8.400 20.100c2.300-.2 4.800-.2 7.200 0"/><circle class="gf" cx="10" cy="7" r=".9"/><circle class="gf" cx="13.500" cy="8.600" r=".7"/><circle class="gf" cx="12.400" cy="5.600" r=".6"/></svg><small>Arrive</small><div class="t">12:30</div><div class="n">Welcome drink on arrival</div></div>
+            <div><svg class="hic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.100c.1-4.500 3.600-8 8-8s7.900 3.500 8 8zM2.500 18.700c6.300-.2 12.700-.2 19 0"/><circle class="gf" cx="12" cy="6.400" r="1.200"/><path class="g" d="M7.500 13a4.600 4.600 0 0 1 2.600-2.600"/></svg><small>Sit down</small><div class="t">14:00</div><div class="n">Christmas dinner</div></div>
+            <div><svg class="hic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v4"/><circle cx="12" cy="13" r="7"/><path d="M5 13.100c4.700-.2 9.300-.2 14 0M12 6c-3 2-3 12 0 14M12 6c3 2 3 12 0 14M6.200 9.400c3.900-.2 7.700-.2 11.600 0M6.200 16.600c3.900.2 7.700.2 11.600 0"/><path class="g" d="M20 3v3M18.500 4.500h3M3.500 5v2M2.500 6h2"/></svg><small>Party time</small><div class="t">19:00</div><div class="n">Evening food at 19:30</div></div>
+          </div>
+          <div class="duo">
+            <div class="card2"><svg class="hic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.500l7 3.100v2.900l-7 3zM21 7.500l-7 3.100v2.900l7 3z"/><rect class="gf" x="10" y="9.800" width="4" height="4.400" rx="1"/></svg><small>Dress</small><b>Dress to impress</b><div class="n">Sparkle encouraged</div></div>
+            <div class="card2"><svg class="hic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16v10.100H4zM3 7h18v3H3z"/><path class="g" d="M12 7v13M12 7c-1.500-3.500-5-3.500-4.500-1.200S10 7 12 7zM12 7c1.500-3.500 5-3.500 4.500-1.200S14 7 12 7z"/></svg><small>Bring</small><div id="bring"><b>Secret Santa</b><b class="b2">Festive cheer</b></div></div>
+          </div>
         </div>
       </div>
 
@@ -6110,7 +6221,7 @@ body{padding:0!important;overflow:hidden}
         <ul class="tl" id="tl"></ul>
         <div class="note">Times are a guide. Nobody needs to watch the clock.</div>
       </div>
-    </div></section><section class="view soon" data-v="menu"><h2>Menu</h2><p>Coming soon. This page is still being built.</p></section><section class="view" data-v="table"><iframe id="tpFrame" title="Table plan" style="border:0;width:100%;height:100%;display:block;background:#0c1f17" allow="fullscreen"></iframe></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
+    </div></section><section class="view soon" data-v="menu"><div class="pg-head"><div class="e">Menu</div><h2>Coming soon</h2><div class="s">This page is still being built</div></div></section><section class="view" data-v="table"><iframe id="tpFrame" title="Table plan" style="border:0;width:100%;height:100%;display:block;background:#0c1f17" allow="fullscreen"></iframe></section><section class="view sa" data-v="santa"><div class="sa-bg"></div><div id="saBody"></div></section><section class="view pl" data-v="play"><div class="pl-pg" id="plBody"></div></section></div><nav class="apptabs" id="apptabs">
   <button class="on" data-v="welcome"><svg viewBox="0 0 24 24"><path d="M.8 9.6h15.4M2 9.6V19.5h13V9.6M12.6 5.4v4.2h1.8V6.2"/><rect x="3" y="12.2" width="2.4" height="2.6"/><rect x="11.6" y="12.2" width="2.4" height="2.6"/><rect x="7.2" y="13.6" width="2.6" height="5.9" style="fill:#c4523f;stroke:none"/><path d="M.6 19.5h22.8"/><path d="M20.4 6.4l-2.3 3.9M20.4 6.4l2.3 3.9h-4.6M20.4 9.4l-3 4.8h6zM20.4 12.8l-3.6 6.7h7.2z"/><circle class="star" cx="20.4" cy="5.2" r=".9" style="fill:#e0b95c;stroke:none"/></svg>Home</button>
   <button data-v="menu"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path class="ln" pathLength="1" d="M8.5 7h7"/><path class="ln" pathLength="1" d="M8.5 11h7"/><path class="ln" pathLength="1" d="M8.5 14.5h5"/><path class="ln" pathLength="1" d="M8.5 18h6"/></svg>Menu</button>
   <button data-v="table"><svg viewBox="0 0 24 24"><rect x="4.5" y="9.6" width="15" height="4.8" rx="1"/><rect x="1.6" y="10.4" width="2" height="3.2" rx=".8"/><rect x="20.4" y="10.4" width="2" height="3.2" rx=".8"/><g class="tp tp1"><g class="bob"><circle cx="8.4" cy="4.2" r="1.6"/><path d="M5.9 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g></g><g class="tp tp2"><g class="bob"><circle cx="15.6" cy="4.2" r="1.6"/><path d="M13.1 8.6c0-2.2 1.1-3 2.5-3s2.5.8 2.5 3"/></g></g><g class="tp tp3"><g class="bob"><circle cx="8.4" cy="19.8" r="1.6"/><path d="M5.9 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g></g><g class="tp tp4"><g class="bob"><circle cx="15.6" cy="19.8" r="1.6"/><path d="M13.1 15.4c0 2.2 1.1 3 2.5 3s2.5-.8 2.5-3"/></g></g></svg>Table</button>
@@ -6162,7 +6273,7 @@ function fly(tx,ty,ms){
 }
 let raf=0;
 function go(name){
-  busy=true;window.GUEST=name;
+  busy=true;window.GUEST=name;scr.classList.add('going');
   document.getElementById('hi').textContent='Welcome, '+name;
   const s=scr.getBoundingClientRect(),d=door.getBoundingClientRect();
   const ox=d.left+d.width/2-s.left,oy=d.top+d.height/2-s.top;
@@ -6196,6 +6307,7 @@ function render(now){
   else if(sleeps===1){num.textContent='1';lbl.textContent='sleep to go';sub.textContent='Santa is on his way'}
   else if(sleeps===0){num.textContent='Today';lbl.textContent='is the day';sub.textContent='Welcome to Number 8'}
   else{num.textContent='Thank you';lbl.textContent='for coming';sub.textContent='Merry Christmas from Number 8'}
+  num.classList.toggle('word',sleeps<1);
   if(window.__gameHide)window.__gameHide(sleeps<=0);
   document.getElementById('hello').textContent=(sleeps===0?'Merry Christmas, ':'Welcome, ')+(window.GUEST||'');
   const mins=now.getHours()*60+now.getMinutes(),today=sleeps===0,M=s=>{const[h,m]=s.split(':');return +h*60+ +m};
@@ -6459,10 +6571,10 @@ const TICKET='<div class="sa-ticket"><span class="notch l"></span><span class="n
 function renderSanta(){
   const el=document.getElementById('saBody'),n=window.GUEST;if(!el||!n)return;
   const head=(t,s)=>'<div class="sa-small">Secret Santa</div><h2>'+t+'</h2><div class="sa-sub" id="saSub">'+s+'</div>';
-  if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('Hello, '+n,'This one is for the grown-ups')+'<div class="sa-stage" style="height:44cqw;width:50cqw">'+GIFT_SVG(false)+'</div><div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
+  if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('For the grown-ups','No shopping for you this year')+'<div class="sa-stage" style="height:44cqw;width:50cqw">'+GIFT_SVG(false)+'</div><div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
   if(!SANTA||!SANTA.drawn){el.innerHTML=head('Not drawn yet','The names are still in the hat')+'<div class="sa-stage">'+GIFT_SVG(true)+'</div><div class="sa-hint">Everyone is drawn at once, so nobody can see a result until it is done. Come back soon.</div>';return}
   saOpenName=null;
-  el.innerHTML=head('Hello, '+n,'Your Secret Santa is ready')+'<div class="sa-stage" id="saStage"><div class="sa-spark">'+SPARKS+'</div>'+GIFT_SVG(true)+TICKET+'</div><button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
+  el.innerHTML=head('Who did you draw?','Unwrap to see who you’re buying for')+'<div class="sa-stage" id="saStage"><div class="sa-spark">'+SPARKS+'</div>'+GIFT_SVG(true)+TICKET+'</div><button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
   document.getElementById('saOpen').onclick=unwrapSanta;
 }
 function unravelBow(stage){
@@ -6582,9 +6694,9 @@ function slHub(){
     :'<div class="pl-card hot"><div class="pl-row">'+slAv(me,'13cqw').replace('class="pl-av ','class="pl-av ').replace('border:','border:')+'<div><div class="pl-ttl" style="font-size:4.8cqw">Add your photo</div><div class="pl-note">So you appear in the games and around the app</div></div></div><button class="pl-btn" style="margin-top:3cqw" data-act="photo">Add photo</button></div>';
   const lbAll=Object.keys(window.__scores||{}).filter(n=>window.__scores[n]>0).map(n=>({n,s:window.__scores[n]})).sort((x,y)=>y.s-x.s||x.n.localeCompare(y.n)),lbRows=plTop(lbAll,me);
   const lb='<div class="pl-lbh">Top five flyers</div>'+(lbRows.length?'<ol class="pl-lb">'+lbRows.map(t=>{const r=t.r;return '<li class="'+(r.n===me?'me':'')+(t.sep?' sep':'')+'"><span class="rk">'+(t.i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+'</span><b>'+r.s+'</b></li>'}).join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No scores yet. Be the first!</div>');
-  const sleigh='<div class="pl-card hot" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div class="pl-row">'+SLEIGH_ICON.replace('class="pl-ico"','style="width:23.500cqw;height:13.500cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Sleigh dash</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">How many presents can you deliver?</div></div></div></div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-pill">Tap to play</span></div>'+lb+'</div>';
-  const quizOn=qzReady(),quiz='<div class="pl-card hot"'+(quizOn?' data-act="qzopen" style="cursor:pointer"':'')+'><div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">To be presented on Christmas Day</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">Tap here to get your practice in.</span><span class="pl-pill">'+(quizOn?'Play':'Soon')+'</span></div>'+(quizOn?qzCols(5,true):'')+'</div>';
-  return '<div class="pl-small">Play</div><h2>Festive fun</h2><div class="pl-sub">Hello, '+me+'</div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
+  const sleigh='<div class="pl-card hot" data-act="sleigh" style="cursor:pointer"><div class="pl-row" style="justify-content:space-between"><div class="pl-row">'+SLEIGH_ICON.replace('class="pl-ico"','style="width:23.500cqw;height:13.500cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Sleigh dash</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">How many presents can you deliver?</div></div></div></div><div class="pl-row" style="margin-top:2.6cqw"><span class="pl-btn pl-go">Tap to play</span></div>'+lb+'</div>';
+  const quizOn=qzReady(),quiz='<div class="pl-card hot"'+(quizOn?' data-act="qzopen" style="cursor:pointer"':'')+'><div class="pl-row">'+QUIZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6cqw">Auntie Sue’s Christmas Quiz</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">To be presented on Christmas Day</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">Tap here to get your practice in.</span><span class="'+(quizOn?'pl-btn pl-go':'pl-pill')+'">'+(quizOn?'Play':'Soon')+'</span></div>'+(quizOn?qzCols(5,true):'')+'</div>';
+  return '<div class="pg-head"><div class="e">Play</div><h2>Festive fun</h2><div class="s">Games before the big day</div></div>'+card+sleigh+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
 }
 function slIntro(){
   const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
@@ -7127,13 +7239,37 @@ document.addEventListener('change',e=>{
 
 
 
+/* ---------- the lit house: windows, tree lights and snow (PIN screen and home page) ---------- */
+function addLights(el,x0,w){
+  if(!el)return;
+  const P=(x,y,bw,bh)=>'left:'+((x-x0)/w*100).toFixed(2)+'%;top:'+(y/6.8).toFixed(2)+'%;'+(bw?'width:'+(bw/w*100).toFixed(2)+'%;height:'+(bh/6.8).toFixed(2)+'%;':'');
+  const W=[[129.1,285.9,66.6,80.2],[605.1,282.5,134.6,87],[125.7,455.9,73.4,73.4],[605.1,438.9,134.6,87]];
+  const T=[[788,418],[788,440],[781,457],[796,459],[775,481],[789,487],[802,479],[768,516],[783,523],[798,521],[810,513],[760,553],[775,561],[791,563],[806,559],[819,551]];
+  const C=['#ffe9b0','#e0584a','#f2cf72','#fff6dc'];
+  el.innerHTML=W.map((r,i)=>'<i class="w" style="'+P(r[0],r[1],r[2],r[3])+'animation-delay:'+(.5+i*.4).toFixed(2)+'s,'+(2.6+i*.7).toFixed(2)+'s"></i>').join('')
+    +T.map((p,i)=>'<i class="t" style="'+P(p[0],p[1])+'--c:'+C[i%4]+';animation-delay:'+(2.3+i*.07).toFixed(2)+'s,'+(3.4+(i*.37)%2.6).toFixed(2)+'s"></i>').join('');
+}
+addLights(document.getElementById('lkLights'),12.3,800);
+addLights(document.getElementById('hmLights'),0,1000);
+(function(){const sn=document.getElementById('lkSnow');if(!sn)return;
+  for(let i=0;i<30;i++){const f=document.createElement('i'),z=(.35+Math.random()*.8).toFixed(2),d=(9+Math.random()*10).toFixed(1);
+    f.style.cssText='left:'+(Math.random()*100).toFixed(1)+'%;width:'+z+'cqw;height:'+z+'cqw;opacity:'+(.25+Math.random()*.5).toFixed(2)+';animation-duration:'+d+'s;animation-delay:-'+(Math.random()*d).toFixed(1)+'s;--sw:'+((Math.random()-.5)*10).toFixed(1)+'cqw';sn.appendChild(f)}
+  setTimeout(()=>{const h=document.querySelector('.house');if(h)h.classList.add('lit')},350);
+})();
+function countUp(){
+  const n=document.getElementById('num'),t=+n.textContent;
+  if(!t||(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches))return;
+  const t0=performance.now()+1300;n.textContent='0';
+  (function step(now){const u=Math.max(0,Math.min(1,(now-t0)/1300)),e=1-Math.pow(1-u,3);n.textContent=Math.round(t*e);if(u<1)requestAnimationFrame(step)})(performance.now());
+}
+
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.v==='play'){slLoadLocal();sl.screen='hub';slRender()}
   if(b.dataset.v==='table'){const f=document.getElementById('tpFrame');if(f&&!f.getAttribute('src'))f.src='table.html?me='+encodeURIComponent(window.GUEST||'')}
   if(b.dataset.v!=='santa'&&(saOpenName||saBusy)){saOpenName=null;saBusy=false;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
-  document.querySelectorAll('#app .view').forEach(v=>v.classList.toggle('on',v.dataset.v===b.dataset.v));
+  document.querySelectorAll('#app .view').forEach(v=>{const on=v.dataset.v===b.dataset.v;v.classList.toggle('sw',on&&!v.classList.contains('on'));v.classList.toggle('on',on)});
 }));
 
 /* ---------- what each guest brings: Secret Santa and festive cheer for everyone, plus whatever is typed against their name in bring.json */
@@ -7158,7 +7294,7 @@ function riseIn(){
   later(()=>{scr.classList.add('hello-on');hi.style.transition='none';hi.style.opacity='0'},1150);
   later(()=>{scr.classList.add('app');scr.classList.remove('rising','hello-on')},2000);
 }
-function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();slLoadLocal();slRender();render(new Date());riseIn()}
+function enterApp(){if(inApp||!window.GUEST)return;inApp=true;paintBring();renderSanta();slLoadLocal();slRender();render(new Date());countUp();riseIn();setTimeout(()=>document.querySelector('#app .hero').classList.add('lit'),1500)}
 document.getElementById('welcome').addEventListener('click',enterApp);
 document.querySelector('#app .hero').addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('selectstart',e=>{if(e.target&&e.target.closest&&e.target.closest('#app .hero'))e.preventDefault()});

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Santa Shortlist · TV</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@400;500;700&family=Pinyon+Script&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Jost:wght@400;500;600;700&family=Pinyon+Script&display=swap" rel="stylesheet">
 <script src="game-core.js"></script>
 <style>
 /* Layout: one full-screen stage, one screen visible at a time. Sized in vmin so it fills any TV; text is at least 64px (question) and 48px (names) on a 1080p set. */
@@ -12,6 +12,7 @@
 --script:"Pinyon Script",cursive;--serif:"Cormorant Garamond",Georgia,serif;--sans:"Jost",system-ui,sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;cursor:none}
+*{font-variant-numeric:lining-nums!important}
 #stage{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 38%,#1f4a39 0,#16382b 46%,#0c1f17 100%)}
 .sc{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5.5vmin 6vmin}
 .sc.on{display:flex;animation:fade .45s ease}
