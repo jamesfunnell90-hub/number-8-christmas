@@ -102,6 +102,7 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
       </div></div>
     <div class="rows" id="rivals"></div>
     <button class="go" id="bStart">Start race</button>
+    <a id="bBack" href="index.html" hidden style="color:var(--gold);font-size:14px;text-decoration:none">Back to the app</a>
     <div class="keys">Phone: hold the left or right side of the screen. Computer: arrow keys or A and D.</div>
   </div></div>
   <div class="ov" id="ovEnd" hidden><div class="card">
@@ -733,6 +734,7 @@ const SPARE=[[0x9a6b45,0xf4ecd6,0x1f7a7a,'#1f7a7a'],[0xb08a6a,0xffffff,0xa33b6b,
 const ROSTER=['Sue','Andy','Steve','Leanne'], SKILL={Sue:.99,Andy:.96,Steve:.93,Leanne:.9};
 const me={name:'James',color:'#c4523f',img:null,no:1,custom:false};
 try{const s=localStorage.getItem('rr_who');if(s&&NAMES.includes(s))me.name=s;}catch(e){}
+let QME=null;try{QME=new URLSearchParams(location.search).get('me');}catch(e){}if(QME&&NAMES.includes(QME))me.name=QME;else QME=null;
 const team=buildTeam({coat:0x8a5a36,sleigh:0xc4523f});
 const pool={};let rivals=[];
 function rivalFor(name){if(pool[name])return pool[name];
@@ -812,8 +814,12 @@ function simRace(name,slot,home){
     pts.push([+s.toFixed(2),+lat.toFixed(2)]);}
   const laps=lapTimes(pts);return {name,pts,laps:laps.map((x,k)=>x-(k?laps[k-1]:0)),total:laps[LAPS-1],sim:true};
 }
-function loadRec(name){try{const j=JSON.parse(localStorage.getItem('rr_best_'+name)||'null');if(j&&j.pts&&j.total)return j;}catch(e){}return null;}
-function saveRec(rec){try{localStorage.setItem('rr_best_'+rec.name,JSON.stringify(rec));return true;}catch(e){return false;}}
+// best races: REMOTE holds everyone's best race from the app's database (live build fills it); this device's own copy is the fallback
+const REMOTE={};
+function loadRec(name){let loc=null;try{const j=JSON.parse(localStorage.getItem('rr_best_'+name)||'null');if(j&&j.pts&&j.total)loc=j;}catch(e){}
+  const r=REMOTE[name];return r&&(!loc||r.total<=loc.total)?r:loc;}
+function saveRec(rec){let ok=false;try{localStorage.setItem('rr_best_'+rec.name,JSON.stringify(rec));ok=true;}catch(e){}
+  if(window.__saveRace){window.__saveRace(rec);ok=true;}return ok;}
 function pickRivals(){
   const real=NAMES.filter(n=>n!==me.name&&loadRec(n)).sort((a,b)=>loadRec(a).total-loadRec(b).total);
   const names=[...real,...ROSTER.filter(n=>n!==me.name&&!real.includes(n))].slice(0,3);
@@ -1031,11 +1037,22 @@ window.__rally={get st(){return st},get state(){return state},input,LEN,P,N,get 
     if(v){const im=new Image();im.onload=()=>{FACEIMG[n]=im;repaintAll();};im.src=v;}});}).catch(()=>{});
   Promise.all([0,1,2,3].map(k=>fetch(FS+'rally/bb'+k+'?key='+KEY).then(r=>r.ok?r.json():null).then(d=>{if(d&&d.fields&&d.fields.img){BILLBOARD_IMAGES[k]={src:d.fields.img.stringValue,fy:d.fields.fy?(+d.fields.fy.doubleValue||+d.fields.fy.integerValue||.5):.5};}}).catch(()=>{})))
     .then(()=>signs.forEach(g=>g.userData.redraw()));
+  // everyone's best 3-lap race, shared through the database
+  fetch(FS+'races?pageSize=60&key='+KEY).then(r=>r.json()).then(j=>{(j.documents||[]).forEach(d=>{const f=d.fields||{},n=d.name.split('/').pop();if(!f.pts||!f.total)return;
+    const num=v=>+(v.doubleValue!=null?v.doubleValue:v.integerValue);
+    REMOTE[n]={name:n,total:num(f.total),laps:((f.laps&&f.laps.arrayValue&&f.laps.arrayValue.values)||[]).map(num),pts:f.pts.stringValue.split('|').map(p=>p.split(',').map(Number))};});
+    if(window.__rallyMenuRefresh)window.__rallyMenuRefresh();}).catch(()=>{});
+  window.__saveRace=rec=>{const body={fields:{name:{stringValue:rec.name},total:{doubleValue:rec.total},laps:{arrayValue:{values:rec.laps.map(x=>({doubleValue:x}))}},
+      pts:{stringValue:rec.pts.map(p=>(+p[0]).toFixed(1)+','+(+p[1]).toFixed(1)).join('|')},updated:{integerValue:String(Date.now())}}};
+    return fetch(FS+'races/'+encodeURIComponent(rec.name)+'?key='+KEY,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(r=>{if(r.ok)REMOTE[rec.name]=rec;return r.ok;}).catch(()=>false);};
 })();
 /* ---------- menu: who you are, photo, rivals ---------- */
 const who=$('who'),prev=$('boardPrev');
 NAMES.forEach(n=>{const o=document.createElement('option');o.value=o.textContent=n;who.appendChild(o);});
 who.value=me.name;
+if(QME){who.disabled=true;$('bBack').hidden=false;}
+window.__rallyMenuRefresh=()=>{if(state==='menu')refreshMe();};
 function refreshMe(){
   if(!me.custom)me.img=FACEIMG[me.name]||null;
   team.userData.paint(me);paintBoard(prev,me);
