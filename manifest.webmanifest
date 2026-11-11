@@ -1,6 +1,7 @@
 {
   "name": "Funnell’s Christmas Spectacular",
   "short_name": "Christmas",
+  "lang": "en-GB",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#10291f",
