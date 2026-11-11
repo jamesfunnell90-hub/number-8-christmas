@@ -29,7 +29,7 @@ button{font:700 14px/1 var(--sans);letter-spacing:.03em;border-radius:999px;padd
 #load i b{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
 #load span{font:500 22px var(--serif)}
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 78px);transform:translateX(-50%);font-size:12px;color:var(--dim);
- background:rgba(12,31,23,.7);padding:6px 12px;border-radius:999px;transition:opacity .5s;pointer-events:none;white-space:nowrap}
+ background:rgba(12,31,23,.7);padding:6px 12px;border-radius:999px;pointer-events:none;white-space:normal;text-align:center;width:max-content;max-width:calc(100vw - 24px);opacity:1 !important}
 #flat{display:none;position:fixed;inset:0;overflow:auto;padding:90px 16px 100px}
 #flat .tbl{max-width:360px;margin:0 auto;display:grid;grid-template-columns:1fr 70px 1fr;gap:8px;align-items:center}
 #flat .s{padding:9px 6px;text-align:center;border:1px solid var(--line);border-radius:10px;background:var(--panel);font-size:14px}
@@ -45,7 +45,7 @@ button{font:700 14px/1 var(--sans);letter-spacing:.03em;border-radius:999px;padd
 <div id="stage"></div>
 <div id="flat"></div>
 <div class="top"><h1>Table plan</h1><p id="sub">&nbsp;</p></div>
-<div id="hint">One finger to slide · two to spin and zoom · tap a place</div>
+<div id="hint">One finger to move around · pinch to zoom · two fingers to spin</div>
 <div class="bar"><button class="solid" id="bMine">Find my seat</button><button class="ghost" id="bRoom">Whole room</button></div>
 <div id="load"><div><span>Laying the table…</span><i><b id="prog"></b></i></div></div>
 
@@ -138,6 +138,14 @@ controls.touches = {ONE: THREE.TOUCH.PAN, TWO: THREE.TOUCH.DOLLY_ROTATE};
 controls.mouseButtons = {LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE};
 controls.minDistance = 0.7; controls.maxDistance = 13; controls.minPolarAngle = 0.12; controls.maxPolarAngle = 1.50;
 controls.rotateSpeed = .6; controls.zoomSpeed = .8; controls.target.copy(CENTRE); controls.autoRotateSpeed = 0.7;
+
+// jumbo corduroy for the sofa: soft ribs, repeated along each cushion
+const cordTex = (() => {
+  const mk = (draw) => { const t = canvasTex(8, 64, draw, {gltf:true}); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1, 1.5); return t; };
+  const map = mk((g, w, h) => { for (let y = 0; y < h; y++) { const k = .5 - .5 * Math.cos(y / h * 2 * Math.PI), c = Math.round(178 + 77 * Math.pow(k, .6)); g.fillStyle = 'rgb(' + c + ',' + c + ',' + c + ')'; g.fillRect(0, y, w, 1); } });
+  const bump = mk((g, w, h) => { for (let y = 0; y < h; y++) { const c = Math.round(255 * Math.pow(.5 - .5 * Math.cos(y / h * 2 * Math.PI), .6)); g.fillStyle = 'rgb(' + c + ',' + c + ',' + c + ')'; g.fillRect(0, y, w, 1); } });
+  bump.colorSpace = THREE.NoColorSpace; return {map, bump};
+})();
 
 // ---------- artwork drawn in the app (keeps the model file small)
 const art = {
@@ -256,6 +264,7 @@ loader.load('room.glb', gltf => {
       o.receiveShadow = !glassy;
       for (const m of mats) {
         if (!drawn) m.envMapIntensity = m.metalness > .5 ? 1.0 : .45;
+        if (m.name === 'Sofa_GreyCord' && !m.map) { m.map = cordTex.map; m.bumpMap = cordTex.bump; m.bumpScale = 1.5; m.color.set(0x9a9fa6); m.roughness = 1; m.envMapIntensity = .15; m.needsUpdate = true; }
         if (m.name === 'Glass') { m.opacity = .12; m.depthWrite = false; m.side = THREE.DoubleSide; m.roughness = .03; m.envMapIntensity = 1.2; }
         if (/Glassware|Vase_Glass/.test(m.name)) { m.depthWrite = false; m.opacity = .32; m.roughness = .02; m.envMapIntensity = 1.6; }
       }
