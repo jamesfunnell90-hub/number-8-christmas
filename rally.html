@@ -19,6 +19,9 @@
 }
 html,body{height:100%;margin:0;overflow:hidden}
 [hidden]{display:none!important}
+*{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none}
+.card,.card *{touch-action:pan-y}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-user-select:none;user-select:none;touch-action:none}
 #app{position:relative;width:100%;height:100%;overflow:hidden}
 canvas#gl{display:block;width:100%;height:100%}
@@ -96,10 +99,11 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <h1>Reindeer Rally</h1>
     <p>Frosty Hollow · 3 laps. Your reindeer runs on its own, so you only steer. Dodge the snowmen and presents, hit the candy-stripe pads for a boost, and watch out for ice. Barge the others out of the way if you dare.</p>
     <div class="me"><canvas id="boardPrev" width="256" height="160"></canvas>
-      <div style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:0">
+      <div id="pick" style="display:flex;flex-direction:column;gap:8px;flex:1;min-width:0">
         <label class="fld">Racing as <select id="who"></select></label>
         <label class="fld">Photo <input type="file" id="photo" accept="image/*"></label>
-      </div></div>
+      </div>
+      <div id="meInfo" hidden style="flex:1;min-width:0;text-align:left;font-size:13px;color:var(--dim);line-height:1.45">Racing as<div id="meName" style="font-family:var(--serif);font-weight:700;font-size:28px;color:var(--ink);line-height:1.1;margin:1px 0 3px"></div>Your name and photo come from the app.</div></div>
     <div class="rows" id="rivals"></div>
     <button class="go" id="bStart">Start race</button>
     <a id="bBack" href="index.html" hidden style="color:var(--gold);font-size:14px;text-decoration:none">Back to the app</a>
@@ -123,6 +127,7 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script>
+window.__RALLY_LIVE=true;
 (function(){
 if(!window.THREE){document.getElementById('err').style.display='grid';return;}
 const $=id=>document.getElementById(id);
@@ -1005,6 +1010,13 @@ function countdown(){reset();state='count';$('ovStart').hidden=true;$('ovEnd').h
 $('bStart').onclick=countdown;$('bAgain').onclick=countdown;
 
 /* ---------- input ---------- */
+// iOS Safari ignores user-scalable=no, so stop pinch, double-tap zoom, text selection and the long-press menu here
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
+document.addEventListener('dblclick',e=>e.preventDefault(),{passive:false});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('selectstart',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
+{let lastEnd=0;document.addEventListener('touchend',e=>{const n=Date.now();if(n-lastEnd<350&&!(e.target.closest&&e.target.closest('button,a')))e.preventDefault();lastEnd=n;},{passive:false});}
 const zl=$('zl'),zr=$('zr'),ptrs=new Map();
 function syncZones(){let l=false,r=false;ptrs.forEach(v=>{if(v==='l')l=true;else r=true;});input.l=l||key.l;input.r=r||key.r;zl.classList.toggle('on',input.l);zr.classList.toggle('on',input.r);}
 const key={l:false,r:false};
@@ -1051,7 +1063,9 @@ window.__rally={get st(){return st},get state(){return state},input,LEN,P,N,get 
 const who=$('who'),prev=$('boardPrev');
 NAMES.forEach(n=>{const o=document.createElement('option');o.value=o.textContent=n;who.appendChild(o);});
 who.value=me.name;
-if(QME){who.disabled=true;$('bBack').hidden=false;}
+if(QME){$('pick').hidden=true;$('meInfo').hidden=false;$('meName').textContent=me.name;$('bBack').hidden=false;}
+else if(window.__RALLY_LIVE){$('pick').hidden=true;$('meInfo').hidden=false;$('meInfo').innerHTML='<div style="color:var(--ink);font-size:14px">Open Reindeer Rally from the Play tab in the app, so you race as yourself.</div>';
+  $('bStart').hidden=true;$('rivals').hidden=true;$('bBack').hidden=false;$('bBack').textContent='Open the app';}
 window.__rallyMenuRefresh=()=>{if(state==='menu')refreshMe();};
 function refreshMe(){
   if(!me.custom)me.img=FACEIMG[me.name]||null;
