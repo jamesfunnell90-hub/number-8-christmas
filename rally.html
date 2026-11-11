@@ -941,7 +941,7 @@ function update(dt,el){
   const boosting=st.boost>0&&state==='race';if(boosting!==st.wasBoost){st.wasBoost=boosting;$('speed').style.opacity=boosting?1:0;}
   // camera
   const fx=Math.sin(st.h),fz=Math.cos(st.h);
-  const back=11+st.sp*.06,up=6;
+  const tall=camera.aspect<.85,back=(tall?13:11)+st.sp*.06,up=tall?7.2:6;
   const cx=st.x-fx*back,cz=st.z-fz*back;
   const k=1-Math.exp(-dt*8);
   camera.position.x+=(cx-camera.position.x)*k;camera.position.z+=(cz-camera.position.z)*k;camera.position.y+=(up-camera.position.y)*k;
@@ -956,7 +956,7 @@ function update(dt,el){
   for(const o of obstacles){const ex=o.x-camera.position.x,ez=o.z-camera.position.z;
     const ahead=(ex*fx+ez*fz),side=Math.abs(ex*fz-ez*fx);
     o.obj.visible=!(ahead>-3&&ahead<back-1.5&&side<o.r+1.6);}
-  const fov=62+(st.boost>0?10:0)+st.sp*.12;camera.fov+=(fov-camera.fov)*Math.min(1,dt*4);camera.updateProjectionMatrix();
+  const fov=(tall?76:62)+(st.boost>0?10:0)+st.sp*.12;camera.fov+=(fov-camera.fov)*Math.min(1,dt*4);camera.updateProjectionMatrix();
   // snow follows camera
   const a=snowGeo.attributes.position.array;
   for(let n=0;n<SN;n++){a[n*3+1]-=dt*(3+(n%5));a[n*3]+=Math.sin(el+n)*dt*.4;
