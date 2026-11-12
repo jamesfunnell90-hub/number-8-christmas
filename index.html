@@ -361,6 +361,44 @@ body{padding:0!important;overflow:hidden}
 #app .sa-btn,#app .sa-hint{transition:opacity .4s}
 #app .sa-fade{opacity:0;pointer-events:none}
 @media (prefers-reduced-motion:reduce){#app .sa-stage,#app .sa-stage *{transition-duration:.01s!important;transition-delay:0s!important;animation-duration:.01s!important}}
+
+/* ---------- Play tab: Games / Leaderboards (12 Nov 2026) ---------- */
+#app .pl-seg{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:1fr 1fr;gap:1.1cqw;padding:1.1cqw;margin:3cqw 0 1cqw;border-radius:999px;background:rgba(6,18,12,.92);border:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#app .pl-seg button{border:0;border-radius:999px;padding:2.8cqw 1.6cqw;min-height:40px;background:none;color:var(--dim);font:500 max(11px,3.3cqw) var(--sans);letter-spacing:.16em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:1.9cqw}
+#app .pl-seg button.on{background:linear-gradient(180deg,#e2c47e,#c9a55a);color:#10291f;box-shadow:0 1.1cqw 3.3cqw rgba(0,0,0,.3)}
+#app .pl-seg svg{width:4.2cqw;height:4.2cqw;min-width:14px;min-height:14px}
+#app .pl-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.8cqw;margin-top:2.8cqw}
+#app .pl-tile{border:1px solid rgba(162,121,43,.55);border-radius:var(--r-card);background:linear-gradient(160deg,#1f4737,#153326 75%);padding:3.3cqw 3cqw 3cqw;display:flex;flex-direction:column;gap:1.7cqw;cursor:pointer;min-width:0;box-shadow:0 1.4cqw 3.9cqw rgba(0,0,0,.25);transition:transform .18s var(--ease)}
+#app .pl-tile:active{transform:scale(.98)}
+#app .pl-tile.off{cursor:default;opacity:.7}
+#app .pl-tile .art{height:18cqw;display:grid;place-items:center;border-radius:3cqw;background:radial-gradient(circle at 50% 60%,rgba(212,179,106,.16),rgba(8,22,16,.35) 70%);border:1px solid rgba(255,255,255,.05)}
+#app .pl-tile .art svg{height:14.5cqw;width:auto;max-width:100%}
+#app .pl-tile .pl-ttl{font-size:5.3cqw;margin-top:.6cqw}
+#app .pl-tile .tl{font-size:max(11px,3.2cqw);color:var(--dim);line-height:1.35;min-height:8.6cqw}
+#app .pl-tile .st{display:flex;align-items:baseline;gap:1.7cqw;font-size:max(11px,3.05cqw);color:var(--ink);border-top:1px solid rgba(255,255,255,.07);padding-top:2cqw;margin-top:auto}
+#app .pl-tile .st b{font:700 4.2cqw var(--serif);color:var(--gold)}
+#app .pl-tile .pl-btn{min-height:40px}
+#app .pl-merow{display:flex;align-items:center;gap:3.3cqw;margin-top:4cqw;padding:2.8cqw 3.3cqw;border:1px solid var(--line);border-radius:var(--r-in);background:rgba(8,22,16,.35)}
+#app .pl-merow .pl-btn{width:auto;padding:0 4cqw;min-height:36px}
+#app .pl-places{display:grid;grid-template-columns:repeat(4,1fr);gap:2cqw;margin-top:2.2cqw}
+#app .pl-place{border-radius:3cqw;background:rgba(8,22,16,.4);border:1px solid var(--line);padding:2.2cqw 1cqw;text-align:center;cursor:pointer}
+#app .pl-place b{display:block;font:700 6.4cqw/1 var(--serif);color:var(--gold)}
+#app .pl-place b sup{font-size:.5em}
+#app .pl-place span{display:block;font-size:max(10px,2.6cqw);color:var(--dim);line-height:1.25;margin-top:.8cqw}
+#app .pl-jump{display:flex;gap:1.7cqw;overflow-x:auto;padding:2.8cqw 0 .6cqw;scrollbar-width:none}
+#app .pl-jump::-webkit-scrollbar{display:none}
+#app .pl-jump button{flex:none;border:1px solid var(--gold-deep);border-radius:999px;background:none;color:var(--gold);font:500 max(10px,2.9cqw) var(--sans);letter-spacing:.14em;text-transform:uppercase;padding:1.9cqw 3cqw;cursor:pointer}
+#app .pl-board{scroll-margin-top:16cqw}
+#app .pl-board .hd{display:flex;align-items:center;gap:2.8cqw}
+#app .pl-board .hd svg{width:10.5cqw;height:10.5cqw;flex:none}
+#app .pl-board .hd .pl-ttl{font-size:5.6cqw}
+#app .pl-board .hd .go{margin-left:auto;flex:none;font:500 max(10px,2.8cqw) var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-deep);border-radius:999px;padding:1.7cqw 2.8cqw;background:none;cursor:pointer}
+#app .pl-sub{display:flex;gap:1.1cqw;margin-top:2.8cqw;padding:.8cqw;border-radius:999px;background:rgba(8,22,16,.45);border:1px solid var(--line)}
+#app .pl-sub button{flex:1;border:0;border-radius:999px;background:none;color:var(--dim);font:500 max(10px,2.8cqw) var(--sans);letter-spacing:.06em;padding:1.9cqw 1cqw;cursor:pointer;white-space:nowrap}
+#app .pl-sub button.on{background:rgba(212,179,106,.22);color:var(--gold)}
+#app .pl-seg,#app .pl-grid,#app .pl-merow,#app .pl-places,#app .pl-jump,#app .pl-board,#app .pl-sub{flex-shrink:0}
+#app .pl-jump button{min-height:32px}
+#app .pl-lb li.me{background:rgba(212,179,106,.12);border-radius:2.8cqw;padding-left:1.7cqw;padding-right:1.7cqw;margin:0 -1.7cqw}
 </style>
 </head>
 <body>
@@ -6706,7 +6744,7 @@ function slHub(){
   const rally='<div class="pl-card hot" data-act="rally" style="cursor:pointer"><div class="pl-row">'+RALLY_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.2cqw">Reindeer Rally</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">Three snowy courses, picked at random</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">3 laps. Beat everyone’s best race.</span><span class="pl-btn pl-go">Race</span></div>'+rallyLb(me)+'</div>';
   const ppS=(()=>{try{const j=JSON.parse(localStorage.getItem('pp_v1_'+slMe())||'null');return j&&j.s?Object.values(j.s):[]}catch(e){return []}})(),ppN=ppS.length,ppStars=ppS.reduce((a,b)=>a+b,0);
   const puz='<div class="pl-card hot" data-act="puzzles" style="cursor:pointer"><div class="pl-row">'+PUZ_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.2cqw">Picture Puzzles</div><div class="pl-small" style="letter-spacing:.14em;margin-top:1.2cqw">Pictures that add up to Christmas</div></div></div><div class="pl-row" style="margin-top:2.6cqw;justify-content:space-between"><span class="pl-note">'+(ppN?ppN+' of 36 solved · '+ppStars+' stars':'Solve them at your own pace.')+'</span><span class="pl-btn pl-go">'+(ppN?'Carry on':'Solve')+'</span></div></div>';
-  return '<div class="pg-head"><div class="e">Play</div><h2>Festive fun</h2><div class="s">Games before the big day</div></div>'+card+sleigh+rally+puz+quiz+photo+'<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
+  return plHub2({me,card,lbAll,ppN,ppStars,has,quizOn});
 }
 function slIntro(){
   const m=slMeta(),warn=(m&&m.n&&!slHandled())?'<div class="pl-note" style="margin-top:3cqw;color:var(--gold)">Your votes are saved from another phone. Starting again here replaces them.</div>':'';
@@ -6726,6 +6764,55 @@ function slDone(){
 }
 function slCropScreen(){
   return '<div class="pl-small">'+(sl.cropFor&&sl.cropFor!==slMe()?sl.cropFor+"’s photo":'Your photo')+'</div><h2>Move and zoom</h2><div class="pl-sub">Drag to move, pinch to zoom</div><div class="pl-crop" id="plStage"></div><input class="pl-slider" id="plZoom" type="range" min="0" max="1000" value="0" aria-label="Zoom"><div class="pl-err" id="plErr">'+(sl.err||'')+'</div><div class="pl-foot"><button class="pl-btn ghost" style="width:34%" data-act="cancelcrop">Cancel</button><button class="pl-btn solid" data-act="savecrop">'+(sl.busy?'Saving…':'Save')+'</button></div>';
+}
+
+/* ---------- Play tab: Games and Leaderboards ---------- */
+const PL_SEG_G='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>';
+const PL_SEG_B='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>';
+const PL_COURSES=[['','Frosty Hollow'],['_t1','Tinsel Tunnel'],['_t2','Icicle Leap']];
+function plTime(t){const m=Math.floor(t/60),s=t-m*60;return m+':'+(s<10?'0':'')+s.toFixed(1)}
+function plOrd(n){const v=n%100,suf=(v>10&&v<14)?'th':(['th','st','nd','rd'][n%10]||'th');return n+'<sup>'+suf+'</sup>'}
+function plList(rows,me,val,sub){const t=plTop(rows,me);if(!t.length)return '<div class="pl-note" style="margin-top:2cqw">No scores yet. Be the first!</div>';
+  return '<ol class="pl-lb">'+t.map(x=>{const r=x.r;return '<li class="'+(r.n===me?'me':'')+(x.sep?' sep':'')+'"><span class="rk">'+(x.i+1)+'</span>'+slAv(r.n,'9cqw')+'<span class="nm">'+(r.n===me?'You':r.n)+(sub?'<small class="qz-n">'+sub(r)+'</small>':'')+'</span><b>'+val(r)+'</b></li>'}).join('')+'</ol>'}
+function plRallyRows(sfx){const R=window.__races||{};return Object.keys(R).filter(id=>sfx?id.endsWith(sfx):!/_t\d$/.test(id)).map(id=>({n:sfx?id.slice(0,-sfx.length):id,s:R[id]})).sort((a,b)=>a.s-b.s)}
+function plPuzRows(){const P=window.__puz||{};return Object.keys(P).filter(n=>P[n].stars>0||P[n].solved>0).map(n=>({n,s:P[n].stars,v:P[n].solved})).sort((a,b)=>b.s-a.s||b.v-a.v||a.n.localeCompare(b.n))}
+function plHub2(o){
+  const me=o.me,tab=window.__plTab||'games',B=qzBoards();
+  const seg='<div class="pl-seg"><button class="'+(tab==='games'?'on':'')+'" data-act="pltab" data-t="games">'+PL_SEG_G+'Games</button><button class="'+(tab==='boards'?'on':'')+'" data-act="pltab" data-t="boards">'+PL_SEG_B+'Leaderboards</button></div>';
+  const head='<div class="pg-head"><div class="e">Play</div><h2>Festive fun</h2><div class="s">Games before the big day</div></div>';
+  let body='';
+  if(tab==='games'){
+    const pz=(window.__puz||{})[me],pn=Math.max(o.ppN||0,pz?pz.solved:0),sc=(window.__scores||{})[me],R=window.__races||{},rb=PL_COURSES.map(c=>R[me+c[0]]).filter(x=>typeof x==='number'),qb=B.best.find(x=>x.n===me);
+    const ic=(k,st)=>k.replace('class="pl-ico"','');
+    const tile=(act,icon,ttl,tl,stat,btn,off)=>'<div class="pl-tile'+(off?' off':'')+'"'+(off?'':' data-act="'+act+'"')+'><div class="art">'+icon+'</div><div class="pl-ttl">'+ttl+'</div><div class="tl">'+tl+'</div><div class="st">'+stat+'</div>'+(off?'<span class="pl-pill" style="text-align:center">Soon</span>':'<span class="pl-btn solid">'+btn+'</span>')+'</div>';
+    body=o.card+'<div class="pl-small" style="margin:5cqw .5cqw 0">Choose a game</div><div class="pl-grid">'+
+      tile('sleigh',ic(SLEIGH_ICON),'Sleigh dash','Deliver as many presents as you can',sc>0?'Your best <b>'+sc+'</b>':'No score yet','Play')+
+      tile('rally',ic(RALLY_ICON),'Reindeer Rally','Race the family on three snowy courses',rb.length?'Best <b>'+plTime(Math.min(...rb))+'</b>':'Not raced yet','Race')+
+      tile('puzzles',ic(PUZ_ICON),'Picture Puzzles','Pictures that add up to Christmas',pn?'<b>'+pn+'</b> of 36 solved':'Not started',pn?'Carry on':'Solve')+
+      tile('qzopen',ic(QUIZ_ICON),'Christmas Quiz','Auntie Sue’s quiz. Get your practice in',o.quizOn?(qb?'Best round <b>'+qb.b+'/'+qb.bn+'</b>':'Not played yet'):'Opens soon','Practise',!o.quizOn)+
+    '</div>'+
+    '<div class="pl-merow">'+slAv(me,'11cqw')+'<div style="flex:1;min-width:0"><div class="pl-ttl" style="font-size:4.6cqw">'+(o.has?'Your photo':'Add your photo')+'</div><div class="pl-note">'+(o.has?'How you appear in the games':'So you appear in the games')+'</div></div><button class="pl-btn" data-act="photo">'+(o.has?'Change':'Add')+'</button></div>'+
+    (o.has?'<div style="text-align:right;margin-top:1cqw"><button class="pl-btn ghost" data-act="rmphoto" style="display:inline-flex;width:auto;min-height:32px">Remove photo</button></div>':'')+
+    '<div class="pl-hostlink"><button data-act="hostpin">Host tools</button></div>';
+  }else{
+    const ci=+(window.__plRally||0),qm=window.__plQuiz||'best';
+    const sleighRows=o.lbAll,rallyRows=plRallyRows(PL_COURSES[ci][0]),puzRows=plPuzRows(),qRows=qm==='best'?B.best:B.life;
+    const rank=rows=>{const k=rows.findIndex(r=>r.n===me);return k<0?'–':plOrd(k+1)};
+    // best rally place across the three courses
+    let rp='–',rc='Reindeer Rally';PL_COURSES.forEach((c,i)=>{const rows=plRallyRows(c[0]),k=rows.findIndex(r=>r.n===me);if(k>=0&&(rp==='–'||k+1<rp.n)){rp={n:k+1,c:c[1]}}});
+    const rpTxt=rp==='–'?'–':plOrd(rp.n),rpSub=rp==='–'?'Reindeer Rally':'Rally · '+rp.c;
+    const chip=(id,b,t)=>'<div class="pl-place" data-act="lbjump" data-id="'+id+'"><b>'+b+'</b><span>'+t+'</span></div>';
+    const board=(id,icon,ttl,sub,act,btn,inner)=>'<div class="pl-card hot pl-board" id="'+id+'"><div class="hd">'+icon.replace('class="pl-ico"','')+'<div><div class="pl-ttl">'+ttl+'</div><div class="pl-small" style="margin-top:.6cqw">'+sub+'</div></div>'+(act?'<button class="go" data-act="'+act+'">'+btn+'</button>':'')+'</div>'+inner+'</div>';
+    body='<div class="pl-card hot"><div class="pl-small">Your places</div><div class="pl-places">'+chip('lb-sleigh',rank(sleighRows),'Sleigh dash')+chip('lb-rally',rpTxt,rpSub)+chip('lb-quiz',rank(B.best),'Quiz · best round')+chip('lb-puz',rank(puzRows),'Puzzles')+'</div></div>'+
+      '<div class="pl-jump">'+[['lb-sleigh','Sleigh dash'],['lb-rally','Reindeer Rally'],['lb-quiz','Quiz'],['lb-puz','Puzzles']].map(([id,t])=>'<button data-act="lbjump" data-id="'+id+'">'+t+'</button>').join('')+'</div>'+
+      board('lb-sleigh',SLEIGH_ICON,'Sleigh dash','Most presents','sleigh','Play',plList(sleighRows,me,r=>r.s))+
+      board('lb-rally',RALLY_ICON,'Reindeer Rally','Fastest 3 laps','rally','Race','<div class="pl-sub">'+PL_COURSES.map((c,i)=>'<button class="'+(i===ci?'on':'')+'" data-act="lbsub" data-b="Rally" data-c="'+i+'">'+c[1]+'</button>').join('')+'</div>'+plList(rallyRows,me,r=>plTime(r.s)))+
+      board('lb-quiz',QUIZ_ICON,'Christmas Quiz','Auntie Sue’s practice',o.quizOn?'qzopen':'','Practise','<div class="pl-sub"><button class="'+(qm==='best'?'on':'')+'" data-act="lbsub" data-b="Quiz" data-c="best">Best round</button><button class="'+(qm==='life'?'on':'')+'" data-act="lbsub" data-b="Quiz" data-c="life">Lifetime</button></div>'+
+        (qm==='best'?plList(qRows,me,r=>r.b+'/'+r.bn):plList(qRows,me,r=>r.p+'%',r=>r.a+' answered')))+
+      board('lb-puz',PUZ_ICON,'Picture Puzzles','Most stars','puzzles','Solve',plList(puzRows,me,r=>r.s+' ★',r=>r.v+' solved'))+
+      '<div class="pl-card" style="text-align:center"><div class="pl-ttl" style="font-size:4.8cqw">Santa Shortlist</div><div class="pl-note" style="margin-top:1cqw">No leaderboard: the results are revealed at the table on Christmas Day.</div></div>';
+  }
+  return head+seg+body;
 }
 function slRender(soft){
   const el=document.getElementById('plBody');if(!el||!window.GUEST)return;
@@ -6825,6 +6912,9 @@ document.addEventListener('click',e=>{
   else if(a==='rmphoto'){if(window.__removePhoto){window.__removePhoto(slMe());if(window.__photos)delete window.__photos[slMe()];slRender()}}
   else if(a==='rally'){location.href='rally.html?me='+encodeURIComponent(slMe())}
   else if(a==='puzzles'){location.href='puzzles.html?me='+encodeURIComponent(slMe())}
+  else if(a==='pltab'){window.__plTab=t.dataset.t;slRender()}
+  else if(a==='lbjump'){const el=document.getElementById(t.dataset.id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'})}
+  else if(a==='lbsub'){window['__pl'+t.dataset.b]=t.dataset.c;slRender(true)}
   else if(a==='sleigh'){document.querySelector('#apptabs [data-v=welcome]').click();setTimeout(()=>{const g=document.getElementById('gamelink');if(g)g.click()},300)}
 });
 function slNext(){
@@ -7277,7 +7367,7 @@ function countUp(){
 
 /* ---------- tabs and entering the app */
 document.querySelectorAll('#apptabs button').forEach(b=>b.addEventListener('click',()=>{
-  if(b.dataset.v==='play'){slLoadLocal();sl.screen='hub';slRender()}
+  if(b.dataset.v==='play'){slLoadLocal();sl.screen='hub';window.__plTab='games';slRender()}
   if(b.dataset.v==='table'){const f=document.getElementById('tpFrame');if(f&&!f.getAttribute('src'))f.src='table.html?me='+encodeURIComponent(window.GUEST||'')}
   if(b.dataset.v!=='santa'&&(saOpenName||saBusy)){saOpenName=null;saBusy=false;renderSanta()}
   document.querySelectorAll('#apptabs button').forEach(x=>x.classList.toggle('on',x===b));
@@ -7325,6 +7415,7 @@ try{
   const app=initializeApp({apiKey:"AIzaSyDFRV5a1Fgwa9WRJMIV_cpdF9HjtZMrEmw",authDomain:"number-8-christmas.firebaseapp.com",projectId:"number-8-christmas",storageBucket:"number-8-christmas.firebasestorage.app",messagingSenderId:"321544675650",appId:"1:321544675650:web:45ff6b3d754dd06f51a8db"});
   const db=getFirestore(app),ping=()=>window.dispatchEvent(new Event("sl-data"));
   onSnapshot(collection(db,"scores"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.score==="number")o[d.id]=v.score});window.__scores=o;ping()},()=>{});
+  onSnapshot(collection(db,"puzzles"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.stars==="number")o[d.id]={stars:v.stars,solved:v.solved||0}});window.__puz=o;ping()},()=>{});
   onSnapshot(collection(db,"races"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.total==="number")o[d.id]=v.total});window.__races=o;ping()},()=>{});
   onSnapshot(collection(db,"photos"),snap=>{const o={};snap.forEach(d=>{const v=d.data();if(typeof v.img==="string")o[d.id]=v.img});window.__photos=o;ping()},()=>{});
   onSnapshot(collection(db,"quiz"),snap=>{const o={};snap.forEach(d=>{const v=d.data();o[d.id]={seen:Array.isArray(v.seen)?v.seen:[],answered:v.answered||0,correct:v.correct||0,runs:v.runs||0,best:v.best||0,bestN:v.bestN||0}});window.__quiz=o;ping()},()=>{});
