@@ -50,6 +50,11 @@ canvas#gl{display:block;width:100%;height:100%}
 .pill .v sup{font-size:.5em;vertical-align:.7em;margin-left:1px}
 .pill .v small{font-size:.5em;color:var(--dim);margin-left:3px}
 #mini{box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#bPause{position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;border:1px solid rgba(212,179,106,.45);background:linear-gradient(180deg,rgba(23,56,43,.9),rgba(12,31,23,.9));box-shadow:0 4px 14px rgba(0,0,0,.3);display:grid;place-items:center;cursor:pointer;padding:0;z-index:3}
+#bPause i{display:flex;gap:5px}#bPause i::before,#bPause i::after{content:"";width:5px;height:16px;border-radius:2px;background:var(--ink)}
+#bPause:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.ghostbtn{background:transparent!important;color:var(--gold)!important;border:1px solid var(--gold-deep)!important}
+.linkbtn{background:none;border:0;color:var(--gold);font-family:var(--sans);font-size:14px;cursor:pointer;padding:6px}
 #toast{position:absolute;left:0;right:0;top:24%;text-align:center;font-family:var(--serif);font-weight:700;font-size:34px;color:var(--ink);text-shadow:0 2px 12px rgba(0,0,0,.7);pointer-events:none;opacity:0;transition:opacity .25s}
 .ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,20,14,.55);padding:20px max(16px,env(safe-area-inset-right,0px)) 20px max(16px,env(safe-area-inset-left,0px))}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px 22px 20px;max-width:360px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px}
@@ -91,6 +96,7 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     </div>
     <canvas id="mini" width="220" height="220"></canvas>
   </div>
+  <button id="bPause" type="button" aria-label="Pause" hidden><i></i></button>
   <div id="lights"><i></i><i></i><i></i></div>
   <div id="msg"></div>
   <div id="toast"></div>
@@ -107,7 +113,7 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
       <div id="meInfo" hidden style="flex:1;min-width:0;text-align:left;font-size:13px;color:var(--dim);line-height:1.45">Racing as<div id="meName" style="font-family:var(--serif);font-weight:700;font-size:28px;color:var(--ink);line-height:1.1;margin:1px 0 3px"></div>Your name and photo come from the app.</div></div>
     <div class="rows" id="rivals"></div>
     <button class="go" id="bStart">Start race</button>
-    <a id="bBack" href="index.html" hidden style="color:var(--gold);font-size:14px;text-decoration:none">Back to the app</a>
+    <a id="bBack" href="index.html#play" hidden style="color:var(--gold);font-size:14px;text-decoration:none">Back to the app</a>
     <div class="keys">Phone: hold the left or right side of the screen. Computer: arrow keys or A and D.</div>
   </div></div>
   <div class="ov" id="ovEnd" hidden><div class="card">
@@ -117,6 +123,15 @@ button.go:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
     <div class="rows" id="eRows"></div>
     <button class="go" id="bAgain">Race again</button>
     <button class="go" id="bNew" style="background:transparent;color:var(--gold);border:1px solid var(--gold-deep)">Try another course</button>
+    <button class="linkbtn" id="bHome">Back to the app</button>
+  </div></div>
+  <div class="ov" id="ovPause" hidden><div class="card">
+    <div class="k">RACE PAUSED</div>
+    <h1 style="font-size:46px">Paused</h1>
+    <p id="pauseLine">The clock has stopped. Take your time.</p>
+    <button class="go" id="bResume">Resume</button>
+    <button class="go ghostbtn" id="bRestart">Restart race</button>
+    <button class="linkbtn" id="bExit">Exit to the app</button>
   </div></div>
   <div id="err">This game needs WebGL, which this browser has turned off.</div>
 </div>
@@ -1101,14 +1116,14 @@ function update(dt,el){
 function frame(ts){
   const dt=Math.min(.05,(ts-last)/1000||0);last=ts;
   const el=(state==='race'||state==='done')?(ts-t0)/1000:0;
-  update(dt,el);
+  if(state!=='paused')update(dt,el);
   worldT+=dt;for(const f of animators)f(worldT);
   if(window.__camFix){window.__camFix(camera);sky.position.copy(camera.position);}
   if(composer){try{composer.render(dt);}catch(e){composer=null;$('vig').hidden=false;renderer.render(scene,camera);}}else renderer.render(scene,camera);
   requestAnimationFrame(frame);
 }
 let endEl=0,worldT=0;
-function finish(el){state='done';endEl=el;
+function finish(el){state='done';endEl=el;$('bPause').hidden=true;
   const best=Math.min(...st.laps),rows=racerTimes(el),place=rows.findIndex(r=>r.me)+1;
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   $('eTag').textContent=['YOU WIN','2ND PLACE','3RD PLACE','4TH PLACE'][place-1];
@@ -1130,10 +1145,20 @@ function countdown(){reset();state='count';$('ovStart').hidden=true;$('ovEnd').h
   let c=3;const m=$('msg'),lt=$('lights'),bulbs=[...lt.children];
   bulbs.forEach(b=>b.className='');lt.classList.add('show');
   const tick=()=>{if(c>0){m.textContent=c;bulbs[3-c].className='r';c--;setTimeout(tick,800);}
-    else{m.textContent='GO!';bulbs.forEach(b=>b.className='g');state='race';t0=performance.now();
+    else{m.textContent='GO!';bulbs.forEach(b=>b.className='g');state='race';t0=performance.now();$('bPause').hidden=false;
       setTimeout(()=>{if(m.textContent==='GO!')m.textContent='';lt.classList.remove('show');},900);}};
   setTimeout(tick,500);}
 $('bStart').onclick=countdown;$('bAgain').onclick=countdown;
+let pausedAt=0;
+function pause(){if(state!=='race')return;state='paused';pausedAt=performance.now();ptrs.clear();key.l=key.r=false;syncZones();$('bPause').hidden=true;$('ovPause').hidden=false;$('bResume').focus();}
+function resume(){if(state!=='paused')return;t0+=performance.now()-pausedAt;state='race';$('ovPause').hidden=true;$('bPause').hidden=false;}
+function toApp(){if(QME||window.__RALLY_LIVE){location.href='index.html#play';return;}
+  $('ovPause').hidden=true;$('ovEnd').hidden=true;$('bPause').hidden=true;state='menu';reset();$('ovStart').hidden=false;}
+$('bPause').onclick=pause;$('bResume').onclick=resume;
+$('bRestart').onclick=()=>{$('ovPause').hidden=true;countdown();};
+$('bExit').onclick=toApp;$('bHome').onclick=toApp;
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='p'||e.key==='P'){if(state==='race')pause();else if(state==='paused')resume();}});
 
 /* ---------- input ---------- */
 // iOS Safari ignores user-scalable=no, so stop pinch, double-tap zoom, text selection and the long-press menu here
