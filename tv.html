@@ -300,7 +300,7 @@ function finishReveal(it,sound){
   const a=$('#r-hv'),b=$('#r-tv');if(a)a.textContent=it.headsVotes;if(b)b.textContent=it.tailsVotes;
   const w=it.winningSide,hf=$('#r-h'),tf=$('#r-t');
   if(hf&&tf){hf.className='face '+(w==='heads'?'win':'lose');tf.className='face '+(w==='tails'?'win':'lose')}
-  const vd=$('#r-verdict');vd.innerHTML='<span style="color:'+(w==='heads'?'var(--gold)':'var(--silver)')+'">'+(w==='heads'?'HEADS':'TAILS')+' wins</span>';
+  const vd=$('#r-verdict');vd.innerHTML='<span style="color:'+(w==='heads'?'var(--gold)':'var(--silver)')+'">'+(w==='heads'?'HEADS':'TAILS')+(it.tie?' wins the tie-break':' wins')+'</span>';
   if(sound)cheer();
 }
 /* ---------- coins ---------- */
