@@ -6680,9 +6680,13 @@ function slAv(name,size){
   const p=window.__photos&&window.__photos[name],st=size==='100%'?'width:100%;aspect-ratio:1;font-size:5.2cqw':'width:'+size+';height:'+size+';font-size:calc('+size+' * .42)';
   return p?'<div class="pl-av" style="'+st+'"><img src="'+p+'" alt=""></div>':'<div class="pl-av '+slColor(name)+'" style="'+st+'">'+name.charAt(0)+'</div>';
 }
+/* when the host resets the vote, host/config settings.voteEpoch changes and every phone drops its old copy of its ballot */
+const slEp=()=>{const c=slCfg();return (c&&c.settings&&c.settings.voteEpoch)||0};
 function slLoadLocal(){
   sl.answers={};sl.submitted=false;
-  try{const j=JSON.parse(localStorage.getItem('sl_votes_'+slMe())||'null');if(j){sl.answers=j.answers||{};sl.submitted=!!j.submitted}}catch(e){}
+  try{const j=JSON.parse(localStorage.getItem('sl_votes_'+slMe())||'null');
+    if(j){if(slCfg()&&(j.ep||0)!==slEp())localStorage.removeItem('sl_votes_'+slMe());else{sl.answers=j.answers||{};sl.submitted=!!j.submitted}}}catch(e){}
+  sl._ep=slCfg()?slEp():null;
 }
 const slHandled=()=>{const ids=slQs().map(q=>q.id);return Object.keys(sl.answers).filter(k=>ids.includes(k)).length};
 function slMeta(){const m=window.__votes&&window.__votes[slMe()];return m||null}
@@ -6702,7 +6706,7 @@ async function slEncrypt(obj){
 }
 let slTimer=0;
 function slSave(now){
-  try{localStorage.setItem('sl_votes_'+slMe(),JSON.stringify({answers:sl.answers,submitted:sl.submitted}))}catch(e){}
+  try{localStorage.setItem('sl_votes_'+slMe(),JSON.stringify({answers:sl.answers,submitted:sl.submitted,ep:slEp()}))}catch(e){}
   clearTimeout(slTimer);slTimer=setTimeout(slPush,now?0:600);
 }
 async function slPush(){
@@ -6722,6 +6726,7 @@ function rallyLb(me){const R=window.__races||{},fmt=t=>{const m=Math.floor(t/60)
     return '<div class="pl-lbh">'+nm+'</div>'+(t.length?'<ol class="pl-lb">'+t.map(x=>'<li class="'+(x.r.n===me?'me':'')+(x.sep?' sep':'')+'"><span class="rk">'+(x.i+1)+'</span>'+slAv(x.r.n,'9cqw')+'<span class="nm">'+(x.r.n===me?'You':x.r.n)+'</span><b>'+fmt(x.r.s)+'</b></li>').join('')+'</ol>':'<div class="pl-note" style="margin-top:1.4cqw">No times yet. Be the first!</div>');}).join('');}
 function plTop(arr,me){const t=arr.slice(0,5).map((r,i)=>({r,i})),k=arr.findIndex(r=>r.n===me);if(k>=5)t.push({r:arr[k],i:k,sep:true});return t}
 function slHub(){
+  if(slCfg()&&sl._ep!==slEp())slLoadLocal();
   const me=slMe(),ph=slPhase(),st=slStatus(),has=!!(window.__photos&&window.__photos[me]);
   let card='';
   const head='<div class="pl-row">'+SL_ICON.replace('class="pl-ico"','style="width:15cqw;height:15cqw;flex:none"')+'<div><div class="pl-ttl" style="font-size:6.6cqw">Santa Shortlist</div><div class="pl-small" style="letter-spacing:.2em;margin-top:1.2cqw">Who’s most likely to…</div></div></div>';
