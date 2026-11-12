@@ -96,7 +96,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 @keyframes pulse{0%{box-shadow:inset 0 -4px 8px rgba(0,0,0,.3),0 0 0 0 rgba(232,110,90,.55)}70%,100%{box-shadow:inset 0 -4px 8px rgba(0,0,0,.3),0 0 0 14px rgba(232,110,90,0)}}
 .ball::after{content:"";position:absolute;left:24%;top:14%;width:30%;height:18%;border-radius:50%;background:rgba(255,255,255,.55);filter:blur(1.5px);transform:rotate(-30deg)}
 .bb .st{display:flex;gap:1px;margin-top:4px;height:10px}
-.bb .st svg{width:9px;height:9px}
+.bb .st svg{width:8px;height:8px}
 
 .lb{list-style:none;margin:10px 0 0;padding:0;counter-reset:r}
 .lb li{display:flex;align-items:center;gap:10px;padding:8px 2px;border-top:1px solid rgba(47,84,67,.7);font-size:15px;opacity:0;animation:rise .6s var(--ease) forwards}
@@ -122,8 +122,25 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .pmid .k{font-size:10px}
 .pmid .c{font:600 19px/1.1 var(--serif);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stars{display:flex;gap:2px}
-.stars svg{width:18px;height:18px;transition:transform .35s var(--spring),opacity .3s}
+.stars svg.go{animation:starGo .7s var(--ease) forwards}
+@keyframes starGo{30%{transform:scale(1.6) rotate(20deg);filter:brightness(1.6)}100%{transform:scale(.8) translateY(4px);opacity:.22}}
+.stars svg{width:15px;height:15px;transition:transform .35s var(--spring),opacity .3s}
 .stars svg.lost{opacity:.22;transform:scale(.8)}
+.clock{display:flex;align-items:center;gap:10px;max-width:320px;margin:12px auto 0;transition:opacity .4s}
+.cbar{flex:1;height:5px;border-radius:3px;background:rgba(212,179,106,.15);overflow:hidden}
+.cbar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold-deep),var(--gold-hi));transform-origin:left center;transition:transform .2s linear,background .3s}
+#clab{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums;min-width:150px;text-align:right}
+.clock.warn .cbar i{background:linear-gradient(90deg,#9c2f22,#e8735e)}
+.clock.warn #clab{color:#ef9a86;animation:glow 1s ease-in-out infinite}
+.clock.last .cbar{display:none}.clock.last #clab{min-width:0;text-align:center;flex:1;color:var(--gold)}
+.clue{margin:14px auto 0;max-width:400px;display:flex;gap:12px;align-items:center;text-align:left;padding:12px 14px;border-radius:14px;border:1px solid var(--gold);
+  background:linear-gradient(135deg,rgba(212,179,106,.24),rgba(212,179,106,.06));box-shadow:0 0 28px rgba(212,179,106,.28);animation:clueIn .9s var(--spring) both}
+.clue.q{animation:none}
+.clue svg{width:32px;height:32px;flex:none;animation:glow 2s ease-in-out infinite}
+.clue p{margin:2px 0 0;font:italic 600 19px/1.3 var(--serif);color:var(--ink)}
+@keyframes clueIn{0%{opacity:0;transform:scale(.8) translateY(12px)}100%{opacity:1;transform:none}}
+.sl.pop{animation:slPop .7s var(--spring)}
+@keyframes slPop{0%{transform:scale(.4) rotate(-12deg)}100%{transform:none}}
 .pdots{display:flex;justify-content:center;gap:5px;margin:10px 0 0}
 .pdots i{width:7px;height:7px;border-radius:50%;border:1px solid rgba(212,179,106,.55)}
 .pdots i.s{background:var(--gold);border-color:var(--gold)}
@@ -199,8 +216,8 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .win h2{font:400 58px/1 var(--script);color:var(--gold);margin:6px 0 0;text-shadow:0 2px 18px rgba(212,179,106,.3)}
 .win .ans{font:700 28px/1.15 var(--serif);letter-spacing:.06em;margin-top:8px;text-transform:uppercase}
 .win .why{font:italic 600 17px/1.4 var(--serif);color:var(--dim);margin-top:6px}
-.wst{display:flex;justify-content:center;gap:12px;margin:16px 0 6px}
-.wst svg{width:46px;height:46px;opacity:0;transform:scale(.2) rotate(-40deg)}
+.wst{display:flex;justify-content:center;gap:8px;margin:16px 0 6px}
+.wst svg{width:40px;height:40px;opacity:0;transform:scale(.2) rotate(-40deg)}
 .wst svg.in{animation:starIn .6s var(--spring) forwards}
 .wst svg.off{animation:starOff .5s var(--ease) forwards}
 @keyframes starIn{to{opacity:1;transform:none}}
@@ -410,12 +427,50 @@ const PZ=[
  ['SHEPHERD',['sheep','herd'],'Sheep + herd'],
  ['NOEL',['nosign','T:L'],'No + L']
 ].map((p,i)=>({id:'p'+(i+1),n:i+1,c:Math.floor(i/6),a:p[0],pics:p[1],why:p[2],pre:p[3]||''}));
-const TOTAL=PZ.length,MAXS=TOTAL*3;
+const CLUES=[
+ 'Kevin’s family fly to Paris and leave him behind',
+ 'Raymond Briggs’ boy flies off with a frosty friend',
+ 'Bruce Willis, a tower block and “Yippee-ki-yay”',
+ 'Will Ferrell in green tights, raised at the North Pole',
+ 'Tom Hanks and a magic train to Santa’s workshop',
+ 'The grumpy green Dr. Seuss character who stole Christmas',
+ 'The carol that goes “All is calm, all is bright”',
+ 'Cliff Richard’s 1988 Christmas number one',
+ 'Chris Rea, stuck in traffic on the way home',
+ 'The Pogues and Kirsty MacColl, every single December',
+ 'The rock ’n’ roll version of the sleigh-bell song',
+ 'The song from The Snowman, sung by a choirboy',
+ 'Little sausages wrapped in bacon',
+ 'The red sauce that goes with the turkey',
+ 'Brown nuts you roast on an open fire',
+ '“Run, run, as fast as you can!” He’s a biscuit',
+ 'A red and white striped sweet shaped like a J',
+ 'The chocolate cake made to look like a log',
+ 'The day after Christmas Day',
+ '“Oh no it isn’t!” “Oh yes it is!” A Christmas show',
+ 'Everyone draws a name and buys one present in secret',
+ 'What you cover the presents in',
+ 'His Majesty on the telly at 3 o’clock',
+ 'Lie in the snow and flap your arms and legs',
+ 'Tiny twinkly lights you wind round the tree',
+ 'Shiny, sparkly strands you drape over the tree',
+ 'What falls off a fir tree. Some people spray them gold',
+ 'A frozen drip hanging from the gutter',
+ 'A shiny ball you hang on the tree',
+ 'A wooden soldier who cracks nuts, and a famous ballet',
+ 'Rudolph, Dasher and Blitzen are all one',
+ 'Where Father Christmas lives',
+ 'The chap who paints frost on the windows overnight',
+ 'They brought gold, frankincense and myrrh',
+ 'They were watching their flocks by night',
+ 'The first word of “The First ___”, French for Christmas'];
+PZ.forEach((p,i)=>p.clue=CLUES[i]);
+const TOTAL=PZ.length,MAXP=5,STEP=20,MAXS=TOTAL*MAXP;
 
 /* ---------------- saved progress ---------------- */
 const KEYP='pp_v1_'+(ME||'guest');
-let S=LS.get(KEYP,{s:{},h:{},r:{},x:{}});   // s: stars per solved puzzle, h: hints used, r: revealed slot positions, x: spares removed
-['s','h','r','x'].forEach(k=>{if(!S[k])S[k]={}});
+let S=LS.get(KEYP,{s:{},r:{},x:{},t:{}});   // s: stars per solved puzzle, r: revealed slot positions, x: spares removed, t: seconds spent so far
+['s','r','x','t'].forEach(k=>{if(!S[k])S[k]={}});
 const save=()=>LS.set(KEYP,S);
 const starsOf=()=>Object.values(S.s).reduce((a,b)=>a+b,0);
 const solvedN=()=>Object.keys(S.s).length;
@@ -463,8 +518,9 @@ const sfx={
   back(){tone(700,0,.08,.04,'triangle')},
   bad(){tone(220,0,.18,.06,'sawtooth');tone(185,.1,.22,.05,'sawtooth')},
   hint(){[880,1175].forEach((f,i)=>tone(f,i*.07,.3,.05))},
+  lose(){tone(660,0,.25,.045,'triangle');tone(494,.12,.35,.04,'triangle')},
   win(){[784,988,1175,1568,1976].forEach((f,i)=>{tone(f,i*.09,.9,.07);tone(f*2,i*.09,.5,.015)})},
-  star(i){tone([1047,1319,1568][i]||1568,0,.6,.07);tone(([1047,1319,1568][i]||1568)*1.5,0,.4,.02)}
+  star(i){const f=[880,988,1175,1319,1568][i]||1568;tone(f,0,.6,.07);tone(f*1.5,0,.4,.02)}
 };
 
 /* ---------------- background: snow and drifting gold lights ---------------- */
@@ -514,17 +570,17 @@ function renderHome(anim){
   }
   h+='<div class="stag">';
   h+='<div class="card"><div class="prog"><div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="'+R+'" fill="none" stroke="rgba(212,179,106,.15)" stroke-width="7"/><circle id="ringArc" cx="50" cy="50" r="'+R+'" fill="none" stroke="url(#rg)" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+CIRC.toFixed(1)+'" stroke-dashoffset="'+CIRC.toFixed(1)+'" style="transition:stroke-dashoffset 1.6s var(--ease)"/><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1d892"/><stop offset="1" stop-color="#a2792b"/></linearGradient></defs></svg><div class="n"><b id="ringN">0</b><small>OF '+MAXS+' ★</small></div></div>'
-    +'<div class="t"><div class="k">'+esc(ME)+'</div><div class="big">'+(sv===0?'36 puzzles to solve':sv===TOTAL?'Every puzzle solved':(TOTAL-sv)+' puzzles to go')+'</div><div class="dim">'+sv+' solved · '+(sv?((st/sv).toFixed(1)+' stars each on average'):'up to 3 stars each')+'</div>'
+    +'<div class="t"><div class="k">'+esc(ME)+'</div><div class="big">'+(sv===0?'36 puzzles to solve':sv===TOTAL?'Every puzzle solved':(TOTAL-sv)+' puzzles to go')+'</div><div class="dim">'+sv+' solved · '+(sv?((st/sv).toFixed(1)+' stars each on average'):'up to '+MAXP+' stars each')+'</div>'
     +(nx?'<button class="btn solid" data-go="'+nx.id+'">'+(sv?'Carry on':'Start')+'</button>':'<button class="btn" disabled>All done</button>')+'</div></div></div>';
   CH.forEach((c,ci)=>{
     const ps=PZ.filter(p=>p.c===ci),cs=ps.reduce((a,p)=>a+(S.s[p.id]||0),0),cn=ps.filter(p=>S.s[p.id]).length;
-    h+='<div class="card ch"><div class="ch-h"><span class="num">'+ROMAN[ci]+'</span><h3>'+c.t+'</h3><span class="sc">'+(cn===6?'<b>Complete</b> · ':'')+'<b>'+cs+'</b>/18 ★</span></div><div class="ch-s">'+c.s+'</div><div class="garland"><svg viewBox="0 0 600 30" preserveAspectRatio="none"><path d="M0 2 Q150 28 300 12 T600 2" fill="none" stroke="#a2792b" stroke-width="2"/><path d="M0 2 Q150 28 300 12 T600 2" fill="none" stroke="#f1d892" stroke-width=".8" stroke-dasharray="2 9" opacity=".8"/></svg>';
+    h+='<div class="card ch"><div class="ch-h"><span class="num">'+ROMAN[ci]+'</span><h3>'+c.t+'</h3><span class="sc">'+(cn===6?'<b>Complete</b> · ':'')+'<b>'+cs+'</b>/'+(6*MAXP)+' ★</span></div><div class="ch-s">'+c.s+'</div><div class="garland"><svg viewBox="0 0 600 30" preserveAspectRatio="none"><path d="M0 2 Q150 28 300 12 T600 2" fill="none" stroke="#a2792b" stroke-width="2"/><path d="M0 2 Q150 28 300 12 T600 2" fill="none" stroke="#f1d892" stroke-width=".8" stroke-dasharray="2 9" opacity=".8"/></svg>';
     ps.forEach((p,j)=>{
       // each bauble hangs from the garland curve
       const sag=[9.5,17.5,16.2,7.3,1.5,.6][j];
       const len=[18,30,14,26,12,22][j],s=S.s[p.id];
       const cls=s?'s':(nx&&nx.id===p.id?'nx':'g');
-      h+='<button class="bb" data-go="'+p.id+'" style="left:'+(j*16.66)+'%;top:'+Math.round(sag)+'px;animation-delay:'+(-j*.7)+'s;animation-duration:'+(4+j*.35)+'s" aria-label="Puzzle '+p.n+(s?', solved, '+s+' stars':'')+'"><span class="str" style="height:'+len+'px"></span><span class="cap"></span><span class="ball '+cls+'">'+p.n+'</span><span class="st">'+(s?[0,1,2].map(k=>k<s?STAR():STAR0).join(''):'')+'</span></button>';
+      h+='<button class="bb" data-go="'+p.id+'" style="left:'+(j*16.66)+'%;top:'+Math.round(sag)+'px;animation-delay:'+(-j*.7)+'s;animation-duration:'+(4+j*.35)+'s" aria-label="Puzzle '+p.n+(s?', solved, '+s+' stars':'')+'"><span class="str" style="height:'+len+'px"></span><span class="cap"></span><span class="ball '+cls+'">'+p.n+'</span><span class="st">'+(s?[0,1,2,3,4].map(k=>k<s?STAR():STAR0).join(''):'')+'</span></button>';
     });
     h+='</div></div>';
   });
@@ -533,7 +589,7 @@ function renderHome(anim){
   if(!rows.find(r=>r.n===ME)&&sv>0)rows.push({n:ME,stars:st,solved:sv});
   rows.sort((a,b)=>b.stars-a.stars||b.solved-a.solved||a.n.localeCompare(b.n));
   h+='<div class="card"><div class="k">Family table</div><div class="big" style="font-size:22px">Most stars</div>'+(rows.length?'<ol class="lb">'+rows.map((r,i)=>'<li class="'+(r.n===ME?'me':'')+'" style="animation-delay:'+(.05*i+.2)+'s"><span class="rk">'+(i+1)+'</span>'+av(r.n)+'<span class="nm">'+(r.n===ME?'You':esc(r.n))+'<small>'+r.solved+' of '+TOTAL+' solved</small></span><span class="v">'+r.stars+STAR()+'</span></li>').join('')+'</ol>':'<p class="dim" style="margin:8px 0 0">Nobody has solved one yet. Be the first on the board.</p>')+'</div>';
-  h+='<div class="card"><div class="k">How it works</div><p class="how">Each puzzle is a row of pictures that adds up to something Christmassy. Sometimes it’s what you see, sometimes what it <b>sounds like</b>. Tap the letters to spell the answer.</p><p class="how">Solve it alone for <b>3 stars</b>. Each hint costs a star, but you always get at least one. Play in any order, and your progress is saved.</p></div>';
+  h+='<div class="card"><div class="k">How it works</div><p class="how">Each puzzle is a row of pictures that adds up to something Christmassy. Sometimes it’s what you see, sometimes what it <b>sounds like</b>. Tap the letters to spell the answer.</p><p class="how">Be quick for <b>5 stars</b>. Every 20 seconds a star melts away, but you never lose the last one. Help arrives as the stars go: at <b>3 stars</b> a right letter drops into place, at <b>2</b> the spare letters vanish, and at <b>1</b> you get a big clue.</p></div>';
   h+='<div class="foot"><a class="lnk" href="index.html" style="display:inline-flex">'+BACK+'Back to the app</a></div></div>';
   $('homeW').innerHTML=h;
   const kids=[...$('homeW').querySelectorAll('.stag>*')];kids.forEach((el,i)=>{el.style.animationDelay=(anim===false?0:.08*i)+'s';if(anim===false)el.style.animationDuration='0s'});
@@ -560,15 +616,18 @@ function build(p){
   const words=[];let li=0;
   p.a.split(' ').forEach(w=>{const ws=[];for(const ch of w){if(/[A-Z]/.test(ch))ws.push({li:li++,ch,t:-1,lock:false});else ws.push({fx:ch})}words.push(ws)});
   const slots=[];words.forEach(w=>w.forEach(s=>{if(!s.fx)slots.push(s)}));
-  return {p,pool,words,slots,cols,hints:S.h[p.id]||0,done:!!S.s[p.id]};
+  return {p,pool,words,slots,cols,t:S.t[p.id]||0,done:!!S.s[p.id],live:false,last:performance.now()};
 }
 function openPuzzle(id){
   const p=PZ.find(x=>x.id===id);cur=p;G1=build(p);
-  // restore earlier hints
+  // put back any help already given, and catch up if time has run on
   (S.r[p.id]||[]).forEach(i=>placeReveal(i,true));
   if(S.x[p.id])removeSpares(true);
+  if(!G1.done){const n=starsNow();if(n<=3&&!(S.r[p.id]||[]).length)helpReveal(true);if(n<=2&&!S.x[p.id])helpSpares(true)}
+  G1.lvl=starsNow();
   if(G1.done){G1.slots.forEach(s=>{if(s.t<0){const k=G1.pool.findIndex(t=>!t.gone&&t.at<0&&t.ch===s.ch);if(k>=0){s.t=k;G1.pool[k].at=s.li}}})}
   renderPlay();show('play');$('play').scrollTop=0;
+  const g=G1;setTimeout(()=>{if(G1===g){g.live=true;g.last=performance.now()}},1300);
 }
 function picHTML(item,i,S0){
   const tx=item.startsWith('T:'),d=(.12+i*.16).toFixed(2);
@@ -586,12 +645,13 @@ function renderPlay(){
   let h='<div class="pbar"><button class="iconb" id="pBack" aria-label="All puzzles">'+BACK.replace('currentColor','#d4b36a')+'</button><div class="pmid"><div class="k">'+ROMAN[p.c]+' · Puzzle '+p.n+' of '+TOTAL+'</div><div class="c">'+c.t+'</div></div><div class="stars" id="pStars"></div></div>';
   h+='<div class="pdots">'+ps.map(x=>'<i class="'+(x.id===p.id?'cur':S.s[x.id]?'s':'')+'"></i>').join('')+'</div>';
   h+='<div class="chip"><span>'+c.k+'</span><span class="d">'+wc+' word'+(wc>1?'s':'')+'</span></div>';
-  h+='<div class="stage" id="stage">'+p.pics.map((it,i)=>(i?'<span class="plus" style="animation-delay:'+(.2+i*.16).toFixed(2)+'s">+</span>':'')+picHTML(it,i,S0)).join('')+'</div>';
+  if(!G1.done)h+='<div class="clock" id="clock"><div class="cbar"><i id="cfill"></i></div><span id="clab"></span></div>';
+  h+='<div class="stage" id="stage">'+p.pics.map((it,i)=>(i?'<span class="plus" style="animation-delay:'+(.2+i*.16).toFixed(2)+'s">+</span>':'')+picHTML(it,i,S0)).join('')+'</div><div id="clueBox"></div>';
   h+='<div class="slots" id="slots"></div><div class="msg" id="msg"></div>';
   h+='<div class="pool" id="pool" style="--c:'+G1.cols+'"></div>';
-  h+='<div class="tools" id="tools"><button class="btn" id="tHint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Hint</button><button class="btn" id="tShuf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle</button><button class="btn" id="tClr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9l-6 6 6 6h11zM12 9l6 6M18 9l-6 6"/></svg>Clear</button></div>';
+  h+='<div class="tools" id="tools"><button class="btn" id="tShuf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Shuffle</button><button class="btn" id="tClr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6H9l-6 6 6 6h11zM12 9l6 6M18 9l-6 6"/></svg>Clear</button></div>';
   $('playW').innerHTML=h;
-  layoutPlay();drawSlots();drawPool(true);drawStars();
+  layoutPlay();drawSlots();drawPool(true);drawStars();drawClock();if(!G1.done&&starsNow()<=1)showClue(true);
   if(G1.done){$('stage').classList.add('solved');$('tools').innerHTML='<button class="btn solid" id="tNext">Next puzzle</button>';$('pool').style.display='none';
     $('slots').querySelectorAll('.sl:not(.fx)').forEach(s=>s.classList.add('ok'));const m=$('msg');m.textContent=p.why;m.classList.add('on');}
 }
@@ -601,7 +661,51 @@ function layoutPlay(){
   const nL=cur.a.replace(/[^A-Z]/g,'').length,s=Math.max(24,Math.min(nL>16?34:40,Math.floor((W-6)/longest)-4));sl.style.setProperty('--s',s+'px');
   const pool=$('pool');if(pool){const tw=(Math.min(400,W)-(G1.cols-1)*7)/G1.cols;pool.querySelectorAll('.tl').forEach(t=>t.style.fontSize=Math.round(tw*.56)+'px')}
 }
-function drawStars(){const n=G1.done?S.s[cur.id]:Math.max(1,3-G1.hints);$('pStars').innerHTML=[0,1,2].map(k=>k<n?STAR():STAR().replace('<svg','<svg class="lost"')).join('')}
+function starsNow(){return G1.done?S.s[cur.id]:Math.max(1,MAXP-Math.floor(G1.t/STEP))}
+function drawStars(){const n=starsNow();$('pStars').innerHTML=[0,1,2,3,4].map(k=>k<n?STAR():STAR().replace('<svg','<svg class="lost"')).join('')}
+function drawClock(){
+  const c=$('clock');if(!c||!G1||G1.done)return;const n=starsNow(),f=$('cfill'),l=$('clab');
+  if(n<=1){c.classList.add('last');c.classList.remove('warn');f.style.transform='scaleX(0)';l.textContent='Last star. Take your time';return}
+  const left=STEP-(G1.t%STEP);f.style.transform='scaleX('+(left/STEP).toFixed(3)+')';
+  c.classList.toggle('warn',left<=5);l.textContent='Next star goes in '+Math.ceil(left)+'s';
+}
+/* the clock: a star melts every 20 seconds, never the last one; it only runs while the puzzle is on screen */
+setInterval(()=>{
+  const now=performance.now();if(!G1){return}const dt=Math.min(.5,(now-G1.last)/1000);G1.last=now;
+  if(view!=='play'||G1.done||!G1.live||document.hidden||sheet.classList.contains('on'))return;
+  G1.t+=dt;const n=starsNow();
+  if(n<G1.lvl){G1.lvl=n;loseStar(n)}
+  drawClock();
+  if(!G1.saveAt||now-G1.saveAt>2000){G1.saveAt=now;S.t[cur.id]=G1.t;save()}
+},200);
+document.addEventListener('visibilitychange',()=>{if(G1&&!G1.done){S.t[cur.id]=G1.t;save()}});
+function loseStar(n){
+  S.t[cur.id]=G1.t;save();sfx.lose();
+  const el=$('pStars').children[n];if(el){el.classList.add('go');const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,16,4)}
+  setTimeout(drawStars,700);
+  if(n===4)setMsg('A star melted. Keep going!');
+  if(n===3)setTimeout(()=>helpReveal(false),500);
+  if(n===2)setTimeout(()=>helpSpares(false),500);
+  if(n===1)setTimeout(()=>showClue(false),500);
+}
+function helpReveal(quiet){
+  const cand=G1.slots.filter(s=>!s.lock&&(s.t<0||G1.pool[s.t].ch!==s.ch));if(!cand.length)return;
+  const pick=cand[Math.floor(Math.random()*cand.length)];if(!placeReveal(pick.li))return;
+  S.r[cur.id]=[pick.li];save();if(quiet)return;
+  sfx.hint();drawSlots();drawPool(false);setMsg('Here’s a letter to help you');
+  const el=$('slots').querySelector('[data-s="'+pick.li+'"]');if(el){el.classList.add('pop');const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,22,5)}
+  setTimeout(check,400);
+}
+function helpSpares(quiet){
+  removeSpares();S.x[cur.id]=1;save();if(quiet)return;
+  sfx.hint();drawSlots();setMsg('The spare letters have gone');
+  $('pool').querySelectorAll('.tl').forEach((el,i)=>{if(G1.pool[i].gone){el.style.animation='none';el.classList.add('x')}});setTimeout(()=>{drawPool(false);check()},480);
+}
+function showClue(quiet){
+  const b=$('clueBox');if(!b||b.firstChild)return;
+  b.innerHTML='<div class="clue'+(quiet?' q':'')+'"><svg viewBox="0 0 24 24" fill="none" stroke="#d4b36a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" fill="rgba(241,216,146,.25)"/></svg><div><div class="k">Big clue</div><p>'+esc(cur.clue)+'</p></div></div>';
+  if(!quiet){sfx.hint();setMsg('');const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,30,6)}
+}
 function firstEmpty(){return G1.slots.findIndex(s=>s.t<0)}
 function drawSlots(){
   const fe=firstEmpty();let h='';
@@ -624,7 +728,7 @@ function flyTile(fromEl,toEl,ch,cb){
 }
 function setMsg(t){const m=$('msg');m.textContent=t||'';m.classList.toggle('on',!!t)}
 $('playW').addEventListener('click',e=>{
-  if(e.target.closest('#pBack')){sfx.back();closeSheet();renderHome(false);show('home');return}
+  if(e.target.closest('#pBack')){if(G1&&!G1.done){S.t[cur.id]=G1.t;save()}sfx.back();closeSheet();renderHome(false);show('home');return}
   if(e.target.closest('#tNext')){goNext();return}
   if(!G1||G1.done||G1.busy)return;
   const tl=e.target.closest('.tl');
@@ -643,7 +747,6 @@ $('playW').addEventListener('click',e=>{
     const vals=free.map(i=>G1.pool[i]);for(let i=vals.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[vals[i],vals[j]]=[vals[j],vals[i]]}
     free.forEach((i,k)=>G1.pool[i]=vals[k]);drawPool(true);return}
   if(e.target.closest('#tClr')){sfx.back();G1.slots.forEach(s=>{if(!s.lock&&s.t>=0){G1.pool[s.t].at=-1;s.t=-1}});setMsg('');drawSlots();drawPool(false);return}
-  if(e.target.closest('#tHint')){hintSheet();return}
 });
 function check(){
   if(firstEmpty()>=0)return;
@@ -668,27 +771,9 @@ function removeSpares(quiet){
     list.slice(need[ch]||0).forEach(i=>{const t=G1.pool[i];if(t.at>=0){G1.slots[t.at].t=-1;t.at=-1}t.gone=true})});
   G1.spared=true;
 }
-function hintSheet(){
-  const canReveal=G1.slots.some(s=>!s.lock),canSpare=!G1.spared&&!S.x[cur.id];
-  const left=Math.max(1,3-G1.hints),cost=left>1?'<span class="cost">−1 '+STAR()+'</span>':'<span class="cost" style="color:var(--dim)">Free now</span>';
-  openSheet('<div style="text-align:center"><div class="k">Need a nudge?</div><div class="big" style="font-size:26px">Hints</div><p class="dim" style="margin:2px 0 0">This puzzle is worth '+left+' star'+(left>1?'s':'')+' now. You always keep at least one.</p></div>'
-    +'<button class="opt" id="hR"'+(canReveal?'':' disabled')+'><span class="ic">'+STAR()+'</span><span><b>Reveal a letter</b><small>Puts one right letter in place</small></span>'+cost+'</button>'
-    +'<button class="opt" id="hS"'+(canSpare?'':' disabled')+'><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#d4b36a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></span><span><b>Remove spare letters</b><small>Takes away every letter you don’t need</small></span>'+cost+'</button>'
-    +'<button class="opt" id="hW"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#d4b36a" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.1"/></svg></span><span><b>Think it through</b><small>'+(cur.why.indexOf('sound')>=0||/[-]/.test(cur.why)?'Say each picture out loud':'Try saying each picture out loud, then join them up')+'</small></span><span class="cost" style="color:var(--dim)">Free</span></button>'
-    +'<button class="btn wide" style="margin-top:14px" id="hX">Close</button>');
-  sheet.onclick=e=>{
-    if(e.target.closest('#hX')||e.target.closest('#hW')){closeSheet();return}
-    if(e.target.closest('#hR')){const cand=G1.slots.filter(s=>!s.lock&&(s.t<0||G1.pool[s.t].ch!==s.ch));const pick=cand.length?cand[Math.floor(Math.random()*cand.length)]:null;
-      if(!pick)return;if(placeReveal(pick.li)){useHint();(S.r[cur.id]=S.r[cur.id]||[]).push(pick.li);save();closeSheet();sfx.hint();drawSlots();drawPool(false);
-        const el=$('slots').querySelector('[data-s="'+pick.li+'"]');if(el){const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,18,4)}setTimeout(check,250)}return}
-    if(e.target.closest('#hS')){removeSpares();useHint();S.x[cur.id]=1;save();closeSheet();sfx.hint();drawSlots();
-      $('pool').querySelectorAll('.tl').forEach((el,i)=>{if(G1.pool[i].gone){el.style.animation='none';el.classList.add('x')}});setTimeout(()=>{drawPool(false);check()},480);return}
-  };
-}
-function useHint(){G1.hints++;S.h[cur.id]=G1.hints;save();drawStars()}
 /* solved */
 function solve(){
-  G1.done=true;const stars=Math.max(1,3-G1.hints),prev=S.s[cur.id]||0;S.s[cur.id]=Math.max(prev,stars);save();push();
+  const stars=starsNow();G1.done=true;S.t[cur.id]=G1.t;const prev=S.s[cur.id]||0;S.s[cur.id]=Math.max(prev,stars);save();push();
   sfx.win();
   const els=[...$('slots').querySelectorAll('.sl:not(.fx)')];els.forEach((el,i)=>{el.style.animationDelay=(i*.045)+'s';el.classList.add('ok')});
   $('stage').classList.add('solved');
@@ -697,15 +782,16 @@ function solve(){
   setTimeout(()=>{
     if(chDone||allDone)rain();
     const nx=nextUnsolved(cur.n);
-    openSheet('<div class="win"><div class="k">Puzzle '+cur.n+' solved</div><h2>'+(stars===3?'Brilliant!':stars===2?'Well done!':'Got it!')+'</h2><div class="ans">'+(cur.pre?cur.pre+' ':'')+esc(cur.a)+'</div><div class="why">'+esc(cur.why)+'</div><div class="wst" id="wst">'+[0,1,2].map(()=>STAR()).join('')+'</div>'
-      +(allDone?'<div class="chd"><b>All 36 solved.</b> You have '+starsOf()+' of '+MAXS+' stars. A proper Christmas brain.</div>':chDone?'<div class="chd"><b>Chapter complete:</b> '+CH[ci].t+'. '+PZ.filter(p=>p.c===ci).reduce((a,p)=>a+S.s[p.id],0)+' of 18 stars.</div>':'')
+    openSheet('<div class="win"><div class="k">Puzzle '+cur.n+' solved</div><h2>'+['Got it!','Got there!','Well done!','Superb!','Brilliant!'][stars-1]+'</h2><div class="ans">'+(cur.pre?cur.pre+' ':'')+esc(cur.a)+'</div><div class="why">'+esc(cur.why)+'</div><div class="wst" id="wst">'+[0,1,2,3,4].map(()=>STAR()).join('')+'</div><div class="dim" style="margin-top:2px">Solved in '+fmtT(G1.t)+'</div>'
+      +(allDone?'<div class="chd"><b>All 36 solved.</b> You have '+starsOf()+' of '+MAXS+' stars. A proper Christmas brain.</div>':chDone?'<div class="chd"><b>Chapter complete:</b> '+CH[ci].t+'. '+PZ.filter(p=>p.c===ci).reduce((a,p)=>a+S.s[p.id],0)+' of '+(6*MAXP)+' stars.</div>':'')
       +'<div class="acts">'+(nx?'<button class="btn solid wide" id="wN">Next puzzle</button>':'')+'<button class="btn wide" id="wH">All puzzles</button></div></div>');
     sheet.dataset.lock='1';
-    const ss=[...$('wst').children];ss.forEach((s,i)=>setTimeout(()=>{if(i<stars){s.classList.add('in');sfx.star(i);const b=s.getBoundingClientRect();burst(b.left+b.width/2,b.top+b.height/2,14,4)}else s.classList.add('off')},350+i*320));
+    const ss=[...$('wst').children];ss.forEach((s,i)=>setTimeout(()=>{if(i<stars){s.classList.add('in');sfx.star(i);const b=s.getBoundingClientRect();burst(b.left+b.width/2,b.top+b.height/2,14,4)}else s.classList.add('off')},300+i*240));
     sheet.onclick=e=>{if(e.target.closest('#wN')){delete sheet.dataset.lock;closeSheet();goNext()}else if(e.target.closest('#wH')){delete sheet.dataset.lock;closeSheet();renderHome(false);show('home')}};
     drawStars();$('tools').innerHTML='<button class="btn solid" id="tNext">Next puzzle</button>';$('pool').style.display='none';setMsg(cur.why);
   },900);
 }
+function fmtT(t){t=Math.round(t);return t<60?t+' seconds':Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
 function goNext(){const nx=nextUnsolved(cur.n);if(!nx){renderHome(false);show('home');return}
   const pw=$('playW');pw.style.transition='opacity .25s,transform .25s';pw.style.opacity=0;pw.style.transform='translateX(-20px)';
   setTimeout(()=>{openPuzzle(nx.id);pw.style.transition='none';pw.style.transform='translateX(20px)';requestAnimationFrame(()=>{pw.style.transition='opacity .35s var(--ease),transform .45s var(--ease)';pw.style.opacity=1;pw.style.transform='none'})},250)}
