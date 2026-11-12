@@ -6271,7 +6271,7 @@ body{padding:0!important;overflow:hidden}
 </div>
 
 <script>
-const PINS={"6731":"Sue","5607":"Simon","0942":"Chloe","8006":"Andy","1146":"Eileen","5700":"Lana","8410":"Steve","5696":"Leanne","4650":"Colin","5984":"Annette","4552":"Oliver","1833":"Natalie","7252":"James","2230":"Arabella"};
+const PINS={"6731":"Sue","5607":"Simon","0942":"Chloe","8006":"Andy","1146":"Eileen","5700":"Lana","8410":"Steve","5696":"Leanne","4650":"Colin","5984":"Annette","4552":"Oliver","1833":"Natalie","7252":"James","2230":"Arabella","3061":"Danny"};
 const scr=document.getElementById('scr'),scene=document.getElementById('scene'),dotsEl=document.getElementById('dots'),
   msg=document.getElementById('msg'),door=document.getElementById('door');
 let entry='',busy=false,timers=[];
@@ -6399,7 +6399,7 @@ function render(now){
   function reset(){score=0;t=0;speed=245;py=0;vy=0;onGround=true;buffer=0;distance=0;obs=[];gifts=[];pops=[];shake=0;pc.textContent='0';nextAt=LW+120;
     snow=[];for(let i=0;i<36;i++)snow.push({x:Math.random()*LW,y:Math.random()*LH,r:.8+Math.random()*1.8,v:18+Math.random()*34});
     back=[];let x=-20;while(x<LW*2){const w=34+Math.random()*40,h=22+Math.random()*30;back.push({x,w,h,s:Math.random()*99});x+=w+8+Math.random()*30}}
-  const TYPES={chimney:{w:20,h:34},house:{w:48,h:46},bighouse:{w:68,h:58},present:{w:88,h:58},snowman:{w:22,h:36},girl:{w:18,h:30},boy:{w:18,h:30},santa:{w:24,h:40},ginger:{w:16,h:25},tree:{w:26,h:48}},FAMILIES=['Funnells','Groutages','Parkers'],NAMES=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Arabella','Cooper'];
+  const TYPES={chimney:{w:20,h:34},house:{w:48,h:46},bighouse:{w:68,h:58},present:{w:88,h:58},snowman:{w:22,h:36},girl:{w:18,h:30},boy:{w:18,h:30},santa:{w:24,h:40},ginger:{w:16,h:25},tree:{w:26,h:48}},FAMILIES=['Funnells','Groutages','Parkers'],NAMES=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Arabella','Cooper','Danny'];
   function spawn(){
     const lastObs=obs[obs.length-1],names=Object.keys(TYPES).filter(n=>(n!=='present'||(speed>=370&&(!lastObs||lastObs.k!=='present')))&&(n!=='bighouse'||speed>=330)),
       k=names[Math.floor(Math.random()*names.length)],T=TYPES[k],isHouse=k.indexOf('house')>-1||k==='present',tight=speed*.58+36;
@@ -6595,6 +6595,7 @@ function render(now){
 
 /* ---------- Secret Santa: each result is locked with its owner's PIN, so only they can open it */
 const SANTA_ADULTS_ONLY=['Arabella'];
+const REMOTE_GUESTS=['Danny'];
 let SANTA=null,saOpenName=null,saBusy=false;
 fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inApp&&!saBusy)renderSanta()}).catch(()=>{});
 const GIFT_SVG=tag=>'<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round">'+
@@ -6610,6 +6611,7 @@ function renderSanta(){
   const el=document.getElementById('saBody'),n=window.GUEST;if(!el||!n)return;
   const head=(t,s)=>'<div class="sa-small">Secret Santa</div><h2>'+t+'</h2><div class="sa-sub" id="saSub">'+s+'</div>';
   if(SANTA_ADULTS_ONLY.includes(n)){el.innerHTML=head('For the grown-ups','No shopping for you this year')+'<div class="sa-stage" style="height:44cqw;width:50cqw">'+GIFT_SVG(false)+'</div><div class="sa-hint">The grown-ups are doing Secret Santa. You are not buying for anyone, but there will be presents under the tree for you.</div>';return}
+  if(REMOTE_GUESTS.includes(n)||(SANTA&&SANTA.drawn&&SANTA.gifts&&!SANTA.gifts[n])){el.innerHTML=head('Not in the draw','Secret Santa is for everyone at the table')+'<div class="sa-stage" style="height:44cqw;width:50cqw">'+GIFT_SVG(false)+'</div><div class="sa-hint">The presents are swapped at the table on Christmas Day, so you’re not in the draw this year. You can still join every game on the Play tab.</div>';return}
   if(!SANTA||!SANTA.drawn){el.innerHTML=head('Not drawn yet','The names are still in the hat')+'<div class="sa-stage">'+GIFT_SVG(true)+'</div><div class="sa-hint">Everyone is drawn at once, so nobody can see a result until it is done. Come back soon.</div>';return}
   saOpenName=null;
   el.innerHTML=head('Who did you draw?','Unwrap to see who you’re buying for')+'<div class="sa-stage" id="saStage"><div class="sa-spark">'+SPARKS+'</div>'+GIFT_SVG(true)+TICKET+'</div><button class="sa-btn solid" id="saOpen" type="button">Tap to unwrap</button><div class="sa-hint" id="saMsg">Only you can see who you have. Make sure nobody is looking over your shoulder.</div>';
@@ -6652,7 +6654,7 @@ async function unwrapSanta(){
 
 
 /* ---------- Santa Shortlist: photo, sealed votes and the Play tab ---------- */
-const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James'];
+const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Danny'];
 const SL_CANDS=SL_ADULTS.concat(['Arabella']);
 const SL_DQS=['ask for seconds','fall asleep on the sofa','still be up at midnight','have all their presents wrapped by 1 December','still be wrapping presents on Christmas Eve','take all the purple ones from the Quality Street tin','be on Father Christmas’s naughty list','give the most thoughtful present','cry at a Christmas film','get too competitive at a board game','sing the loudest when a Christmas song comes on','be the one fixing the tree lights','spot Father Christmas’s sleigh first','win Auntie Sue’s quiz'];
 /* Survey window. TEMPORARY test window: open now, closing at the end of 5 November. The real window is OPEN 1 Dec 2026 to CLOSE 21 Dec 2026 (midnight, so the last day is 20 Dec): new Date(2026,11,1) and new Date(2026,11,21). */
@@ -7276,7 +7278,7 @@ async function hostStartMode(mode){
     await window.__saveRehearsal({hp:HOST_PIN,rounds:r.g.rounds,spares:r.g.spares,questions:r.texts,summary:r.g.summary,updated:Date.now()});
     window.__rehearsal={rounds:r.g.rounds,spares:r.g.spares,questions:r.texts};
   }
-  let st=GC.init(mode);st.seq=((window.__gstate&&window.__gstate.seq)||0)+1;st.players=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n));window.__gstate=st;
+  let st=GC.init(mode);st.seq=((window.__gstate&&window.__gstate.seq)||0)+1;st.players=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n)&&!REMOTE_GUESTS.includes(n));window.__gstate=st;
   await window.__saveState(st);slGo('host');
 }
 function slHostRemote(){
@@ -7287,7 +7289,7 @@ function slHostRemote(){
   const head='<div class="pl-row" style="gap:1.6cqw;flex-wrap:wrap">'+chip(live?'TV connected':'TV not seen',live)+chip(locked?'Locked':'Not locked',locked)+chip(tv&&tv.cached?'Offline ready':'Not cached yet',tv&&tv.cached)+chip(st.mode==='rehearsal'?'REHEARSAL':'Real game',st.mode!=='rehearsal')+'</div>';
   if(!info.ok){return head+'<div class="pl-card" style="margin-top:3cqw"><div class="pl-note">'+(st.mode==='rehearsal'?'No rehearsal game on the TV yet.':'The real game has not been built yet, so there is nothing to run. Use Rehearsal to try the TV.')+'</div></div>'+hostStartButtons(st)}
   if(st.screen==='pick'){
-    const names=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n));
+    const names=SL_CANDS.filter(n=>!HOST.cfg.away.includes(n)&&!REMOTE_GUESTS.includes(n));
     return head+'<div class="pl-ttl" style="font-size:6cqw;margin-top:3cqw">Who won?</div><div class="pl-faces">'+names.map(n=>'<button class="pl-face" type="button" data-act="hr-pick" data-n="'+n+'">'+slAv(n,'100%')+'<span>'+n+'</span></button>').join('')+'</div><div class="pl-foot"><button class="pl-btn ghost" data-act="hr-cmd" data-c="exit">Cancel</button></div>';
   }
   const rn=(st.k==='r'&&!st.sd)?'Round '+st.n+' of '+info.rounds:st.sd?'Sudden death':'';
@@ -7384,7 +7386,7 @@ let BRING={};
 fetch('bring.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{BRING=j;if(inApp)paintBring()}).catch(()=>{});
 function paintBring(){
   const mine=[].concat(BRING[window.GUEST]||[]).map(x=>String(x).trim()).filter(Boolean);
-  const items=['Secret Santa','Festive cheer'].concat(mine);
+  const items=(REMOTE_GUESTS.includes(window.GUEST)?['Festive cheer']:['Secret Santa','Festive cheer']).concat(mine);
   document.getElementById('bring').innerHTML=items.map((x,i)=>'<b'+(i>0?' class="b2"':'')+'>'+x.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b>').join('');
 }
 let inApp=false;
