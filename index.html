@@ -6271,7 +6271,7 @@ body{padding:0!important;overflow:hidden}
 </div>
 
 <script>
-const PINS={"6731":"Sue","5607":"Simon","0942":"Chloe","8006":"Andy","1146":"Eileen","5700":"Lana","8410":"Steve","5696":"Leanne","4650":"Colin","5984":"Annette","4552":"Oliver","1833":"Natalie","7252":"James","2230":"Arabella","3061":"Danny"};
+const PINS={"6731":"Sue","5607":"Simon","0942":"Chloe","8006":"Andy","1146":"Eileen","5700":"Lana","8410":"Steve","5696":"Leanne","4650":"Colin","5984":"Annette","4552":"Oliver","1833":"Natalie","7252":"James","2230":"Arabella","3061":"Danny","8720":"Lucy"};
 const scr=document.getElementById('scr'),scene=document.getElementById('scene'),dotsEl=document.getElementById('dots'),
   msg=document.getElementById('msg'),door=document.getElementById('door');
 let entry='',busy=false,timers=[];
@@ -6399,7 +6399,7 @@ function render(now){
   function reset(){score=0;t=0;speed=245;py=0;vy=0;onGround=true;buffer=0;distance=0;obs=[];gifts=[];pops=[];shake=0;pc.textContent='0';nextAt=LW+120;
     snow=[];for(let i=0;i<36;i++)snow.push({x:Math.random()*LW,y:Math.random()*LH,r:.8+Math.random()*1.8,v:18+Math.random()*34});
     back=[];let x=-20;while(x<LW*2){const w=34+Math.random()*40,h=22+Math.random()*30;back.push({x,w,h,s:Math.random()*99});x+=w+8+Math.random()*30}}
-  const TYPES={chimney:{w:20,h:34},house:{w:48,h:46},bighouse:{w:68,h:58},present:{w:88,h:58},snowman:{w:22,h:36},girl:{w:18,h:30},boy:{w:18,h:30},santa:{w:24,h:40},ginger:{w:16,h:25},tree:{w:26,h:48}},FAMILIES=['Funnells','Groutages','Parkers'],NAMES=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Arabella','Cooper','Danny'];
+  const TYPES={chimney:{w:20,h:34},house:{w:48,h:46},bighouse:{w:68,h:58},present:{w:88,h:58},snowman:{w:22,h:36},girl:{w:18,h:30},boy:{w:18,h:30},santa:{w:24,h:40},ginger:{w:16,h:25},tree:{w:26,h:48}},FAMILIES=['Funnells','Groutages','Parkers'],NAMES=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Arabella','Cooper','Danny','Lucy'];
   function spawn(){
     const lastObs=obs[obs.length-1],names=Object.keys(TYPES).filter(n=>(n!=='present'||(speed>=370&&(!lastObs||lastObs.k!=='present')))&&(n!=='bighouse'||speed>=330)),
       k=names[Math.floor(Math.random()*names.length)],T=TYPES[k],isHouse=k.indexOf('house')>-1||k==='present',tight=speed*.58+36;
@@ -6595,7 +6595,7 @@ function render(now){
 
 /* ---------- Secret Santa: each result is locked with its owner's PIN, so only they can open it */
 const SANTA_ADULTS_ONLY=['Arabella'];
-const REMOTE_GUESTS=['Danny'];
+const REMOTE_GUESTS=['Danny','Lucy'];
 let SANTA=null,saOpenName=null,saBusy=false;
 fetch('santa.json',{cache:'no-store'}).then(r=>r.json()).then(j=>{SANTA=j;if(inApp&&!saBusy)renderSanta()}).catch(()=>{});
 const GIFT_SVG=tag=>'<svg class="sa-gift" viewBox="0 0 160 150" fill="none" stroke-linecap="round" stroke-linejoin="round">'+
@@ -6654,7 +6654,7 @@ async function unwrapSanta(){
 
 
 /* ---------- Santa Shortlist: photo, sealed votes and the Play tab ---------- */
-const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Danny'];
+const SL_ADULTS=['Sue','Simon','Chloe','Andy','Eileen','Lana','Steve','Leanne','Colin','Annette','Oliver','Natalie','James','Danny','Lucy'];
 const SL_CANDS=SL_ADULTS.concat(['Arabella']);
 const SL_DQS=['ask for seconds','fall asleep on the sofa','still be up at midnight','have all their presents wrapped by 1 December','still be wrapping presents on Christmas Eve','take all the purple ones from the Quality Street tin','be on Father Christmas’s naughty list','give the most thoughtful present','cry at a Christmas film','get too competitive at a board game','sing the loudest when a Christmas song comes on','be the one fixing the tree lights','spot Father Christmas’s sleigh first','win Auntie Sue’s quiz'];
 /* Survey window. TEMPORARY test window: open now, closing at the end of 5 November. The real window is OPEN 1 Dec 2026 to CLOSE 21 Dec 2026 (midnight, so the last day is 20 Dec): new Date(2026,11,1) and new Date(2026,11,21). */
