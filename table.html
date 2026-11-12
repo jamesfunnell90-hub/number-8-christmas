@@ -31,6 +31,10 @@ button:active{transform:scale(.96);filter:brightness(1.12)}
 #load i{display:block;width:180px;height:3px;background:var(--line);border-radius:3px;margin:14px auto 0;overflow:hidden}
 #load i b{display:block;height:100%;width:0;background:var(--gold);transition:width .2s}
 #load span{font:500 22px var(--serif)}
+#lay{display:block;width:min(220px,58vw);height:auto;margin:0 auto 18px;overflow:visible}
+#lay .pl{opacity:0;transform-box:fill-box;transform-origin:center;transform:translateY(-14px) scale(1.35);transition:opacity .32s ease-out,transform .42s cubic-bezier(.2,1.4,.4,1)}
+#lay .pl.on{opacity:1;transform:none}
+#lay.clear .pl{opacity:0;transform:scale(.85);transition:opacity .45s,transform .45s}
 #hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 78px);transform:translateX(-50%);font-size:12px;color:var(--dim);
  background:rgba(12,31,23,.7);padding:6px 12px;border-radius:999px;pointer-events:none;white-space:normal;text-align:center;width:max-content;max-width:calc(100vw - 24px);opacity:1 !important}
 #flat{display:none;position:fixed;inset:0;overflow:auto;padding:130px 16px 100px}
@@ -50,7 +54,7 @@ button:active{transform:scale(.96);filter:brightness(1.12)}
 <div class="top"><div class="e">Table plan</div><h1>Who sits where</h1><p id="sub">&nbsp;</p></div>
 <div id="hint">One finger to move around · pinch to zoom · two fingers to spin</div>
 <div class="bar"><button class="solid" id="bMine">Find my seat</button><button class="ghost" id="bRoom">Whole room</button></div>
-<div id="load"><div><span>Laying the table…</span><i><b id="prog"></b></i></div></div>
+<div id="load"><div><svg id="lay" viewBox="0 0 220 300" aria-hidden="true"><rect x="66" y="36" width="88" height="238" rx="6" fill="#f4ecd6" opacity=".95"/><rect x="104" y="44" width="12" height="192" rx="2" fill="#c4523f" opacity=".55"/><g class="pl" data-k="0"><rect x="102" y="18" width="16" height="16" rx="4" fill="#2f5443"/><rect x="97" y="46" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><rect x="121.4" y="46" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><circle cx="110" cy="52" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="110" cy="52" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="1"><rect x="50" y="74" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="69" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="93.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="82" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="82" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="2"><rect x="50" y="104" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="99" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="123.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="112" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="112" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="3"><rect x="50" y="134" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="129" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="153.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="142" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="142" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="4"><rect x="50" y="164" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="159" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="183.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="172" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="172" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="5"><rect x="50" y="194" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="189" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="213.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="202" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="202" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="6"><rect x="50" y="224" width="16" height="16" rx="4" fill="#2f5443"/><rect x="78" y="219" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="78" y="243.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="84" cy="232" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="84" cy="232" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="7"><rect x="82" y="276" width="16" height="16" rx="4" fill="#2f5443"/><rect x="77" y="252" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><rect x="101.4" y="252" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><circle cx="90" cy="258" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="90" cy="258" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="8"><rect x="122" y="276" width="16" height="16" rx="4" fill="#2f5443"/><rect x="117" y="252" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><rect x="141.4" y="252" width="1.6" height="12" rx=".8" fill="#c9cfc8"/><circle cx="130" cy="258" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="130" cy="258" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="9"><rect x="154" y="224" width="16" height="16" rx="4" fill="#2f5443"/><rect x="130" y="219" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="243.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="232" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="232" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="10"><rect x="154" y="194" width="16" height="16" rx="4" fill="#2f5443"/><rect x="130" y="189" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="213.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="202" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="202" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="11"><rect x="154" y="164" width="16" height="16" rx="4" fill="#2f5443"/><rect x="130" y="159" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="183.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="172" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="172" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="12"><rect x="154" y="134" width="16" height="16" rx="4" fill="#2f5443"/><rect x="130" y="129" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="153.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="142" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="142" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="13"><rect x="154" y="104" width="16" height="16" rx="4" fill="#2f5443"/><rect x="130" y="99" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="123.4" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="112" r="9" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="112" r="5.58" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g><g class="pl" data-k="14"><rect x="158" y="74" width="16" height="16" rx="5" fill="#c4523f" opacity=".85"/><rect x="130" y="71.5" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><rect x="130" y="90.9" width="12" height="1.6" rx=".8" fill="#c9cfc8"/><circle cx="136" cy="82" r="6.5" fill="#fbf7ec" stroke="#d4b36a" stroke-width="1.2"/><circle cx="136" cy="82" r="4.03" fill="none" stroke="#e6dcc4" stroke-width=".8"/></g></svg><span>Laying the table…</span><i><b id="prog"></b></i></div></div>
 
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script type="module">
@@ -58,6 +62,19 @@ button:active{transform:scale(.96);filter:brightness(1.12)}
 const qs = new URLSearchParams(location.search);
 const ME = (qs.get('me') || '').trim();
 const $ = id => document.getElementById(id);
+
+// loading screen: the table is laid one place at a time, and stays up until the whole table is laid at least once
+const layT0 = performance.now(), LAY_STEP = 150, LAY_MIN = 15 * LAY_STEP + 500;
+(function layLoop(){
+  const pls = [...document.querySelectorAll('#lay .pl')], lay = $('lay'); let i = 0;
+  const tick = () => {
+    if ($('load').classList.contains('gone')) return;
+    if (i < pls.length) { pls[i++].classList.add('on'); setTimeout(tick, LAY_STEP); }
+    else { setTimeout(() => { lay.classList.add('clear'); setTimeout(() => { pls.forEach(p => p.classList.remove('on')); lay.classList.remove('clear'); i = 0; setTimeout(tick, 250); }, 500); }, 900); }
+  };
+  setTimeout(tick, 200);
+})();
+function hideLoad(){ setTimeout(() => $('load').classList.add('gone'), Math.max(0, LAY_MIN - (performance.now() - layT0))); }
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 const seatData = await fetch('seats.json', {cache:'no-cache'}).then(r => r.json()).then(j => j.seats).catch(() => ({}));
@@ -73,7 +90,7 @@ function flatPlan(){            // plain top-down plan for phones that cannot dr
   h += s(1, 'head') + '</div><small>Kitchen on the left · sofa and garden on the right</small>';
   el.innerHTML = h; el.style.display = 'block';
   ['stage', 'hint', 'bRoom', 'bMine'].forEach(i => $(i).style.display = 'none');
-  $('load').classList.add('gone');
+  hideLoad();
 }
 
 let THREE, OrbitControls, GLTFLoader, RoomEnvironment;
@@ -340,7 +357,7 @@ loader.load('room.glb', gltf => {
     }
   });
   buildCards(); buildRing();
-  $('load').classList.add('gone');
+  hideLoad();
   overview(true);
   setTimeout(() => { if (mySeatNo && !touched) flyToSeat(+mySeatNo); }, 2200);
 }, e => { if (e.total) $('prog').style.width = Math.round(e.loaded / e.total * 100) + '%'; }, () => flatPlan());
